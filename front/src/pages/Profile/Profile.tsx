@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import toast from "react-hot-toast";
 import { AuthContext } from "../../features/auth/AuthContext";
 import { updateUser } from "../../features/auth/authApi";
 import "./Profile.css";
@@ -56,10 +57,10 @@ function Profile() {
       loginUser(data);
       setEditando(false);
 
-      alert("Perfil actualizado correctamente");
+      toast.success("Login correcto");
     } catch (error) {
       console.error(error);
-      alert("Error al actualizar perfil");
+      toast.error("Error");
     }
   };
 
@@ -72,7 +73,18 @@ function Profile() {
 
     setEditando(false);
   };
+const hacerAdmin = () => {
+  if (!usuario) return;
 
+  const actualizado = {
+    ...usuario,
+    rol: "ADMIN",
+  };
+
+  localStorage.setItem("usuario", JSON.stringify(actualizado));
+
+  window.location.reload();
+};
   return (
     <div className="profile-container">
       <div className="profile-card">
