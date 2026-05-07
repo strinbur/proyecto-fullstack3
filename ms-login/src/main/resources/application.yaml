@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ms-login
+
+  mongodb:
+    uri: mongodb://localhost:27017/login_bd
+
+server:
+  port: 8081

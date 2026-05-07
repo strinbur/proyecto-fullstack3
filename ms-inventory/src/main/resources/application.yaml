@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: ms-inventory
+  
+  mongodb:
+    uri: mongodb://localhost:27017/inventario_bd
+
+server:
+  port: 8082
