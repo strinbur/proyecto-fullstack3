@@ -2,7 +2,6 @@ package com.grupocordillera.ms_bff.login.service;
 
 import com.grupocordillera.ms_bff.login.client.LoginClient;
 import com.grupocordillera.ms_bff.login.dto.*;
-
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,64 +17,36 @@ public class LoginService {
 
     // LOGIN
     public LoginResponseDTO login(LoginRequestDTO request) {
-        try {
-            return loginClient.login(request);
-        } catch (Exception e) {
-            throw new RuntimeException("Error en login: " + e.getMessage());
-        }
+        return loginClient.login(request);
     }
 
-    // REGISTER PUBLICO
+    // REGISTER
     public LoginResponseDTO register(LoginRegisterDTO request) {
-        try {
-            return loginClient.register(request);
-        } catch (Exception e) {
-            throw new RuntimeException("Error en registro: " + e.getMessage());
-        }
+        return loginClient.register(request);
     }
 
-    // CREAR USUARIO CON ROL
+    // CREACION CON ROL
     public LoginResponseDTO createUserWithRole(LoginAdminCreateDTO request) {
-        try {
-            return loginClient.createUserWithRole(request);
-        } catch (Exception e) {
-            throw new RuntimeException("Error creando usuario: " + e.getMessage());
-        }
+        return loginClient.createUserWithRole(request);
     }
 
     // UPDATE
     public LoginResponseDTO update(String id, LoginUpdateDTO request) {
-        try {
-            return loginClient.update(id, request);
-        } catch (Exception e) {
-            throw new RuntimeException("Error actualizando usuario: " + e.getMessage());
-        }
+        return loginClient.update(id, request);
     }
 
     // GET POR ID
     public LoginResponseDTO getById(String id) {
-        try {
-            return loginClient.getById(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Error obteniendo usuario: " + e.getMessage());
-        }
+        return loginClient.getById(id);
     }
 
     // GET ALL
     public List<LoginResponseDTO> getAll() {
-        try {
-            return loginClient.getAll();
-        } catch (Exception e) {
-            throw new RuntimeException("Error obteniendo usuarios: " + e.getMessage());
-        }
+        return loginClient.getAll();
     }
 
     // DELETE
     public void delete(String id) {
-        try {
-            loginClient.delete(id);
-        } catch (Exception e) {
-            throw new RuntimeException("Error eliminando usuario: " + e.getMessage());
-        }
+        loginClient.delete(id);
     }
 }

@@ -8,9 +8,6 @@ import com.grupocordillera.ms_login.service.LoginService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
-
-
 
 @RestController
 @RequestMapping("/login")
@@ -23,88 +20,55 @@ public class LoginController {
         this.service = service;
     }
 
-
+    // REGISTRAR SIN ROL 
     @PostMapping("/register")
-    public ResponseEntity<?> registrar(@Valid @RequestBody Login login) {
-        try {
-            return ResponseEntity.ok(service.registrar(login));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<LoginResponseDTO> registrar(@Valid @RequestBody Login login) {
+        return ResponseEntity.ok(service.registrar(login));
     }
 
-
+    // LOGIN
     @PostMapping
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
+    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
 
-        Optional<LoginResponseDTO> usuario = service.login(
+        LoginResponseDTO usuario = service.login(
                 request.getCorreo(),
                 request.getPassword()
         );
 
-        return usuario
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(401).body("Credenciales incorrectas"));
+        return ResponseEntity.ok(usuario);
     }
 
-
+    // LISTAR
     @GetMapping
     public ResponseEntity<?> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
-
+    // GET POR ID
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerPorId(@PathVariable String id) {
-
-        Optional<LoginResponseDTO> usuario = service.buscarPorId(id);
-
-        return usuario
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<LoginResponseDTO> obtenerPorId(@PathVariable String id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-
+    // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(
+    public ResponseEntity<LoginResponseDTO> actualizar(
             @PathVariable String id,
             @Valid @RequestBody LoginUpdateDTO dto
     ) {
-        try {
-            return ResponseEntity.ok(service.actualizar(id, dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        return ResponseEntity.ok(service.actualizar(id, dto));
     }
 
-
+    // DELETE
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable String id) {
+    public ResponseEntity<Void> eliminar(@PathVariable String id) {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
+    // CREAR USUARIO CON ROL
     @PostMapping("/admin")
-    public ResponseEntity<?> crearUsuario(
-            @Valid @RequestBody Login login
-    ) {
-
-        try {
-
-            return ResponseEntity.ok(
-                    service.crearUsuario(login)
-            );
-
-        } catch (RuntimeException e) {
-
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-
-        }
-
+    public ResponseEntity<LoginResponseDTO> crearUsuario(@Valid @RequestBody Login login) {
+        return ResponseEntity.ok(service.crearUsuario(login));
     }
-
-  
-
 }
