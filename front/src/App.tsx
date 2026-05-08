@@ -8,37 +8,53 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
+import Products from "./pages/Products/Products";
 
 import { AuthProvider } from "./features/auth/AuthProvider";
 
 function App() {
-  return (
-  <AuthProvider>
-    <BrowserRouter>
-      <div
-        style={{
-          minHeight: "100vh",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Navbar />
 
-        <div style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-          </Routes>
+  return (
+
+    <AuthProvider>
+
+      <BrowserRouter>
+
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+
+          <Navbar />
+
+          <div style={{ flex: 1 }}>
+
+            <Routes>
+
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/products" element={<Products />} />
+
+            </Routes>
+
+          </div>
+
+          <Footer />
+
         </div>
 
-        <Footer />
-      </div>
-    </BrowserRouter>
-  </AuthProvider>
-);
+      </BrowserRouter>
+
+    </AuthProvider>
+
+  );
+
 }
 
 export default App;

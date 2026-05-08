@@ -83,4 +83,28 @@ public class LoginController {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/admin")
+    public ResponseEntity<?> crearUsuario(
+            @Valid @RequestBody Login login
+    ) {
+
+        try {
+
+            return ResponseEntity.ok(
+                    service.crearUsuario(login)
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+
+        }
+
+    }
+
+  
+
 }

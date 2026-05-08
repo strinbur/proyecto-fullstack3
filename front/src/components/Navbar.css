@@ -1,0 +1,140 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background: linear-gradient(90deg, #1e3a8a, #2563eb);
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  font-family: 'Outfit', sans-serif;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+}
+
+.navbar-logo {
+  color: white;
+  text-decoration: none;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.navbar-links {
+  display: flex;
+  gap: 25px;
+}
+
+.navbar-link {
+  color: white;
+  text-decoration: none;
+  font-weight: 500;
+  transition: 0.25s;
+}
+
+.navbar-link:hover {
+  opacity: 0.85;
+}
+
+.navbar-admin-link {
+  color: #fde047;
+  text-decoration: none;
+  font-weight: bold;
+  border: 1px solid #fde047;
+  padding: 2px 8px;
+  border-radius: 6px;
+  transition: 0.25s;
+}
+
+.navbar-admin-link:hover {
+  background: rgba(253, 224, 71, 0.1);
+}
+
+.navbar-profile-wrapper {
+  position: relative;
+}
+
+.navbar-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: #60a5fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: bold;
+  border: 2px solid white;
+  transition: 0.25s;
+}
+
+.navbar-avatar:hover {
+  transform: scale(1.05);
+}
+
+.navbar-dropdown {
+  position: absolute;
+  right: 0;
+  top: 55px;
+  background: white;
+  color: #1e293b;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  padding: 15px;
+  min-width: 200px;
+  z-index: 100;
+}
+
+.dropdown-label {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.dropdown-user {
+  margin: 0 0 15px 0;
+  font-weight: bold;
+  color: #1e3a8a;
+}
+
+.dropdown-divider {
+  border: 0.5px solid #f1f5f9;
+  margin-bottom: 15px;
+}
+
+.dropdown-link {
+  display: block;
+  text-decoration: none;
+  color: #1e3a8a;
+  font-weight: 600;
+  margin-bottom: 12px;
+  transition: 0.25s;
+}
+
+.dropdown-link:hover {
+  opacity: 0.8;
+}
+
+.dropdown-auth-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.logout-button {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.25s;
+}
+
+.logout-button:hover {
+  background: #dc2626;
+}
