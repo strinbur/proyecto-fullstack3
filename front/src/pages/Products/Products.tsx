@@ -1,82 +1,119 @@
-import { useEffect, useState } from "react";
-import { listarProductos } from "../../features/inventory/inventoryApi";
-import "./Products.css";
+import { useState } from 'react'
+import './Products.css'
 
-interface Product {
-  id: string;
-  codigo: string;
-  nombre: string;
-  marca: string;
-  precio: number;
-  cantidad: number;
-  categoria: string;
-}
+function Products() {
 
-export default function Products() {
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
 
-  const [products, setProducts] = useState<Product[]>([]);
+  const products = [
+    {
+      id: 1,
+      nombre: 'Notebook Lenovo IdeaPad',
+      marca: 'Lenovo',
+      precio: 799990,
+      categoria: 'Tecnología',
+      descripcion:
+        'Notebook ideal para gaming y productividad con excelente rendimiento.',
+      detalles: [
+        'Intel Core i7',
+        '16GB RAM',
+        'RTX 4060',
+        'SSD 1TB'
+      ],
+      imagen:
+        'https://images.unsplash.com/photo-1593642702821-c8da6771f0c6'
+    },
 
-  useEffect(() => {
+    {
+      id: 2,
+      nombre: 'Smart TV Samsung',
+      marca: 'Samsung',
+      precio: 599990,
+      categoria: 'Televisión',
+      descripcion:
+        'Smart TV 4K con colores vibrantes y sistema operativo inteligente.',
+      detalles: [
+        '55 pulgadas',
+        '4K UHD',
+        'HDR',
+        'Netflix integrado'
+      ],
+      imagen:
+        'https://images.unsplash.com/photo-1593784991095-a205069470b6'
+    },
 
-    const fetchProductos = async () => {
-
-      try {
-
-        const data = await listarProductos();
-        setProducts(data);
-
-      } catch (error) {
-
-        console.error("Error cargando productos", error);
-
-      }
-
-    };
-
-    fetchProductos();
-
-  }, []);
+    {
+      id: 3,
+      nombre: 'TV LG',
+      marca: 'LG',
+      precio: 449990,
+      categoria: 'Televisión',
+      descripcion:
+        'Televisor LG con excelente calidad de imagen y sonido envolvente.',
+      detalles: [
+        '50 pulgadas',
+        'WebOS',
+        'Full HD',
+        'Bluetooth'
+      ],
+      imagen:
+        'https://images.unsplash.com/photo-1461151304267-38535e780c79'
+    }
+  ]
 
   return (
+    <div className="products-page">
 
-    <div className="min-h-screen bg-gray-100 p-8">
+      <div className="products-header">
 
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Productos
-      </h1>
+        <div>
+          <h1>Todos los productos</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <p>
+            Descubre tecnología, televisores y más.
+          </p>
+        </div>
+
+      </div>
+
+      <div className="products-grid">
 
         {products.map((product) => (
 
           <div
+            className="product-card"
             key={product.id}
-            className="bg-white rounded-xl shadow-md p-5"
+            onClick={() => setSelectedProduct(product)}
           >
 
-            <h2 className="text-xl font-semibold text-gray-800">
-              {product.nombre}
-            </h2>
+            <img
+              src={product.imagen}
+              alt={product.nombre}
+            />
 
-            <p className="text-gray-500">
-              Código: {product.codigo}
-            </p>
+            <div className="product-info">
 
-            <p className="text-gray-500">
-              Marca: {product.marca}
-            </p>
+              <span className="product-category">
+                {product.categoria}
+              </span>
 
-            <p className="text-blue-600 font-bold text-lg mt-2">
-              ${product.precio}
-            </p>
+              <h3>{product.nombre}</h3>
 
-            <p className="text-gray-600">
-              Stock: {product.cantidad}
-            </p>
+              <p>{product.marca}</p>
 
-            <span className="inline-block mt-3 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-              {product.categoria}
-            </span>
+              <div className="price-row">
+
+                <span className="price">
+                  ${product.precio.toLocaleString('es-CL')}
+                </span>
+
+                <button className="add-cart">
+                  Agregar
+                </button>
+
+              </div>
+
+            </div>
 
           </div>
 
@@ -84,8 +121,76 @@ export default function Products() {
 
       </div>
 
+      {/* MODAL */}
+
+      {selectedProduct && (
+
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedProduct(null)}
+        >
+
+          <div
+            className="product-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            <button
+              className="close-modal"
+              onClick={() => setSelectedProduct(null)}
+            >
+              ✕
+            </button>
+
+            <img
+              src={selectedProduct.imagen}
+              alt={selectedProduct.nombre}
+            />
+
+            <div className="modal-info">
+
+              <span className="product-category">
+                {selectedProduct.categoria}
+              </span>
+
+              <h2>{selectedProduct.nombre}</h2>
+
+              <h3>
+                ${selectedProduct.precio.toLocaleString('es-CL')}
+              </h3>
+
+              <p>
+                {selectedProduct.descripcion}
+              </p>
+
+              <ul>
+
+                {selectedProduct.detalles.map(
+                  (detalle: string, index: number) => (
+
+                    <li key={index}>
+                      {detalle}
+                    </li>
+
+                  )
+                )}
+
+              </ul>
+
+              <button className="buy-btn">
+                Agregar al carrito
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
+
     </div>
-
-  );
-
+  )
 }
+
+export default Products
