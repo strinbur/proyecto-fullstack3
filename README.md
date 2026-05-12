@@ -97,15 +97,7 @@ mvn -f login test
 2. Hacer commits pequeños y claros
 3. Abrir un Pull Request describiendo el cambio
 
-## Diagrama de draw.io
-<img width="1324" height="989" alt="Fullstack 3 diagrama drawio" src="https://github.com/user-attachments/assets/b9872c5e-cb80-4673-a76a-ac6345d95740" />
-
-
-## Trello 
-[📋 Acceder al Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)
-
-
-
+## Diagrama de mermaid
 ```mermaid
 ---
 config:
@@ -164,6 +156,62 @@ flowchart LR
 
     L_BFF_UserMS_0@{ curve: linear }
 ```
+## Diagrama de mermaid
+```mermaid
+---
+config:
+  layout: fixed
+---
+flowchart LR
+    %% Definición de Estilos
+    classDef frontend fill:#2196f3,stroke:#0d47a1,stroke-width:2px,color:#fff
+    classDef component fill:#fff,stroke:#0055ff,stroke-width:2px
+    classDef circuit fill:#fff,stroke:#ff5722,stroke-width:3px
+    classDef database fill:#fff,stroke:#0055ff,stroke-dasharray: 5 5
+    classDef storage fill:#fff,stroke:#0055ff,stroke-width:1px
+
+    Usuario((" Usuario")) --> Vercel
+
+    subgraph Vercel["Vercel"]
+        Frontend["Frontend <br/> React + Vite"]
+    end
+
+    subgraph K8s["Kubernetes Cluster"]
+        direction LR
+        
+        %% Componentes iniciales
+        Ingress["Ingress Controller"] --> Gateway["API Gateway <br/> (Krakend)"]
+        Gateway --> BFF["BFF <br/> (Spring Boot)"]
+
+        %% El patrón Circuit Breaker (usando forma de hexágono)
+        BFF --> CB{{Circuit Breaker}}
+        
+        %% Destino del flujo
+        CB --> Carrito["Carrito <br/> Spring Boot + Java 25"]
+        Carrito --> BD_C[("BD Carrito <br/> Mongo db 8")]
+        BD_C --- PVC_C("PVC Carrito")
+        
+        %% Estilo para que el cuadro de K8s sea grande
+        style K8s padding:60px,fill:#fcfcfc,stroke:#333,stroke-width:2px
+    end
+
+    %% Conexión Vercel a K8s
+    Frontend --> Ingress
+
+    %% Aplicación de clases
+    class Frontend frontend
+    class Ingress,Gateway,BFF,Carrito component
+    class CB circuit
+    class BD_C database
+    class PVC_C storage
+
+
+## Trello 
+[📋 Acceder al Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)
+
+```
+
+
 
 
 
