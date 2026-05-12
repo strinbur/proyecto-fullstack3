@@ -97,7 +97,7 @@ mvn -f login test
 2. Hacer commits pequeños y claros
 3. Abrir un Pull Request describiendo el cambio
 
-## Diagrama de mermaid
+## Diagrama de Mermaid
 ```mermaid
 ---
 config:
@@ -156,7 +156,9 @@ flowchart LR
 
     L_BFF_UserMS_0@{ curve: linear }
 ```
-## Diagrama de mermaid
+
+
+## Diagrama de Mermaid
 ```mermaid
 ---
 config:
@@ -206,6 +208,10 @@ flowchart LR
     class PVC_C storage
 
 ```
+
+
+
+
 ## Trello 
 [📋 Acceder al Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)
 
