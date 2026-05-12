@@ -106,66 +106,6 @@ mvn -f login test
 
 
 
-```mermaid
-
----
-config:
-  layout: fixed
----
-flowchart LR
- subgraph Vercel["Vercel"]
-        Frontend["Frontend <br> React + Vite"]
-  end
- subgraph K8s["Kubernetes"]
-        Ingress["Ingress Controller <br> Traefik"]
-        Gateway["API Gateway <br> Krakend"]
-        BFF["BFF <br> Spring Boot + Java"]
-        PVC_C("PVC Carrito")
-        BD_C[("BD Carrito <br> Mongo 8")]
-        PVC_I("PVC Inventario")
-        BD_I[("BD Inventario <br> Mongo 8")]
-        PVC_Co("PVC Compra")
-        BD_Co[("BD Compra <br> Mongo 8")]
-        PVC_R("PVC Reportes")
-        BD_R[("BD Reportes <br> Mongo 8")]
-        PVC_U("PVC Usuario")
-        BD_U[("BD Usuario <br> Mongo 8")]
-        Gestion["Gestión Datos <br> Spring Boot + Java 25"]
-        KPI["KPI <br> FastAPI + Python 3.14"]
-        PVC_G("PVC Gestión")
-        BD_G[("BD Gestión <br> Mongo 8")]
-        PVC_K("PVC KPI")
-        BD_K[("BD KPI <br> Mongo 8")]
-  end
-    BD_C --- PVC_C
-    BD_I --- PVC_I
-    BD_Co --- PVC_Co
-    BD_R --- PVC_R
-    BD_U --- PVC_U
-    BD_G --- PVC_G
-    BD_K --- PVC_K
-    Usuario(("Usuario")) --> Vercel
-    Frontend --> Ingress
-    Ingress --> Gateway
-    Gateway --> BFF
-    BFF --> Compra["Compra <br> Spring Boot + Java 25"] & Inventario["Inventario <br> Spring Boot + Java 25"] & Carrito["Carrito <br> Spring Boot + Java 25"] & Reportes["Reportes <br> FastAPI + Python 3.14"] & UserMS["Usuario <br> Spring Boot + Java 25"]
-    Carrito --> BD_C
-    Inventario --> BD_I & Gestion
-    Compra --> BD_Co & Inventario & Gestion
-    Reportes --> BD_R
-    UserMS --> BD_U
-    Gestion --> KPI & BD_G
-    KPI --> BD_K & Reportes
-    BD_G --> BD_K
-
-    classDef cloud fill:#f9f9f9,stroke:#333,stroke-width:2px
-    classDef service fill:#fff,stroke:#0055ff,stroke-width:2px
-    classDef database fill:#fff,stroke:#0055ff,stroke-dasharray: 5 5
-    classDef storage fill:#fff,stroke:#0055ff,stroke-width:1px
-
-    L_BFF_UserMS_0@{ curve: linear }
-
-```
 
 
 
