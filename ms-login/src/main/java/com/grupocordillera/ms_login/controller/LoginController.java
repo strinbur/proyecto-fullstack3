@@ -1,13 +1,14 @@
 package com.grupocordillera.ms_login.controller;
 
-import com.grupocordillera.ms_login.dto.LoginRequestDTO;
-import com.grupocordillera.ms_login.dto.LoginResponseDTO;
-import com.grupocordillera.ms_login.dto.LoginUpdateDTO;
-import com.grupocordillera.ms_login.model.Login;
+import com.grupocordillera.ms_login.dto.*;
 import com.grupocordillera.ms_login.service.LoginService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/login")
@@ -20,37 +21,34 @@ public class LoginController {
         this.service = service;
     }
 
-    // REGISTRAR SIN ROL 
+    // 1. PÚBLICO: Registro de clientes
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> registrar(@Valid @RequestBody Login login) {
-        return ResponseEntity.ok(service.registrar(login));
+    public ResponseEntity<LoginResponseDTO> registrar(@Valid @RequestBody RegisterDTO dto) {
+        return new ResponseEntity<>(service.registrar(dto), HttpStatus.CREATED);
     }
 
-    // LOGIN
-    @PostMapping
-    public ResponseEntity<LoginResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
-
-        LoginResponseDTO usuario = service.login(
-                request.getCorreo(),
-                request.getPassword()
-        );
-
-        return ResponseEntity.ok(usuario);
+    // 2. PÚBLICO: Autenticación
+    @PostMapping("/auth")
+    public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
+        return ResponseEntity.ok(service.login(request.getCorreo(), request.getPassword()));
     }
 
-    // LISTAR
+    // 3. SOLO ADMIN Y VENTAS: listar usuarios
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping
-    public ResponseEntity<?> listar() {
+    public ResponseEntity<List<LoginResponseDTO>> listar() {
         return ResponseEntity.ok(service.listar());
     }
 
-    // GET POR ID
+    // 4. SOLO ADMIN Y VENTAS: buscar por ID
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> obtenerPorId(@PathVariable String id) {
         return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    // UPDATE
+    // 5. USUARIO O ADMIN: actualizar perfil
+    @PreAuthorize("#id == authentication.principal or hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> actualizar(
             @PathVariable String id,
@@ -59,16 +57,18 @@ public class LoginController {
         return ResponseEntity.ok(service.actualizar(id, dto));
     }
 
-    // DELETE
+    // 6. SOLO ADMIN: eliminar usuarios
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> eliminar(@PathVariable String id) {
         service.eliminar(id);
         return ResponseEntity.noContent().build();
     }
 
-    // CREAR USUARIO CON ROL
-    @PostMapping("/admin")
-    public ResponseEntity<LoginResponseDTO> crearUsuario(@Valid @RequestBody Login login) {
-        return ResponseEntity.ok(service.crearUsuario(login));
+    // 7. SOLO ADMIN: crear usuarios con roles
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/create")
+    public ResponseEntity<LoginResponseDTO> crearUsuario(@Valid @RequestBody CreateUserDTO dto) {
+        return new ResponseEntity<>(service.crearUsuario(dto), HttpStatus.CREATED);
     }
 }

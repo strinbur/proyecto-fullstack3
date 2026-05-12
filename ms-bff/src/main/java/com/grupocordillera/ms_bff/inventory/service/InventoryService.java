@@ -1,38 +1,20 @@
 package com.grupocordillera.ms_bff.inventory.service;
 
-import com.grupocordillera.ms_bff.inventory.client.InventoryClient;
-import com.grupocordillera.ms_bff.inventory.dto.InventoryDTO;
-
-import org.springframework.stereotype.Service;
+import com.grupocordillera.ms_bff.inventory.dto.InventoryCreateDTO;
+import com.grupocordillera.ms_bff.inventory.dto.InventoryUpdateDTO;
+import com.grupocordillera.ms_bff.inventory.dto.InventoryResponseDTO;
 
 import java.util.List;
 
-@Service
-public class InventoryService {
+public interface InventoryService {
 
-    private final InventoryClient client;
+    List<InventoryResponseDTO> listar(String categoria);
 
-    public InventoryService(InventoryClient client) {
-        this.client = client;
-    }
+    InventoryResponseDTO crear(InventoryCreateDTO dto);
 
-    public List<InventoryDTO> listar(String categoria) {
-        return client.listar(categoria);
-    }
+    InventoryResponseDTO obtenerPorCodigo(String codigo);
 
-    public InventoryDTO crear(InventoryDTO dto) {
-        return client.crear(dto);
-    }
+    InventoryResponseDTO actualizar(String codigo, InventoryUpdateDTO dto);
 
-    public InventoryDTO obtenerPorCodigo(String codigo) {
-        return client.obtenerPorCodigo(codigo);
-    }
-
-    public InventoryDTO actualizar(String codigo, InventoryDTO dto) {
-        return client.actualizar(codigo, dto);
-    }
-
-    public void eliminar(String codigo) {
-        client.eliminar(codigo);
-    }
+    void eliminar(String codigo);
 }

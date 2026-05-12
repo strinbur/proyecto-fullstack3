@@ -21,7 +21,7 @@ public class V001_InitInventoryCollection {
 
         // CREAR INDICE UNICO PARA CODIGO
         mongoTemplate
-                .getCollection("productos")
+                .getCollection("products")
                 .createIndex(
                         new Document("codigo", 1),
                         new IndexOptions().unique(true)
@@ -94,7 +94,7 @@ public class V001_InitInventoryCollection {
 
         // INSERTAR PRODUCTOS
         mongoTemplate
-                .getCollection("productos")
+                .getCollection("products")
                 .insertMany(List.of(
                         notebook,
                         smartTv,
@@ -107,12 +107,12 @@ public class V001_InitInventoryCollection {
 
         // ELIMINAR INDICE
         mongoTemplate
-                .getCollection("productos")
+                .getCollection("products")
                 .dropIndex("codigo_1");
 
         // ELIMINAR PRODUCTOS INSERTADOS
         mongoTemplate
-                .getCollection("productos")
+                .getCollection("products")
                 .deleteMany(
                         new Document(
                                 "codigo",

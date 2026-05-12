@@ -12,9 +12,11 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-
+    // VALIDACIONES DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> manejarValidaciones(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> manejarValidaciones(
+            MethodArgumentNotValidException ex
+    ) {
 
         Map<String, Object> respuesta = new HashMap<>();
 
@@ -27,12 +29,16 @@ public class GlobalExceptionHandler {
         respuesta.put("status", 400);
         respuesta.put("errores", errores);
 
-        return ResponseEntity.badRequest().body(respuesta);
+        return ResponseEntity
+                .badRequest()
+                .body(respuesta);
     }
 
-
+    // ERRORES PERSONALIZADOS
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> manejarErrores(ResponseStatusException ex) {
+    public ResponseEntity<Map<String, Object>> manejarErrores(
+            ResponseStatusException ex
+    ) {
 
         Map<String, Object> respuesta = new HashMap<>();
 
@@ -41,6 +47,23 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity
                 .status(ex.getStatusCode())
+                .body(respuesta);
+    }
+
+    // FALLBACK GENERAL
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<Map<String, Object>> manejarGeneral(Exception ex) {
+
+        Map<String, Object> respuesta = new HashMap<>();
+
+        respuesta.put("status", 500);
+        respuesta.put(
+                "errores",
+                List.of("Error interno del servidor")
+        );
+
+        return ResponseEntity
+                .internalServerError()
                 .body(respuesta);
     }
 }

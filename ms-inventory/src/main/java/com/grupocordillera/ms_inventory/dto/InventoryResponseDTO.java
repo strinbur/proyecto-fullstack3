@@ -1,11 +1,11 @@
-package com.grupocordillera.ms_bff.inventory.dto;
+package com.grupocordillera.ms_inventory.dto;
 
 import lombok.Data;
 
 import java.util.Map;
 
 @Data
-public class InventoryDTO {
+public class InventoryResponseDTO {
 
     private String id;
     private String codigo;
@@ -14,5 +14,6 @@ public class InventoryDTO {
     private double precio;
     private int cantidad;
     private String categoria;
+
     private Map<String, Object> atributos;
 }

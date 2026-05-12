@@ -1,52 +1,24 @@
 package com.grupocordillera.ms_bff.login.service;
 
-import com.grupocordillera.ms_bff.login.client.LoginClient;
 import com.grupocordillera.ms_bff.login.dto.*;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
-public class LoginService {
+public interface LoginService {
 
-    private final LoginClient loginClient;
+    // LOGIN: Retorna Token + Usuario
+    AuthResponseDTO login(LoginRequestDTO request);
 
-    public LoginService(LoginClient loginClient) {
-        this.loginClient = loginClient;
-    }
+    LoginResponseDTO register(LoginRegisterDTO request);
 
-    // LOGIN
-    public LoginResponseDTO login(LoginRequestDTO request) {
-        return loginClient.login(request);
-    }
+    LoginResponseDTO createUserWithRole(LoginAdminCreateDTO request);
 
-    // REGISTER
-    public LoginResponseDTO register(LoginRegisterDTO request) {
-        return loginClient.register(request);
-    }
+    LoginResponseDTO update(String id, LoginUpdateDTO request);
 
-    // CREACION CON ROL
-    public LoginResponseDTO createUserWithRole(LoginAdminCreateDTO request) {
-        return loginClient.createUserWithRole(request);
-    }
+    LoginResponseDTO getById(String id);
 
-    // UPDATE
-    public LoginResponseDTO update(String id, LoginUpdateDTO request) {
-        return loginClient.update(id, request);
-    }
+    // GET ALL: Corregido (solo una lista)
+    List<LoginResponseDTO> getAll();
 
-    // GET POR ID
-    public LoginResponseDTO getById(String id) {
-        return loginClient.getById(id);
-    }
-
-    // GET ALL
-    public List<LoginResponseDTO> getAll() {
-        return loginClient.getAll();
-    }
-
-    // DELETE
-    public void delete(String id) {
-        loginClient.delete(id);
-    }
+    void delete(String id);
 }

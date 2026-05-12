@@ -1,19 +1,13 @@
 package com.grupocordillera.ms_bff.login.controller;
 
-import com.grupocordillera.ms_bff.login.dto.LoginAdminCreateDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginRequestDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginResponseDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginRegisterDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginUpdateDTO;
+import com.grupocordillera.ms_bff.login.dto.*;
 import com.grupocordillera.ms_bff.login.service.LoginService;
-
 import jakarta.validation.Valid;
-
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/bff/login")
@@ -29,99 +23,73 @@ public class LoginController {
         this.service = service;
     }
 
-    // LOGIN
+    // LOGIN: Corregido para retornar AuthResponseDTO (Token + Usuario)
     @PostMapping
-    public LoginResponseDTO login(
-            @RequestBody LoginRequestDTO request
-    ) {
+    public AuthResponseDTO login(@Valid @RequestBody LoginRequestDTO request) {
 
-        log.info(
-                " BFF LOGIN RECIBIDO: {}",
-                request.getCorreo()
-        );
+        log.info("BFF LOGIN RECIBIDO: {}", request.getCorreo());
 
         return service.login(request);
-
     }
 
-    // REGISTER PUBLICO
+    // REGISTER
     @PostMapping("/register")
-    public LoginResponseDTO register(
-            @RequestBody LoginRegisterDTO request
-    ) {
+    public LoginResponseDTO register(@Valid @RequestBody LoginRegisterDTO request) {
 
-        log.info(
-                " BFF REGISTER: {}",
-                request.getCorreo()
-        );
+        log.info("BFF REGISTER: {}", request.getCorreo());
 
         return service.register(request);
-
     }
 
     // CREAR USUARIO CON ROL
     @PostMapping("/admin")
     public LoginResponseDTO createUserWithRole(
-            @Valid @RequestBody LoginAdminCreateDTO request
-    ) {
+            @Valid @RequestBody LoginAdminCreateDTO request) {
 
         log.info(
-                " BFF CREATE USER ROLE: {} - {}",
+                "BFF CREATE USER ROLE: {} - {}",
                 request.getCorreo(),
                 request.getRol()
         );
 
         return service.createUserWithRole(request);
-
     }
 
     // UPDATE
     @PutMapping("/{id}")
     public LoginResponseDTO update(
             @PathVariable String id,
-            @RequestBody LoginUpdateDTO request
-    ) {
+            @Valid @RequestBody LoginUpdateDTO request) {
 
-        log.info(
-                " BFF UPDATE PERFIL ID: {}",
-                id
-        );
+        log.info("BFF UPDATE PERFIL ID: {}", id);
 
         return service.update(id, request);
-
     }
 
-    // GET POR ID
+    // GET BY ID
     @GetMapping("/{id}")
-    public LoginResponseDTO getById(
-            @PathVariable String id
-    ) {
+    public LoginResponseDTO getById(@PathVariable String id) {
 
-        log.info(
-                " BFF GET USER ID: {}",
-                id
-        );
+        log.info("BFF GET USER ID: {}", id);
 
         return service.getById(id);
-
     }
 
+    // GET ALL
     @GetMapping
     public List<LoginResponseDTO> getAll() {
 
-        log.info(" BFF GET ALL USERS");
+        log.info("BFF GET ALL USERS");
 
         return service.getAll();
-
     }
 
+    // DELETE
     @DeleteMapping("/{id}")
     public void delete(@PathVariable String id) {
 
         log.info("BFF DELETE USER ID: {}", id);
 
         service.delete(id);
-
     }
-
 }

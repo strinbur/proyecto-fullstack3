@@ -20,20 +20,20 @@ public class V001_InitLoginCollection {
     @Execution
     public void execution(MongoTemplate mongoTemplate) {
 
-        // CREAR INDICE UNICO PARA CORREO
+        // Crea un indice unico para correo
         mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .createIndex(
                         new Document("correo", 1),
                         new IndexOptions().unique(true)
                 );
 
         // =========================
-        // USUARIO PATRICIO
+        // Usuario Patricio
         // =========================
 
         Document patricioExiste = mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .find(new Document("correo", "pa.olguine@duocuc.cl"))
                 .first();
 
@@ -48,16 +48,16 @@ public class V001_InitLoginCollection {
             patricio.put("rol", Rol.ADMIN.name());
 
             mongoTemplate
-                    .getCollection("login")
+                    .getCollection("users")
                     .insertOne(patricio);
         }
 
         // =========================
-        // USUARIO OSCAR
+        // Usuario Oscar
         // =========================
 
         Document oscarExiste = mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .find(new Document("correo", "os.leyton@duocuc.cl"))
                 .first();
 
@@ -72,16 +72,16 @@ public class V001_InitLoginCollection {
             oscar.put("rol", Rol.ADMIN.name());
 
             mongoTemplate
-                    .getCollection("login")
+                    .getCollection("users")
                     .insertOne(oscar);
         }
 
         // =========================
-        // USUARIO BENJAMIN
+        // Usuario Benjamin
         // =========================
 
         Document benjaminExiste = mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .find(new Document("correo", "benj.vasquezc@duocuc.cl"))
                 .first();
 
@@ -96,7 +96,7 @@ public class V001_InitLoginCollection {
             benjamin.put("rol", Rol.ADMIN.name());
 
             mongoTemplate
-                    .getCollection("login")
+                    .getCollection("users")
                     .insertOne(benjamin);
         }
     }
@@ -104,14 +104,14 @@ public class V001_InitLoginCollection {
     @RollbackExecution
     public void rollback(MongoTemplate mongoTemplate) {
 
-        // ELIMINAR INDICE
+        // Eliminar indice
         mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .dropIndex("correo_1");
 
-        // ELIMINAR USUARIOS CREADOS
+        // Eliminar usuarios creados
         mongoTemplate
-                .getCollection("login")
+                .getCollection("users")
                 .deleteMany(
                         new Document(
                                 "correo",
