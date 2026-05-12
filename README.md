@@ -205,11 +205,11 @@ flowchart LR
     class BD_C database
     class PVC_C storage
 
-
+```
 ## Trello 
 [📋 Acceder al Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)
 
-```
+
 
 
 
