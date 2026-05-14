@@ -8,6 +8,9 @@ import com.grupocordillera.ms_inventory.service.InventoryService;
 import jakarta.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,20 +25,26 @@ public class InventoryController {
         this.service = service;
     }
 
+    // PUBLICO
     @GetMapping
     public ResponseEntity<List<InventoryResponseDTO>> listar(
             @RequestParam(required = false) String categoria
     ) {
 
         if (categoria != null && !categoria.trim().isEmpty()) {
+
             return ResponseEntity.ok(
                     service.obtenerPorCategoria(categoria)
             );
         }
 
-        return ResponseEntity.ok(service.obtenerTodos());
+        return ResponseEntity.ok(
+                service.obtenerTodos()
+        );
     }
 
+    // SOLO ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     public ResponseEntity<InventoryResponseDTO> crear(
             @Valid @RequestBody InventoryCreateDTO inventario
@@ -49,6 +58,7 @@ public class InventoryController {
                 .body(nuevo);
     }
 
+    // PUBLICO
     @GetMapping("/codigo/{codigo}")
     public ResponseEntity<InventoryResponseDTO> obtenerPorCodigo(
             @PathVariable String codigo
@@ -59,6 +69,8 @@ public class InventoryController {
         );
     }
 
+    // SOLO ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/codigo/{codigo}")
     public ResponseEntity<Void> eliminarPorCodigo(
             @PathVariable String codigo
@@ -69,6 +81,8 @@ public class InventoryController {
         return ResponseEntity.noContent().build();
     }
 
+    // SOLO ADMIN
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/codigo/{codigo}")
     public ResponseEntity<InventoryResponseDTO> actualizar(
             @PathVariable String codigo,

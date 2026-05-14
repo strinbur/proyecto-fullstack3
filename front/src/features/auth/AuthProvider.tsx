@@ -16,8 +16,8 @@ export function AuthProvider({ children }: Props) {
 
   // LOGIN: Ahora recibe el objeto completo (token + usuario)
   const loginUser = (data: { token: string; usuario: Usuario }) => {
-    localStorage.setItem("token", data.token); // Guardamos la llave
-    localStorage.setItem("usuario", JSON.stringify(data.usuario)); // Guardamos los datos
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("usuario", JSON.stringify(data.usuario));
     setUsuario(data.usuario);
   };
 
