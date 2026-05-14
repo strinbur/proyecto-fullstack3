@@ -1,0 +1,231 @@
+/* =========================
+   CONTENEDOR PRINCIPAL
+========================= */
+
+.dashboard-page {
+  min-height: 90vh;
+  background-color: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  padding: 40px 20px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.dashboard-container {
+  width: 100%;
+  max-width: 1100px;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.dashboard-header-centered {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.dashboard-header-centered h1 {
+  color: #1e3a8a;
+  font-size: 36px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.dashboard-header-centered p {
+  color: #64748b;
+  font-size: 16px;
+}
+
+/* =========================
+   CREAR USUARIO
+========================= */
+
+.create-user-card {
+  background: white;
+  border-radius: 28px;
+  padding: 40px;
+  margin-bottom: 30px;
+  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
+}
+
+/* inputs/select */
+.create-user-card input,
+.create-user-card select {
+  width: 100%;
+  padding: 16px;
+  margin-bottom: 14px;
+  border: 1px solid #dbe3f0;
+  border-radius: 14px;
+  font-size: 15px;
+  background: #f9fbff;
+  color: #1e293b;
+  outline: none;
+  transition: 0.25s;
+}
+
+.create-user-card input:focus,
+.create-user-card select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  background: white;
+}
+
+/* botón crear */
+.create-user-card button {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(90deg, #2563eb, #1e3a8a);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.create-user-card button:hover {
+  transform: translateY(-2px);
+  opacity: 0.95;
+}
+
+/* =========================
+   TABLA
+========================= */
+
+.dashboard-main-card {
+  background: white;
+  border-radius: 28px;
+  padding: 30px;
+  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
+}
+
+.dashboard-main-card h3 {
+  color: #1e3a8a;
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+/* tabla */
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  text-align: left;
+  padding: 15px;
+  color: #64748b;
+  font-size: 14px;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.custom-table td {
+  padding: 18px 15px;
+  border-bottom: 1px solid #f8fafc;
+  color: #334155;
+  font-size: 15px;
+}
+
+/* =========================
+   BOTÓN ELIMINAR
+========================= */
+
+.delete-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.delete-btn:hover {
+  background: #dc2626;
+  transform: scale(1.05);
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 768px) {
+  .dashboard-page {
+    padding: 20px;
+  }
+
+  .create-user-card,
+  .dashboard-main-card {
+    padding: 25px;
+  }
+}
+
+/* =========================
+   CARDS DASHBOARD (STATS)
+========================= */
+
+.stats-grid-centered {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.stat-card {
+  background: white;
+  padding: 22px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
+  transition: 0.25s ease;
+  border: 1px solid #eef2f7;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+}
+
+/* ICONOS */
+.stat-icon {
+  width: 55px;
+  height: 55px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: white;
+}
+
+/* COLORES ICONOS */
+.stat-icon.blue {
+  background: #2563eb;
+}
+
+.stat-icon.green {
+  background: #22c55e;
+}
+
+.stat-icon.orange {
+  background: #f59e0b;
+}
+
+/* TEXTOS */
+.stat-label {
+  display: block;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.stat-number {
+  display: block;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1e293b;
+}

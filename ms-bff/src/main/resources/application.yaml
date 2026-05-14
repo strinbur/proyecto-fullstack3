@@ -6,8 +6,16 @@ spring:
     openfeign:
       client:
         config:
+
+          default:
+            connectTimeout: 3000
+            readTimeout: 5000
+
           ms-login:
-            url: http://localhost:8081
+            url: http://ms-login:8081
+
+          ms-inventory:
+            url: http://ms-inventory:8082
 
 server:
   port: 8080

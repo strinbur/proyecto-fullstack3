@@ -1,0 +1,103 @@
+.products-page {
+  min-height: 90vh;
+  background: #f0f4f8;
+  padding: 40px 20px;
+  font-family: 'Outfit', sans-serif;
+}
+
+.products-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.products-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 35px;
+}
+
+.products-title h1 {
+  color: #1e3a8a;
+  font-size: 34px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.products-title p {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.products-button {
+  background: linear-gradient(90deg, #2563eb, #1e3a8a);
+  color: white;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: 0.25s;
+}
+
+.products-button:hover {
+  transform: translateY(-2px);
+  opacity: 0.96;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.product-card {
+  background: white;
+  border-radius: 22px;
+  padding: 24px;
+  box-shadow: 0 12px 30px rgba(30, 58, 138, 0.06);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  transition: 0.25s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 40px rgba(30, 58, 138, 0.1);
+}
+
+.product-name {
+  color: #1e293b;
+  font-size: 21px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.product-info {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  color: #2563eb;
+  font-size: 26px;
+  font-weight: 800;
+  margin-top: 18px;
+}
+
+.product-stock {
+  margin-top: 8px;
+  color: #475569;
+  font-weight: 600;
+}
+
+.product-category {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 7px 14px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 700;
+}

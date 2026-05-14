@@ -1,9 +1,18 @@
 spring:
   application:
     name: ms-inventory
-  
+
   mongodb:
-    uri: mongodb://localhost:27017/inventario_bd
+    uri: mongodb://host.docker.internal:27017/inventory_bd
+
+mongock:
+  migration-scan-package:
+    - com.grupocordillera.ms_inventory.migrations
 
 server:
   port: 8082
+
+jwt:
+  secret:
+    key: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+  expiration: 86400000

@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import toast from "react-hot-toast";
 import { login } from "../../features/auth/authApi";
 import { AuthContext } from "../../features/auth/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -17,12 +18,12 @@ function Login() {
 
       auth?.loginUser(user);
 
-      alert("Login exitoso");
+      toast.success("Login correcto");
 
       navigate("/"); // 👈 esto es lo importante
     } catch (error) {
       console.error(error);
-      alert("Error en login");
+      toast.error("Error");
     }
   };
 

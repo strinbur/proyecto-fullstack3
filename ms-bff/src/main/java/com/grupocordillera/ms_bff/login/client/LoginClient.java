@@ -1,42 +1,46 @@
 package com.grupocordillera.ms_bff.login.client;
 
-import com.grupocordillera.ms_bff.login.dto.LoginRequestDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginResponseDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginUpdateDTO;
-import com.grupocordillera.ms_bff.login.dto.LoginRegisterDTO;
-
+import com.grupocordillera.ms_bff.login.dto.*;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "ms-login", url = "http://localhost:8081")
+@FeignClient(
+    name = "ms-login",
+    path = "/login",
+    configuration = com.grupocordillera.ms_bff.config.FeignConfig.class
+)
 public interface LoginClient {
 
-    // 🔐 LOGIN
-    @PostMapping("/login")
-    LoginResponseDTO login(@RequestBody LoginRequestDTO request);
+    // LOGIN: Cambiado a AuthResponseDTO para recibir token y usuario
+    @PostMapping("/auth")
+    AuthResponseDTO login(@RequestBody LoginRequestDTO request);
 
-
-    @PostMapping("/login/register")
+    // REGISTER
+    @PostMapping("/register")
     LoginResponseDTO register(@RequestBody LoginRegisterDTO dto);
 
+    // ADMIN CREATE
+    @PostMapping("/admin/create")
+    LoginResponseDTO createUserWithRole(@RequestBody LoginAdminCreateDTO dto);
 
-    @PutMapping("/login/{id}")
+    // UPDATE
+    @PutMapping("/{id}")
     LoginResponseDTO update(
             @PathVariable("id") String id,
             @RequestBody LoginUpdateDTO dto
     );
 
-
-    @GetMapping("/login/{id}")
+    // GET BY ID
+    @GetMapping("/{id}")
     LoginResponseDTO getById(@PathVariable("id") String id);
 
-
-    @GetMapping("/login")
+    // GET ALL
+    @GetMapping
     List<LoginResponseDTO> getAll();
 
-
-    @DeleteMapping("/login/{id}")
+    // DELETE
+    @DeleteMapping("/{id}")
     Void delete(@PathVariable("id") String id);
 }

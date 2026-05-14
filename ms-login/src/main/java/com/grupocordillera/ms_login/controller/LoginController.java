@@ -1,16 +1,18 @@
 package com.grupocordillera.ms_login.controller;
 
-import com.grupocordillera.ms_login.dto.LoginRequestDTO;
-import com.grupocordillera.ms_login.dto.LoginResponseDTO;
-import com.grupocordillera.ms_login.dto.LoginUpdateDTO;
-import com.grupocordillera.ms_login.model.Login;
+import com.grupocordillera.ms_login.dto.*;
 import com.grupocordillera.ms_login.service.LoginService;
+
 import jakarta.validation.Valid;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+
 import org.springframework.web.bind.annotation.*;
-import java.util.Optional;
 
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/login")
@@ -23,64 +25,89 @@ public class LoginController {
         this.service = service;
     }
 
-
+    // 1. PÚBLICO: Registro de clientes
     @PostMapping("/register")
-    public ResponseEntity<?> registrar(@Valid @RequestBody Login login) {
-        try {
-            return ResponseEntity.ok(service.registrar(login));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+    public ResponseEntity<LoginResponseDTO> registrar(
+            @Valid @RequestBody RegisterDTO dto
+    ) {
 
-
-    @PostMapping
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO request) {
-
-        Optional<LoginResponseDTO> usuario = service.login(
-                request.getCorreo(),
-                request.getPassword()
+        return new ResponseEntity<>(
+                service.registrar(dto),
+                HttpStatus.CREATED
         );
-
-        return usuario
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(401).body("Credenciales incorrectas"));
     }
 
+    // 2. PÚBLICO: LOGIN
+    @PostMapping("/auth")
+    public ResponseEntity<AuthResponseDTO> login(
+            @Valid @RequestBody LoginRequestDTO request
+    ) {
 
+        return ResponseEntity.ok(
+                service.login(
+                        request.getCorreo(),
+                        request.getPassword()
+                )
+        );
+    }
+
+    // 3. SOLO ADMIN Y VENTAS: LISTAR
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping
-    public ResponseEntity<?> listar() {
-        return ResponseEntity.ok(service.listar());
+    public ResponseEntity<List<LoginResponseDTO>> listar() {
+
+        return ResponseEntity.ok(
+                service.listar()
+        );
     }
 
-
+    // 4. SOLO ADMIN Y VENTAS: BUSCAR POR ID
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping("/{id}")
-    public ResponseEntity<?> obtenerPorId(@PathVariable String id) {
+    public ResponseEntity<LoginResponseDTO> obtenerPorId(
+            @PathVariable String id
+    ) {
 
-        Optional<LoginResponseDTO> usuario = service.buscarPorId(id);
-
-        return usuario
-                .<ResponseEntity<?>>map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return ResponseEntity.ok(
+                service.buscarPorId(id)
+        );
     }
 
-
+    // 5. USUARIO LOGEADO PUEDE ACTUALIZAR
+    @PreAuthorize("hasAnyRole('ADMIN','VENTAS','CLIENTE')")
     @PutMapping("/{id}")
-    public ResponseEntity<?> actualizar(
+    public ResponseEntity<LoginResponseDTO> actualizar(
             @PathVariable String id,
             @Valid @RequestBody LoginUpdateDTO dto
     ) {
-        try {
-            return ResponseEntity.ok(service.actualizar(id, dto));
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+
+        return ResponseEntity.ok(
+                service.actualizar(id, dto)
+        );
     }
 
-
+    // 6. SOLO ADMIN: ELIMINAR
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> eliminar(@PathVariable String id) {
+    public ResponseEntity<Void> eliminar(
+            @PathVariable String id
+    ) {
+
         service.eliminar(id);
+
         return ResponseEntity.noContent().build();
+    }
+
+    // 7. SOLO ADMIN: CREAR USUARIO CON ROL
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/admin/create")
+    public ResponseEntity<LoginResponseDTO> crearUsuario(
+            @Valid @RequestBody CreateUserDTO dto
+    ) {
+
+        return new ResponseEntity<>(
+                service.crearUsuario(dto),
+                HttpStatus.CREATED
+        );
     }
 }

@@ -14,14 +14,15 @@ export function AuthProvider({ children }: Props) {
     return data ? JSON.parse(data) : null;
   });
 
-  // LOGIN
-  const loginUser = (user: Usuario) => {
-    localStorage.setItem("usuario", JSON.stringify(user));
-    setUsuario(user);
+  // LOGIN: Ahora recibe el objeto completo (token + usuario)
+  const loginUser = (data: { token: string; usuario: Usuario }) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("usuario", JSON.stringify(data.usuario));
+    setUsuario(data.usuario);
   };
 
-  // LOGOUT
   const logout = () => {
+    localStorage.removeItem("token");
     localStorage.removeItem("usuario");
     setUsuario(null);
   };

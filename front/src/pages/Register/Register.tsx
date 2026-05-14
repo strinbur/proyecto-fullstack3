@@ -1,4 +1,6 @@
 import { useState } from "react";
+import toast from "react-hot-toast";
+import axios from "axios";
 import { register } from "../../features/auth/authApi";
 import "./Register.css";
 
@@ -10,32 +12,95 @@ function Register() {
 
   const handleRegister = async () => {
     try {
+
+      // =========================
+      // VALIDACIONES FRONTEND
+      // =========================
+
+      if (!nombre.trim()) {
+        toast.error("El nombre es obligatorio");
+        return;
+      }
+
+      if (!apellido.trim()) {
+        toast.error("El apellido es obligatorio");
+        return;
+      }
+
+      if (!correo.trim()) {
+        toast.error("El correo es obligatorio");
+        return;
+      }
+
+      if (!correo.includes("@")) {
+        toast.error("El correo no es válido");
+        return;
+      }
+
+      if (!password.trim()) {
+        toast.error("La contraseña es obligatoria");
+        return;
+      }
+
+      // =========================
+      // PETICIÓN
+      // =========================
+
       await register({
         nombre,
         apellido,
         correo,
         password,
+        rol: "CLIENTE"
       });
 
-      alert("Usuario registrado correctamente");
-
+      toast.success("Usuario registrado con éxito");
 
       setNombre("");
       setApellido("");
       setCorreo("");
       setPassword("");
 
-    } catch (error) {
+    } catch (error: unknown) {
+
       console.error(error);
-      alert("Error al registrar usuario");
+
+      // =========================
+      // ERRORES BACKEND
+      // =========================
+
+      if (axios.isAxiosError(error)) {
+
+        const status = error.response?.status;
+        const data = error.response?.data;
+
+        const message =
+          typeof data === "string"
+            ? data
+            : data?.message;
+
+        // 🔥 CASO ESPECÍFICO: correo ya registrado
+        if (
+          status === 409 ||
+          message?.toLowerCase().includes("correo")
+        ) {
+          toast.error("El correo ya está registrado");
+          return;
+        }
+
+        toast.error(message || "Error al registrar usuario");
+        return;
+      }
+
+      toast.error("Error inesperado");
     }
   };
 
   return (
     <div className="register-container">
-      <div className="register-card">
+      <div className="register-card" style={{ fontFamily: "'Outfit', sans-serif" }}>
 
-        <h1 className="register-title">Registro</h1>
+        <h1 className="register-title">Crear Cuenta</h1>
 
         <div className="register-form">
 
@@ -69,7 +134,7 @@ function Register() {
           />
 
           <button className="register-button" onClick={handleRegister}>
-            Registrar
+            Registrar Ahora
           </button>
 
         </div>

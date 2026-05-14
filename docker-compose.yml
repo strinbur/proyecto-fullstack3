@@ -1,0 +1,49 @@
+services:
+
+  mongodb:
+    image: mongo:8
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  ms-login:
+    build:
+      context: ./ms-login
+    container_name: ms-login
+    ports:
+      - "8081:8081"
+    depends_on:
+      - mongodb
+
+  ms-inventory:
+    build:
+      context: ./ms-inventory
+    container_name: ms-inventory
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongodb
+
+  ms-bff:
+    build:
+      context: ./ms-bff
+    container_name: ms-bff
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ms-login
+      - ms-inventory
+
+  front:
+    build:
+      context: ./front
+    container_name: front
+    ports:
+      - "5173:5173"
+    depends_on:
+      - ms-bff
+
+volumes:
+  mongo_data:

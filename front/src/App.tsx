@@ -1,33 +1,60 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 import Home from "./pages/Home/Home";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
+import Products from "./pages/Products/Products";
 
 import { AuthProvider } from "./features/auth/AuthProvider";
 
 function App() {
+
   return (
+
     <AuthProvider>
+
       <BrowserRouter>
 
-        <Navbar />
+        <div
+          style={{
+            minHeight: "100vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
 
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
+          <Navbar />
 
-          {/* 🟡 PROFILE */}
-          <Route path="/profile" element={<Profile />} />
-        </Routes>
+          <div style={{ flex: 1 }}>
+
+            <Routes>
+
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/products" element={<Products />} />
+
+            </Routes>
+
+          </div>
+
+          <Footer />
+
+        </div>
 
       </BrowserRouter>
+
     </AuthProvider>
+
   );
+
 }
 
 export default App;
