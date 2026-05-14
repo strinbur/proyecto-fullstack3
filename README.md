@@ -1,99 +1,153 @@
-# Fullstack-3-Grupo-Cordillera
+# Proyecto Fullstack3 — Documentación
 
-Proyecto fullstack desarrollado por el Grupo Cordillera. Contiene un frontend en React (Vite) y dos microservicios backend en Spring Boot que usan MongoDB.
+Resumen breve
+----------------
+Aplicación fullstack basada en un conjunto de microservicios Java (Spring Boot) y un frontend en React + Vite. Contiene:
+- `front`: SPA en React (Vite, TypeScript).
+- `ms-bff`: Backend-for-Frontend (BFF) que orquesta llamadas a microservicios.
+- `ms-login`: Microservicio de autenticación (JWT + MongoDB).
+- `ms-inventory`: Microservicio de inventario (MongoDB).
 
-## Contenido
-- `front/` – Aplicación frontend (React + Vite)
-- `inventario/` – Servicio backend Inventario (Spring Boot, MongoDB)
-- `login/` – Servicio backend Login (Spring Boot, MongoDB)
+**Contexto**
+----------------
+Este proyecto busca separar responsabilidades en microservicios para manejar autenticación y gestión de inventario, y exponer una experiencia unificada al cliente mediante un BFF. Está pensado para entornos de desarrollo con Docker Compose y despliegue local.
 
-## Stack tecnológico
+**Problemas identificados**
+----------------
+- Necesidad de desacoplar responsabilidades de autenticación y datos de inventario.
+- Gestión de credenciales y tokens (JWT) entre cliente y servicios.
+- Configuración de infraestructura reproducible (bases de datos, puertos, volúmenes).
+- Comunicaciones seguras y manejo de timeouts entre servicios.
+- Necesidad de migraciones y control de esquema para MongoDB.
 
-- Frontend:
-  - React 19
-  - Vite
-  - react-router-dom
-  - Desarrollo con Node.js / npm
+**Conclusión / Cómo se solucionó**
+----------------
+Se optó por una arquitectura basada en microservicios con un BFF central que expone la API al frontend. Cada servicio es responsable de su dominio y datos (MongoDB). El proyecto se orquesta con `docker-compose` para levantar contenedores reproducibles y con un volumen persistente para MongoDB (`mongo_data`). Para las migraciones se usa Mongock; para la seguridad se usa JWT manejado por `ms-login`.
 
-- Backend (cada servicio):
-  - Java (versión en los `pom.xml`: 25)
-  - Spring Boot (starter parent 4.x)
-  - MongoDB (drivers Spring Data MongoDB)
-  - Lombok (opcional en tiempo de compilación)
+Requisitos
+----------------
 
-## Requisitos previos
+Requisitos funcionales
+- Autenticación de usuarios (login/register) con JWT.
+- Endpoints para CRUD de productos/inventario.
+- Frontend que consume el BFF y mantiene sesión (token en localStorage).
 
-- Node.js (recomendado >= 18)
-- npm
-- Java (según `pom.xml` — la configuración actual indica `java.version=25`; usar la JDK que prefieras compatible)
-- Maven (o usar el wrapper `mvnw` / `mvnw.cmd` incluido)
-- MongoDB corriendo localmente o una URI accesible
+Requisitos no funcionales
+- Despliegue reproducible con Docker Compose.
+- Persistencia de datos de MongoDB en volumen Docker.
+- Timeouts y resiliencia en llamadas inter-servicio (OpenFeign timeouts configurados).
+- Documentación mínima (OpenAPI / springdoc para servicios).
 
-## Configuración y ejecución
+README técnico — Levantamiento con Docker
+----------------
 
-1) Frontend
+Requisitos previos
+- Docker y Docker Compose instalados.
 
-```bash
-cd front
-npm install
-npm run dev
-```
-
-El frontend usa Vite y servirá típicamente en `http://localhost:5173` (por defecto de Vite).
-
-2) Backend — `inventario` y `login`
-
-Cada servicio es una aplicación Spring Boot. En Windows puedes usar el wrapper:
-
-```powershell
-cd inventario
-.\mvnw.cmd spring-boot:run
-# en otra terminal
-cd login
-.\mvnw.cmd spring-boot:run
-```
-
-O con Maven instalado:
+Comandos básicos
 
 ```bash
-mvn -f inventario spring-boot:run
-mvn -f login spring-boot:run
+# Construir y levantar (desarrollo)
+docker compose up --build
+
+# Levantar en background
+docker compose up -d --build
+
+# Parar y eliminar contenedores (mantiene volúmenes a menos que se indique)
+docker compose down
+
+# Eliminar contenedores y volúmenes (cuidado: borra datos)
+docker compose down -v
 ```
 
-Por defecto Spring Boot usa el puerto `8080`. Si ambos servicios arrancan sin configurar puertos específicos, habrá conflicto. Se recomienda configurar `server.port` en `src/main/resources/application.yaml` de cada servicio (por ejemplo `8081` y `8082`).
+Variables de entorno y configuración
+- El repositorio incluye `docker-compose.yml` que define nombres de contenedor y un volumen persistente:
+  - Contenedores: `mongodb`, `ms-login`, `ms-inventory`, `ms-bff`, `front`.
+  - Volumen persistente: `mongo_data` (contiene datos de MongoDB).
 
-### MongoDB
+- Propiedades Spring que se pueden sobrescribir con variables de entorno (ejemplos):
+  - `SPRING_APPLICATION_NAME` — nombre de la app.
+  - `SERVER_PORT` — puerto del servicio (ej. 8081, 8082, 8080).
+  - `SPRING_MONGODB_URI` — URI de conexión a MongoDB (ej. `mongodb://mongodb:27017/inventory_bd`).
+  - `JWT_SECRET_KEY` — secreto para firmar tokens JWT (mapea a `jwt.secret.key`).
 
-Los `application.yaml` actuales apuntan a URIs locales:
+Ejemplo de `.env` local (opcional)
 
-- `inventario`: `mongodb://localhost:27017/inventario_bd`
-- `login`: `mongodb://localhost:27017/login_bd`
-
-Si usas un servicio remoto, puedes cambiar estas URIs o proporcionar la variable de entorno correspondiente que uses en tu configuración.
-
-## Variables de entorno sugeridas
-
-- `SPRING_DATA_MONGODB_URI` o configurar `spring.mongodb.uri` en `application.yaml`.
-- `SERVER_PORT` (o `server.port` en `application.yaml`) para cambiar puertos de los servicios.
-
-## Estructura del repositorio
-
-- `front/` — código fuente del cliente React
-- `inventario/` — microservicio Inventario (Java/Spring)
-- `login/` — microservicio Login (Java/Spring)
-
-## Testing
-
-Para ejecutar pruebas unitarias en los servicios Java:
-
-```bash
-mvn -f inventario test
-mvn -f login test
+```env
+# Variables para sobrescribir en docker compose (opcional)
+JWT_SECRET_KEY=f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD
+SPRING_MONGODB_URI=mongodb://mongodb:27017
+FRONT_API_BASE=http://ms-bff:8080/bff
 ```
+
+Notas sobre el frontend
+- El cliente Axios por defecto apunta a `http://localhost:8080/bff` en desarrollo (`front/src/api/api.ts`).
+- En entorno Docker, para que el `front` dentro de un contenedor apunte al BFF, cambie la `baseURL` a `http://ms-bff:8080/bff` o use una variable de entorno en tiempo de build (por ejemplo `VITE_API_BASE_URL` / `FRONT_API_BASE`) y adapte `api.ts` para `import.meta.env.VITE_API_BASE_URL`.
+
+Persistencia y nombres
+----------------
+- Nombre del volumen: `mongo_data` (definido en `docker-compose.yml`).
+- Nombres de contenedor (fáciles de reconocer): `mongodb`, `ms-login`, `ms-inventory`, `ms-bff`, `front`.
+
+Arquitectura y diagrama (alta nivel)
+----------------
+
+Diagrama ASCII (flujo):
+
+```
+ [Browser/React Front] --(HTTP)--> [ms-bff (BFF) ] --(Feign/HTTP)--> [ms-login]
+                                             |--(Feign/HTTP)--> [ms-inventory]
+                                                       
+                      [MongoDB <-> ms-login/ms-inventory]
+```
+
+Descripción del arquetipo elegido
+- Arquetipo: Microservicios con BFF (Backend For Frontend).
+  - Motivo: desacoplar UI de múltiples servicios backend, centralizar políticas de sesión, CORS y agregación de datos.
+
+Librerías clave por pieza
+- `front` (React + Vite):
+  - `react`, `react-dom`, `react-router-dom` — UI y rutas.
+  - `axios` — llamadas HTTP; configuración de interceptors para JWT.
+  - `vite`, `typescript` — tooling.
+
+- `ms-bff`:
+  - Spring Boot Web, OpenFeign — cliente HTTP declarativo hacia microservicios.
+  - Configuración de timeouts y retry a nivel de feign (según `application.yaml`).
+
+- `ms-login` y `ms-inventory`:
+  - `spring-boot-starter-data-mongodb` — acceso a MongoDB.
+  - `spring-boot-starter-web` — controllers / REST endpoints.
+  - `spring-boot-starter-security` (en `ms-login`) + `jjwt` — autenticación JWT.
+  - `mongock` — migraciones de esquema/datos para MongoDB.
+  - `springdoc-openapi` — documentación automática de API.
+
+Patrones de diseño aplicados (por servicio)
+- Front:
+  - Context/Provider: `AuthContext` para manejar sesión y estado auth global.
+  - Protected Route: `ProtectedRoute` para rutas que requieren autenticación.
+
+- ms-bff:
+  - Façade / Aggregator: expone una API simple al cliente y orquesta llamadas a varios microservicios.
+  - Client (OpenFeign): desacopla implementación de llamadas HTTP.
+
+- ms-login / ms-inventory:
+  - Controller-Service-Repository: separación de responsabilidad (Controllers expone endpoints, Services contienen lógica de negocio, Repositories acceden a MongoDB).
+  - DTOs y mappers para separar modelo de dominio vs payloads HTTP.
+  - Security: `ms-login` implementa emisión/verificación de JWT.
+  - Migraciones: Mongock para versionado de cambios en la base de datos.
+
+
+Archivo específico de interés:
+- [Docker Compose root](docker-compose.yml)
+- Frontend API: [front/src/api/api.ts](front/src/api/api.ts)
+- ms-login config: [ms-login/src/main/resources/application.yaml](ms-login/src/main/resources/application.yaml)
+- ms-inventory config: [ms-inventory/src/main/resources/application.yaml](ms-inventory/src/main/resources/application.yaml)
+
 
 ## Contribuir
 
-1. Crear una rama (`git checkout -b feature/mi-cambio`)
+1. Crear una rama (`git checkout -b feature-mi-cambio`)
 2. Hacer commits pequeños y claros
 3. Abrir un Pull Request describiendo el cambio
 
