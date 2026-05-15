@@ -1,7 +1,7 @@
 # Microservicio de Inventario (ms-inventory)
 
 ## Descripción
-Este microservicio gestiona el inventario de productos para la aplicación fullstack. Proporciona endpoints para crear, leer, actualizar y eliminar productos, con soporte para categorías y atributos dinámicos.
+Microservicio responsable de la gestión del inventario de productos. Ofrece endpoints para crear, leer, actualizar y eliminar productos, con validaciones y reglas de negocio orientadas a inventario, y seguridad basada en JWT.
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
@@ -9,108 +9,100 @@ Este microservicio gestiona el inventario de productos para la aplicación fulls
 - **Base de Datos**: MongoDB
 - **Autenticación**: JWT (JSON Web Tokens)
 - **Documentación**: OpenAPI/Swagger
-- **Herramientas**: Lombok, Mongock (para migraciones de BD), Spring Security
+- **Herramientas**: Lombok, Mongock, Spring Security
 
-## Patrones de Diseño
-Este microservicio implementa varios patrones de diseño para mantener un código modular, mantenible y escalable:
+## Dependencias
+- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
+- `spring-boot-starter-webmvc` — base para APIs REST con Spring MVC
+- `spring-boot-starter-security` — seguridad y filtros de autenticación
+- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
+- `spring-boot-starter-data-mongodb-test` (test) — pruebas de integración con MongoDB
+- `spring-boot-starter-webmvc-test` (test) — utilidades de prueba para MVC
+- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
+- `lombok` — generación de getters/setters y código boilerplate
+- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
+- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
+- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
+- `jjwt-api` — interfaz para creación/validación de JWT
+- `jjwt-impl` (runtime) — implementación de JWT
+- `jjwt-jackson` (runtime) — soporte JSON para JWT
 
-- **Repository Pattern**: Utilizado para el acceso a datos con `MongoRepository`, abstrae las operaciones CRUD sobre MongoDB.
-- **Service Layer Pattern**: La lógica de negocio se encapsula en servicios (`InventoryService`), separando la lógica de los controladores.
-- **DTO (Data Transfer Object) Pattern**: Se usan DTOs (`InventoryCreateDTO`, `InventoryResponseDTO`, etc.) para transferir datos entre capas sin exponer entidades internas.
-- **Factory Pattern**: `InventoryFactory` se utiliza para crear y mapear objetos de inventario, aplicando reglas de negocio durante la creación.
-- **Dependency Injection**: Spring maneja la inyección de dependencias a través del constructor, promoviendo el bajo acoplamiento.
-- **MVC (Model-View-Controller)**: Estructura básica con controladores REST, servicios y modelos de datos.
-- **Singleton Pattern**: Los beans de Spring (servicios, repositorios) son singletons por defecto.
-- **Strategy Pattern**: Implementado en la autenticación JWT, donde `JwtService` maneja la generación y validación de tokens.
-- **Filter Pattern**: `JwtAuthenticationFilter` intercepta requests para validar tokens JWT.
-- **Builder Pattern**: Facilitado por Lombok en modelos y DTOs para construcción de objetos.
+## Principales Patrones de Diseño
+- **Repository Pattern**: Acceso a datos con `MongoRepository`.
+- **Service Layer Pattern**: Lógica de negocio separada de los controladores.
+- **DTO Pattern**: Transferencia de datos con objetos específicos.
+- **Factory Pattern**: `InventoryFactory` mapea y crea objetos respetando reglas de negocio.
+- **Filter Pattern**: `JwtAuthenticationFilter` valida tokens en cada petición.
+- **Dependency Injection**: Spring gestiona dependencias para bajo acoplamiento.
+
+## Endpoints Principales
+- `GET /inventario` — Listar productos (público), opcional `?categoria={categoria}`
+- `GET /inventario/{codigo}` — Obtener producto por código (restringido según configuración de seguridad)
+- `POST /inventario` — Crear producto (requiere rol `ADMIN`)
+- `PUT /inventario/{codigo}` — Actualizar producto (requiere rol `ADMIN`)
+- `DELETE /inventario/{codigo}` — Eliminar producto (requiere rol `ADMIN`)
 
 ## Reglas de Negocio y Validaciones
-Este microservicio implementa las siguientes reglas de negocio y validaciones:
-
 ### Validaciones de Productos
-- **Campos obligatorios**: Código, nombre, marca, categoría.
-- **Código único**: No puede existir otro producto con el mismo código.
-- **Precio**: Debe ser mayor o igual a 0.
-- **Cantidad**: Debe ser mayor o igual a 0.
-- **Producto debe existir**: Para actualizar o eliminar, el producto debe existir por código.
+- Campos obligatorios: código, nombre, marca, categoría.
+- Código único para cada producto.
+- Precio mayor o igual a 0.
+- Cantidad mayor o igual a 0.
+- El producto debe existir para actualizar o eliminar.
 
-### Reglas de Negocio Automáticas
-- **Categoría "Tecnología"**: Agrega automáticamente atributo "garantia" con valor "12 meses".
-- **Cantidad cero**: Agrega automáticamente atributo "estado" con valor "sin stock".
-- **Atributos dinámicos**: Soporta atributos adicionales como Map<String, Object>.
+### Reglas Automáticas
+- Categoría `Tecnología` agrega atributo `garantia: 12 meses`.
+- Cantidad cero agrega atributo `estado: sin stock`.
+- Soporta atributos dinámicos adicionales en el producto.
 
-### Autenticación y Autorización
-- **Listar productos**: Público (sin autenticación requerida).
-- **Crear/Actualizar/Eliminar productos**: Requiere rol ADMIN.
-- **JWT**: Tokens expiran en 24 horas (86400000 ms).
+### Seguridad
+- `GET /inventario` es público.
+- Crear/actualizar/eliminar productos requiere rol `ADMIN`.
+- Tokens JWT expiran en 24 horas (`86400000 ms`).
 
 ### Manejo de Errores
-- Se lanzan excepciones `ResponseStatusException` con códigos HTTP apropiados (400 para validaciones, 404 para no encontrado, etc.).
+- Respuestas adecuadas: 400 para validaciones, 404 para no encontrado, etc.
+- Se usan excepciones con mensajes claros para errores de negocio.
 
-## Dependencias Principales
-- `spring-boot-starter-data-mongodb`: Para integración con MongoDB
-- `spring-boot-starter-webmvc`: Para crear APIs REST
-- `spring-boot-starter-security`: Para seguridad y autenticación
-- `jjwt-api`, `jjwt-impl`, `jjwt-jackson`: Para manejo de tokens JWT
-- `mongock-springboot-v3`: Para migraciones de base de datos
-- `springdoc-openapi-starter-webmvc-ui`: Para documentación OpenAPI
-- `spring-boot-starter-validation`: Para validación de datos
-- `lombok`: Para reducir código boilerplate
-- `spring-boot-devtools`: Para desarrollo (hot reload)
+## Configuración
+### Puerto
+- El servicio expone el puerto **8082**.
 
-## Puerto
-El microservicio utiliza el puerto **8082**.
-
-## Configuración de Base de Datos
-- **URI**: `mongodb://host.docker.internal:27017/inventory_bd`
-- Requiere MongoDB corriendo en el puerto 27017 (típicamente en Docker)
+### Base de Datos
+- URI por defecto: `mongodb://host.docker.internal:27017/inventory_bd`
+- Requiere MongoDB corriendo en el puerto 27017.
 
 ## Levantamiento Individual
-Si necesitas levantar este microservicio de forma individual (fuera del docker-compose), sigue estos pasos:
-
 ### Prerrequisitos
 - Java 25 instalado
 - Maven instalado
-- MongoDB corriendo (puerto 27017)
+- MongoDB corriendo en el puerto 27017
 
-### Opción 1: Ejecutar directamente con Maven (Recomendado para desarrollo)
+### Opción 1: Ejecutar con Maven
 ```bash
 mvn spring-boot:run
 ```
 
 ### Opción 2: Compilar y ejecutar JAR
 ```bash
-# Compilar el proyecto
 mvn clean install
-
-# Ejecutar el JAR generado
 java -jar target/ms-inventory-0.0.1-SNAPSHOT.jar
 ```
 
-## Endpoints Principales
-- `GET /inventario`: Listar todos los productos (público), opcional `?categoria={categoria}`
-- `GET /inventario/{codigo}`: Obtener producto por código
-- `POST /inventario`: Crear nuevo producto (requiere ADMIN)
-- `PUT /inventario/{codigo}`: Actualizar producto (requiere ADMIN)
-- `DELETE /inventario/{codigo}`: Eliminar producto (requiere ADMIN)
-
 ## Documentación API
-Una vez levantado, accede a la documentación Swagger en:
+Accede a Swagger en:
 `http://localhost:8082/swagger-ui.html`
 
-## Notas
-- Este microservicio forma parte de una arquitectura de microservicios completa.
-- Para un levantamiento completo del sistema, usa `docker-compose up` desde la raíz del proyecto.
-- Las migraciones de base de datos se ejecutan automáticamente al iniciar gracias a Mongock.
-
 ## Testing
-Para ejecutar las pruebas unitarias:
+Ejecuta las pruebas unitarias con:
 ```bash
 mvn test
 ```
 
-Actualmente incluye pruebas básicas de integración de Spring Boot.
+## Notas
+- Forma parte de la arquitectura completa del proyecto.
+- Para un levantamiento completo, usa `docker-compose up` desde la raíz.
+- Mongock ejecuta las migraciones de base de datos al iniciar.
 
 ## Arquitectura del Proyecto
 ```

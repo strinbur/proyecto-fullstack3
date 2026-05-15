@@ -1,7 +1,7 @@
 # Microservicio de Login (ms-login)
 
 ## Descripción
-Este microservicio maneja la autenticación y gestión de usuarios para la aplicación fullstack. Proporciona endpoints para registro, login y validación de tokens JWT.
+Este microservicio maneja la autenticación y la gestión de usuarios para la aplicación fullstack. Proporciona endpoints para registro, inicio de sesión, consulta, actualización y eliminación de usuarios, con seguridad basada en JWT y roles.
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
@@ -9,119 +9,103 @@ Este microservicio maneja la autenticación y gestión de usuarios para la aplic
 - **Base de Datos**: MongoDB
 - **Autenticación**: JWT (JSON Web Tokens)
 - **Documentación**: OpenAPI/Swagger
-- **Herramientas**: Lombok, Mongock (para migraciones de BD), Spring Security
+- **Herramientas**: Lombok, Mongock, Spring Security
 
-## Patrones de Diseño
-Este microservicio implementa varios patrones de diseño para mantener un código modular, mantenible y escalable:
+## Dependencias
+- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
+- `spring-boot-starter-web` — base para APIs REST con Spring MVC
+- `spring-boot-starter-security` — seguridad y filtros de autenticación
+- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
+- `spring-boot-starter-test` (test) — utilidades de pruebas unitarias e integración
+- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
+- `lombok` — generación de getters/setters y código boilerplate
+- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
+- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
+- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
+- `jjwt-api` — interfaz para creación/validación de JWT
+- `jjwt-impl` (runtime) — implementación de JWT
+- `jjwt-jackson` (runtime) — serialización JSON para JWT
 
-- **Repository Pattern**: Utilizado para el acceso a datos con `MongoRepository`, abstrae las operaciones CRUD sobre MongoDB.
-- **Service Layer Pattern**: La lógica de negocio se encapsula en servicios (`LoginService`), separando la lógica de los controladores.
-- **DTO (Data Transfer Object) Pattern**: Se usan DTOs (`RegisterDTO`, `LoginResponseDTO`, etc.) para transferir datos entre capas sin exponer entidades internas.
-- **Dependency Injection**: Spring maneja la inyección de dependencias a través del constructor, promoviendo el bajo acoplamiento.
-- **MVC (Model-View-Controller)**: Estructura básica con controladores REST, servicios y modelos de datos.
-- **Singleton Pattern**: Los beans de Spring (servicios, repositorios) son singletons por defecto.
-- **Strategy Pattern**: Implementado en la autenticación JWT, donde `JwtService` maneja la generación y validación de tokens.
-- **Filter Pattern**: `JwtAuthenticationFilter` intercepta requests para validar tokens JWT.
-- **Builder Pattern**: Facilitado por Lombok en modelos y DTOs para construcción de objetos.
-- **Factory Pattern**: El contenedor de Spring actúa como factory para crear y gestionar beans.
+## Principales Patrones de Diseño
+- **Repository Pattern**: Acceso a datos con `MongoRepository`.
+- **Service Layer Pattern**: Lógica de negocio separada de controladores.
+- **DTO Pattern**: Transferencia de datos entre capas con objetos específicos.
+- **Filter Pattern**: `JwtAuthenticationFilter` valida tokens en cada petición.
+- **Dependency Injection**: Spring gestiona dependencias para reducir acoplamiento.
+
+## Endpoints Principales
+- `POST /login/auth` — Iniciar sesión (público)
+- `POST /login/register` — Registrar nuevo usuario (público, crea usuario con rol `CLIENTE` por defecto)
+- `GET /login` — Listar usuarios (requiere rol `ADMIN` o `VENTAS`)
+- `GET /login/{id}` — Obtener usuario por ID (requiere rol `ADMIN` o `VENTAS`)
+- `PUT /login/{id}` — Actualizar usuario (requiere usuario autenticado: `ADMIN`, `VENTAS`, `CLIENTE`)
+- `DELETE /login/{id}` — Eliminar usuario (requiere rol `ADMIN`)
+- `POST /login/admin/create` — Crear usuario con rol (requiere rol `ADMIN`)
 
 ## Reglas de Negocio y Validaciones
-Este microservicio implementa las siguientes reglas de negocio y validaciones:
-
 ### Roles de Usuario
-- **CLIENTE**: Rol por defecto para usuarios registrados públicamente.
-- **ADMIN**: Rol administrativo con permisos completos.
-- **VENTAS**: Rol para operaciones de ventas.
+- **CLIENTE**: Rol por defecto en registro público.
+- **ADMIN**: Permisos administrativos.
+- **VENTAS**: Permisos para operaciones de ventas.
 
-### Validaciones de Registro
-- **Campos obligatorios**: Nombre, apellido, correo, contraseña.
-- **Correo**: Debe ser un email válido y único en el sistema.
-- **Contraseña**: Mínimo 6 caracteres.
-- **Rol**: Asignado automáticamente como CLIENTE en registro público.
+### Registro
+- Campos obligatorios: nombre, apellido, correo, contraseña.
+- El correo debe ser válido y único.
+- La contraseña debe tener mínimo 6 caracteres.
+- El rol se asigna como `CLIENTE` en registro público.
 
-### Validaciones de Login
-- **Campos obligatorios**: Correo y contraseña.
-- **Correo**: Debe ser un email válido.
-- **Autenticación**: Verifica que el usuario exista y la contraseña coincida.
+### Login
+- Campos obligatorios: correo y contraseña.
+- El correo debe ser válido.
+- Se verifica existencia del usuario y coincidencia de contraseña.
 
-### Creación de Usuarios (por Admin)
-- **Correo único**: No puede existir otro usuario con el mismo correo.
-- **Rol**: Especificado en la solicitud (CLIENTE, ADMIN, VENTAS).
-
-### Actualización de Usuarios
-- **Campos no vacíos**: Nombre, apellido y correo no pueden estar vacíos.
-- **Correo único**: Si se cambia el correo, debe ser único.
+### Gestión de Usuarios
+- El correo debe ser único al crear o actualizar un usuario.
+- Nombre, apellido y correo no pueden quedar vacíos.
+- El rol puede ser `CLIENTE`, `ADMIN` o `VENTAS`.
 
 ### Autenticación JWT
-- **Expiración**: Tokens expiran en 24 horas (86400000 ms).
-- **Claims**: Incluye rol, nombre y correo del usuario.
-- **Endpoints protegidos**: Todos excepto registro y login requieren token válido.
+- Los tokens expiran en 24 horas (`86400000 ms`).
+- Incluyen datos clave como rol, nombre y correo.
+- Solo los endpoints de login y registro están abiertos sin token.
 
 ### Manejo de Errores
-- Se lanzan excepciones personalizadas (`LoginException`) para errores de negocio.
-- Respuestas HTTP apropiadas (400 para validaciones, 401 para autenticación, etc.).
+- Se usan excepciones personalizadas para errores de negocio.
+- Respuestas HTTP adecuadas: 400 para validaciones, 401 para autenticación, etc.
 
-## Dependencias Principales
-- `spring-boot-starter-data-mongodb`: Para integración con MongoDB
-- `spring-boot-starter-web`: Para crear APIs REST
-- `spring-boot-starter-security`: Para seguridad y autenticación
-- `jjwt-api`, `jjwt-impl`, `jjwt-jackson`: Para manejo de tokens JWT
-- `mongock-springboot-v3`: Para migraciones de base de datos
-- `springdoc-openapi-starter-webmvc-ui`: Para documentación OpenAPI
-- `spring-boot-starter-validation`: Para validación de datos
-- `lombok`: Para reducir código boilerplate
-- `spring-boot-devtools`: Para desarrollo (hot reload)
+## Configuración
+### Puerto
+- El servicio expone el puerto **8081**.
 
-## Puerto
-El microservicio utiliza el puerto **8081**.
-
-## Configuración de Base de Datos
-- **URI**: `mongodb://host.docker.internal:27017/login_bd`
-- Requiere MongoDB corriendo en el puerto 27017 (típicamente en Docker)
+### Base de Datos
+- URI por defecto: `mongodb://host.docker.internal:27017/login_bd`
+- Requiere MongoDB corriendo en el puerto 27017.
 
 ## Levantamiento Individual
-Si necesitas levantar este microservicio de forma individual (fuera del docker-compose), sigue estos pasos:
-
 ### Prerrequisitos
 - Java 25 instalado
 - Maven instalado
-- MongoDB corriendo (puerto 27017)
+- MongoDB corriendo en el puerto 27017
 
-### Opción 1: Ejecutar directamente con Maven (Recomendado para desarrollo)
+### Opción 1: Ejecutar con Maven
 ```bash
 mvn spring-boot:run
 ```
 
 ### Opción 2: Compilar y ejecutar JAR
 ```bash
-# Compilar el proyecto
 mvn clean install
-
-# Ejecutar el JAR generado
 java -jar target/ms-login-0.0.1-SNAPSHOT.jar
 ```
 
-## Endpoints Principales
-- `POST /api/auth/login`: Iniciar sesión
-- `POST /api/auth/register`: Registrar nuevo usuario
-- `GET /api/auth/validate`: Validar token JWT
-
 ## Documentación API
-Una vez levantado, accede a la documentación Swagger en:
+Una vez levantado, accede a Swagger en:
 `http://localhost:8081/swagger-ui.html`
 
 ## Notas
-- Este microservicio forma parte de una arquitectura de microservicios completa.
-- Para un levantamiento completo del sistema, usa `docker-compose up` desde la raíz del proyecto.
-- Las migraciones de base de datos se ejecutan automáticamente al iniciar gracias a Mongock.
-
-## Testing
-Para ejecutar las pruebas unitarias:
-```bash
-mvn test
-```
-
-Actualmente incluye pruebas básicas de integración de Spring Boot.
+- Este microservicio forma parte de una solución de microservicios completa.
+- Para levantar el sistema completo, usa `docker-compose up` desde la raíz del proyecto.
+- Mongock ejecuta las migraciones de base de datos automáticamente al iniciar.
 
 ## Arquitectura del Proyecto
 ```
