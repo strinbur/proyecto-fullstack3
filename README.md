@@ -2,13 +2,13 @@
 
 ## Introducción
 
-Este repositorio contiene una versión **demo** de una plataforma de monitoreo e inventario para Grupo Cordillera. El objetivo principal es validar la arquitectura, demostrar la integración entre frontend, BFF y microservicios backend, y mostrar un flujo funcional básico.
+
 
 ---
 
 ## Descripción General
 
-Versión demo de un proyecto fullstack desarrollado por el Grupo Cordillera, implementando una arquitectura de microservicios con un Backend for Frontend (BFF) como patrón de integración. El sistema integra un frontend responsivo en React (Vite) con múltiples microservicios backend en Spring Boot, utilizando MongoDB como base de datos centralizada.
+Versión de un proyecto fullstack desarrollado por el Grupo Cordillera, implementando una arquitectura de microservicios con un Backend for Frontend (BFF) como patrón de integración. El sistema integra un frontend responsivo en React (Vite) con múltiples microservicios backend en Spring Boot, utilizando MongoDB como base de datos centralizada.
 
 Este repositorio busca validar la arquitectura, mostrar la comunicación entre los componentes y ofrecer una demostración funcional básica. Aún no representa la solución final completa.
 
@@ -30,7 +30,7 @@ Este repositorio busca validar la arquitectura, mostrar la comunicación entre l
 
 ---
 
-## Objetivos Funcionales
+## Requerimientos Funcionales
 
 Los siguientes puntos representan el alcance funcional esperado de la plataforma y los objetivos de esta demo:
 
@@ -42,7 +42,7 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 
 ---
 
-## Objetivos No Funcionales
+## Requerimientos No Funcionales
 
 - **Escalabilidad**: Arquitectura de microservicios para escalado independiente
 - **Mantenibilidad**: Código modular y documentación clara
@@ -172,8 +172,6 @@ git push origin feature-nombre-tarea-o-colaborador
 Crear un Pull Request hacia `develop` con:
 - Título descriptivo
 - Descripción detallada de cambios
-- Referencias a issues relacionados (si aplica)
-- Screenshots o videos (para cambios UI)
 
 ### 5. Revisión y Merge
 
