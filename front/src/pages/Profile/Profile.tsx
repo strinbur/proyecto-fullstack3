@@ -12,26 +12,24 @@ function Profile() {
     throw new Error("AuthContext no está disponible");
   }
 
-  const { usuario, logout } = auth;
-  const [editando, setEditando] = useState(false);
-  const [form, setForm] = useState({ nombre: "", apellido: "", correo: "" });
+  const { user, logout } = auth;
+  const [editing, setEditing] = useState(false);
+  const [form, setForm] = useState({ name: "", lastname: "", email: "" });
 
-  if (!usuario) {
+  if (!user) {
     return <h1 style={{ textAlign: "center" }}>No estás logueado</h1>;
   }
 
-  const inicial = usuario.nombre?.charAt(0).toUpperCase();
+  const initial = user.name?.charAt(0).toUpperCase();
 
-  // ======================================================
-  // LOGICA DE ACCIONES
-  // ======================================================
-  const iniciarEdicion = () => {
+
+  const startEditing = () => {
     setForm({
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      correo: usuario.correo,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
     });
-    setEditando(true);
+    setEditing(true);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,76 +37,136 @@ function Profile() {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleGuardar = async () => {
+  const handleSave = async () => {
     try {
-      const data = await updateUser(usuario.id, form);
 
-      // ACTUALIZAR LOCALSTORAGE
-      const actualizado = {
-        ...usuario,
-        nombre: data.nombre,
-        apellido: data.apellido,
-        correo: data.correo,
+      const data = await updateUser(user.id, form);
+
+
+      const updatedUser = {
+        ...user,
+        name: data.name,
+        lastname: data.lastname,
+        email: data.email,
       };
 
-      localStorage.setItem("usuario", JSON.stringify(actualizado));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
       toast.success("Perfil actualizado");
-      setEditando(false);
+
+      setEditing(false);
+
       window.location.reload();
+
     } catch (error: unknown) {
+
       console.error(error);
-      let mensaje = "Error al actualizar";
+
+      let message = "Error al actualizar";
+
       if (axios.isAxiosError(error)) {
-        mensaje = typeof error.response?.data === "string" 
-          ? error.response.data 
+
+        message = typeof error.response?.data === "string"
+          ? error.response.data
           : "Error al actualizar";
       }
-      toast.error(mensaje);
+
+      toast.error(message);
     }
   };
 
-  const handleCancelar = () => {
+  const handleCancel = () => {
+
     setForm({
-      nombre: usuario.nombre,
-      apellido: usuario.apellido,
-      correo: usuario.correo,
+      name: user.name,
+      lastname: user.lastname,
+      email: user.email,
     });
-    setEditando(false);
+
+    setEditing(false);
   };
 
   return (
     <div className="profile-container">
       <div className="profile-card">
-        <div className="profile-avatar">{inicial}</div>
+
+        <div className="profile-avatar">{initial}</div>
+
         <h1 className="profile-title">Mi Perfil</h1>
 
         <div className="profile-info">
-          {editando ? (
+
+          {editing ? (
             <>
-              <input name="nombre" value={form.nombre} onChange={handleChange} className="profile-input" placeholder="Nombre" />
-              <input name="apellido" value={form.apellido} onChange={handleChange} className="profile-input" placeholder="Apellido" />
-              <input name="correo" value={form.correo} onChange={handleChange} className="profile-input" placeholder="Correo" />
+              <input
+                name="name"
+                value={form.name}
+                onChange={handleChange}
+                className="profile-input"
+                placeholder="Nombre"
+              />
+
+              <input
+                name="lastname"
+                value={form.lastname}
+                onChange={handleChange}
+                className="profile-input"
+                placeholder="Apellido"
+              />
+
+              <input
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className="profile-input"
+                placeholder="Correo"
+              />
             </>
           ) : (
             <>
-              <p><strong>Nombre:</strong> {usuario.nombre}</p>
-              <p><strong>Apellido:</strong> {usuario.apellido}</p>
-              <p><strong>Correo:</strong> {usuario.correo}</p>
-              <p><strong>Rol:</strong> {usuario.rol}</p>
+              <p><strong>Nombre:</strong> {user.name}</p>
+              <p><strong>Apellido:</strong> {user.lastname}</p>
+              <p><strong>Correo:</strong> {user.email}</p>
+              <p><strong>Rol:</strong> {user.role}</p>
             </>
           )}
+
         </div>
 
         <div className="profile-actions">
-          {editando ? (
+
+          {editing ? (
             <>
-              <button className="profile-button" onClick={handleGuardar}>Guardar cambios</button>
-              <button className="profile-button cancel" onClick={handleCancelar}>Cancelar</button>
+              <button
+                className="profile-button"
+                onClick={handleSave}
+              >
+                Guardar cambios
+              </button>
+
+              <button
+                className="profile-button cancel"
+                onClick={handleCancel}
+              >
+                Cancelar
+              </button>
             </>
           ) : (
-            <button className="profile-button blue" onClick={iniciarEdicion}>Editar perfil</button>
+            <button
+              className="profile-button blue"
+              onClick={startEditing}
+            >
+              Editar perfil
+            </button>
           )}
-          <button className="profile-button logout" onClick={logout}>Cerrar sesión</button>
+
+          <button
+            className="profile-button logout"
+            onClick={logout}
+          >
+            Cerrar sesión
+          </button>
+
         </div>
       </div>
     </div>

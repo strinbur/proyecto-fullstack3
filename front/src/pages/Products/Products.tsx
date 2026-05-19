@@ -1,28 +1,31 @@
 import { useEffect, useState } from "react";
-import { listarProductos } from "../../features/inventory/inventoryApi";
+import { getAllProducts } from "../../features/inventory/inventoryApi";
 import "./Products.css";
 
 interface Product {
   id: string;
-  codigo: string;
-  nombre: string;
-  marca: string;
-  precio: number;
-  cantidad: number;
-  categoria: string;
+  code: string;
+  name: string;
+  brand: string;
+  price: number;
+  quantity: number;
+  category: string;
 }
 
 export default function Products() {
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [stockError, setStockError] = useState("");
 
   useEffect(() => {
 
-    const fetchProductos = async () => {
+    const fetchProducts = async () => {
 
       try {
 
-        const data = await listarProductos();
+        const data = await getAllProducts();
         setProducts(data);
 
       } catch (error) {
@@ -33,56 +36,230 @@ export default function Products() {
 
     };
 
-    fetchProductos();
+    fetchProducts();
 
   }, []);
 
+  const getProductImage = (name: string) => {
+
+    const productName = name.toLowerCase();
+
+    if (productName.includes("lenovo")) {
+
+      return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200&auto=format&fit=crop";
+
+    }
+
+    if (productName.includes("samsung")) {
+
+      return "https://images.unsplash.com/photo-1593784991095-a205069470b6?q=80&w=1200&auto=format&fit=crop";
+
+    }
+
+    if (productName.includes("lg")) {
+
+      return "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=1200&auto=format&fit=crop";
+
+    }
+
+    return "https://placehold.co/600x400";
+
+  };
+
+  const openProductDetail = (product: Product) => {
+
+    setSelectedProduct(product);
+    setQuantity(1);
+    setStockError("");
+
+  };
+
+  const handleQuantityChange = (value: number) => {
+
+    if (!selectedProduct) return;
+
+    if (value > selectedProduct.quantity) {
+
+      setStockError(`Solo hay ${selectedProduct.quantity} unidades disponibles`);
+      return;
+
+    }
+
+    if (value < 1) {
+
+      setQuantity(1);
+      return;
+
+    }
+
+    setStockError("");
+    setQuantity(value);
+
+  };
+
   return (
 
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="products-page">
 
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">
-        Productos
-      </h1>
+      <div className="products-container">
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="products-header">
 
-        {products.map((product) => (
+          <div>
 
-          <div
-            key={product.id}
-            className="bg-white rounded-xl shadow-md p-5"
-          >
+            <h1>Productos</h1>
 
-            <h2 className="text-xl font-semibold text-gray-800">
-              {product.nombre}
-            </h2>
-
-            <p className="text-gray-500">
-              Código: {product.codigo}
+            <p>
+              Encuentra los mejores productos disponibles
             </p>
-
-            <p className="text-gray-500">
-              Marca: {product.marca}
-            </p>
-
-            <p className="text-blue-600 font-bold text-lg mt-2">
-              ${product.precio}
-            </p>
-
-            <p className="text-gray-600">
-              Stock: {product.cantidad}
-            </p>
-
-            <span className="inline-block mt-3 bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm">
-              {product.categoria}
-            </span>
 
           </div>
 
-        ))}
+          <button className="products-btn">
+            Ver ofertas
+          </button>
+
+        </div>
+
+        <div className="products-grid">
+
+          {products.map((product) => (
+
+            <div
+              key={product.id}
+              className="product-card"
+              onClick={() => openProductDetail(product)}
+            >
+
+              <div className="product-image">
+
+                <img
+                  src={getProductImage(product.name)}
+                  alt={product.name}
+                />
+
+                <span className="product-category">
+                  {product.category}
+                </span>
+
+              </div>
+
+              <div className="product-content">
+
+                <h2>{product.name}</h2>
+
+                <p className="product-brand">
+                  {product.brand}
+                </p>
+
+                <div className="product-info">
+
+                  <p>
+                    Código: {product.code}
+                  </p>
+
+                  <p>
+                    Stock: {product.quantity}
+                  </p>
+
+                </div>
+
+                <div className="product-footer">
+
+                  <span className="product-price">
+                    ${product.price}
+                  </span>
+
+                  <button className="buy-btn">
+                    Comprar
+                  </button>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          ))}
+
+        </div>
 
       </div>
+
+      {selectedProduct && (
+
+        <div
+          className="modal-overlay"
+          onClick={() => setSelectedProduct(null)}
+        >
+
+          <div
+            className="modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+
+            <button
+              className="close-btn"
+              onClick={() => setSelectedProduct(null)}
+            >
+              ✕
+            </button>
+
+            <img
+              src={getProductImage(selectedProduct.name)}
+              alt={selectedProduct.name}
+              className="modal-image"
+            />
+
+            <div className="modal-info">
+
+              <span className="modal-category">
+                {selectedProduct.category}
+              </span>
+
+              <h2>{selectedProduct.name}</h2>
+
+              <p>Marca: {selectedProduct.brand}</p>
+
+              <p>Código: {selectedProduct.code}</p>
+
+              <p>Stock disponible: {selectedProduct.quantity}</p>
+
+              <h3>${selectedProduct.price}</h3>
+
+              <div className="quantity-container">
+
+                <label>Cantidad</label>
+
+                <input
+                  type="number"
+                  value={quantity}
+                  min={1}
+                  onChange={(e) =>
+                    handleQuantityChange(Number(e.target.value))
+                  }
+                  className="quantity-input"
+                />
+
+              </div>
+
+              {stockError && (
+                <div className="stock-alert">
+                  {stockError}
+                </div>
+              )}
+
+              <button className="modal-buy-btn">
+                Comprar {quantity} producto{quantity > 1 ? "s" : ""}
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
 

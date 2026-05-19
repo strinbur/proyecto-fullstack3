@@ -20,27 +20,27 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryResponseDTO> listar(String categoria) {
-        return client.listar(categoria);
+    public List<InventoryResponseDTO> getAll(String category) {
+        return client.getAll(category);
     }
 
     @Override
-    public InventoryResponseDTO crear(InventoryCreateDTO dto) {
-        return client.crear(dto);
+    public InventoryResponseDTO save(InventoryCreateDTO dto) {
+        return client.save(dto);
     }
 
     @Override
-    public InventoryResponseDTO obtenerPorCodigo(String codigo) {
-        return client.obtenerPorCodigo(codigo);
+    public InventoryResponseDTO getByCode(String code) {
+        return client.getByCode(code);
     }
 
     @Override
-    public InventoryResponseDTO actualizar(String codigo, InventoryUpdateDTO dto) {
-        return client.actualizar(codigo, dto);
+    public InventoryResponseDTO update(String code, InventoryUpdateDTO dto) {
+        return client.update(code, dto);
     }
 
     @Override
-    public void eliminar(String codigo) {
-        client.eliminar(codigo);
+    public void deleteByCode(String code) {
+        client.deleteByCode(code);
     }
 }

@@ -13,34 +13,34 @@ import java.util.List;
 )
 public interface LoginClient {
 
-    // LOGIN: Cambiado a AuthResponseDTO para recibir token y usuario
+    // Login
     @PostMapping("/auth")
     AuthResponseDTO login(@RequestBody LoginRequestDTO request);
 
-    // REGISTER
+    // Registro public crea un usuario con rol cliente
     @PostMapping("/register")
-    LoginResponseDTO register(@RequestBody LoginRegisterDTO dto);
+    LoginResponseDTO createClient(@RequestBody LoginRegisterDTO request);
 
-    // ADMIN CREATE
+    // Creacion de usuario con rol (solo admin)
     @PostMapping("/admin/create")
-    LoginResponseDTO createUserWithRole(@RequestBody LoginAdminCreateDTO dto);
+    LoginResponseDTO createUser(@RequestBody LoginAdminCreateDTO request);
 
-    // UPDATE
+    // Update de usuario
     @PutMapping("/{id}")
-    LoginResponseDTO update(
+    LoginResponseDTO updateUser(
             @PathVariable("id") String id,
-            @RequestBody LoginUpdateDTO dto
+            @RequestBody LoginUpdateDTO request
     );
 
-    // GET BY ID
+    // Get by ID
     @GetMapping("/{id}")
-    LoginResponseDTO getById(@PathVariable("id") String id);
+    LoginResponseDTO getUserById(@PathVariable("id") String id);
 
-    // GET ALL
+    // Get todos los usuarios
     @GetMapping
-    List<LoginResponseDTO> getAll();
+    List<LoginResponseDTO> getAllUsers();
 
-    // DELETE
+    // Delete usuario
     @DeleteMapping("/{id}")
-    Void delete(@PathVariable("id") String id);
+    Void deleteUser(@PathVariable("id") String id);
 }

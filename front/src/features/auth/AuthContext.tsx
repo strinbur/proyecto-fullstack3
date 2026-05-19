@@ -1,31 +1,24 @@
 import { createContext } from "react";
 
-/* ==========================================================
-   TIPADO DE USUARIO
-   ========================================================== */
-export interface Usuario {
+// El tipo de datos que representa a un usuario autenticado
+export interface User {
   id: string;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  rol?: string; // El rol es opcional por si el microservicio no lo envía en algún flujo
+  name: string;
+  lastname: string;
+  email: string;
+  role?: string;
 }
 
-/* ==========================================================
-   TIPADO DE RESPUESTA DE LOGIN (JWT + USER)
-   ========================================================== */
+// El tipo de datos que se espera recibir al hacer login
 export interface LoginData {
   token: string;
-  usuario: Usuario;
+  user: User;
 }
 
-/* ==========================================================
-   DEFINICIÓN DEL CONTEXTO
-   ========================================================== */
+// El tipo de datos que representa el contexto de autenticación
 export interface AuthContextType {
-  usuario: Usuario | null;
-  // loginUser ahora recibe el objeto completo que viene del BFF
-  loginUser: (data: LoginData) => void; 
+  user: User | null;
+  loginUser: (data: LoginData) => void;
   logout: () => void;
 }
 

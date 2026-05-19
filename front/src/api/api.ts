@@ -4,9 +4,7 @@ export const api = axios.create({
   baseURL: "http://localhost:8080/bff"
 });
 
-/* ==========================================================
-   AGREGAR TOKEN JWT AUTOMATICAMENTE
-   ========================================================== */
+//Agregamos un interceptor para incluir el token JWT en cada solicitud
 api.interceptors.request.use((config) => {
 
   const token = localStorage.getItem("token");
@@ -18,9 +16,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-/* ==========================================================
-   MANEJO GLOBAL DE ERRORES JWT
-   ========================================================== */
+//Manejo de errores globales, como token inválido o expirado
 api.interceptors.response.use(
 
   (response) => response,
@@ -31,7 +27,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
 
       localStorage.removeItem("token");
-      localStorage.removeItem("usuario");
+      localStorage.removeItem("user");
 
       window.location.href = "/login";
     }

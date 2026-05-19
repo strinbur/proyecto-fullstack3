@@ -7,14 +7,15 @@ import { AuthContext } from "../features/auth/AuthContext";
 function Navbar() {
 
   const auth = useContext(AuthContext);
-  const usuario = auth?.usuario;
+
+  const user = auth?.user;
   const logout = auth?.logout;
 
   const [open, setOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement | null>(null);
 
-  const inicial = usuario?.nombre?.charAt(0).toUpperCase();
+  const inicial = user?.name?.charAt(0).toUpperCase();
 
   useEffect(() => {
 
@@ -56,7 +57,7 @@ function Navbar() {
             Productos
           </Link>
 
-          {usuario && (
+          {user && (
 
             <Link to="/profile" className="navbar-link">
               Perfil
@@ -64,7 +65,7 @@ function Navbar() {
 
           )}
 
-          {usuario?.rol === "ADMIN" && (
+          {user?.role === "ADMIN" && (
 
             <Link
               to="/dashboard"
@@ -88,14 +89,14 @@ function Navbar() {
           className="navbar-avatar"
           onClick={() => setOpen(!open)}
         >
-          {usuario ? inicial : "?"}
+          {user ? inicial : "?"}
         </div>
 
         {open && (
 
           <div className="navbar-dropdown">
 
-            {usuario ? (
+            {user ? (
 
               <>
 
@@ -104,7 +105,7 @@ function Navbar() {
                 </p>
 
                 <p className="dropdown-user">
-                  {usuario.nombre} ({usuario.rol})
+                  {user.name} ({user.role})
                 </p>
 
                 <hr className="dropdown-divider" />

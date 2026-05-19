@@ -6,8 +6,8 @@ import lombok.Data;
 public class LoginResponseDTO {
 
     private String id;
-    private String nombre;
-    private String apellido;
-    private String correo;
-    private String rol;
+    private String name;
+    private String lastname;
+    private String email;
+    private String role;
 }

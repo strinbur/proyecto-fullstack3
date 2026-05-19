@@ -29,12 +29,12 @@ public class JwtService {
                 .getBody();
     }
 
-    public String extractCorreo(String token) {
+    public String extractEmail(String token) {
 
         return extractClaims(token).getSubject();
     }
 
-    public String extractRol(String token) {
+    public String extractRole(String token) {
 
         return extractClaims(token)
                 .get("rol", String.class);

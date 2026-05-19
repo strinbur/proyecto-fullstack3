@@ -8,12 +8,12 @@ import java.util.Map;
 public class InventoryResponseDTO {
 
     private String id;
-    private String codigo;
-    private String nombre;
-    private String marca;
-    private double precio;
-    private int cantidad;
-    private String categoria;
+    private String code;
+    private String name;
+    private String brand;
+    private double price;
+    private int quantity;
+    private String category;
 
-    private Map<String, Object> atributos;
+    private Map<String, Object> specs;
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/inventario")
+@RequestMapping("/inventory")
 public class InventoryController {
 
     private final InventoryService service;
@@ -25,72 +25,72 @@ public class InventoryController {
         this.service = service;
     }
 
-    // PUBLICO
+    // Trae los productos
     @GetMapping
-    public ResponseEntity<List<InventoryResponseDTO>> listar(
-            @RequestParam(required = false) String categoria
+    public ResponseEntity<List<InventoryResponseDTO>> getAll(
+            @RequestParam(required = false) String category
     ) {
 
-        if (categoria != null && !categoria.trim().isEmpty()) {
+        if (category != null && !category.trim().isEmpty()) {
 
             return ResponseEntity.ok(
-                    service.obtenerPorCategoria(categoria)
+                    service.getByCategory(category)
             );
         }
 
         return ResponseEntity.ok(
-                service.obtenerTodos()
+                service.getAll()
         );
     }
 
-    // SOLO ADMIN
+    // Solo ADMIN
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
-    public ResponseEntity<InventoryResponseDTO> crear(
-            @Valid @RequestBody InventoryCreateDTO inventario
+    public ResponseEntity<InventoryResponseDTO> create(
+            @Valid @RequestBody InventoryCreateDTO inventory
     ) {
 
-        InventoryResponseDTO nuevo =
-                service.guardar(inventario);
+        InventoryResponseDTO newInventory =
+                service.save(inventory);
 
         return ResponseEntity
                 .status(201)
-                .body(nuevo);
+                .body(newInventory);
     }
 
-    // PUBLICO
-    @GetMapping("/codigo/{codigo}")
-    public ResponseEntity<InventoryResponseDTO> obtenerPorCodigo(
-            @PathVariable String codigo
+    // Trae un producto por su codigo
+    @GetMapping("/code/{code}")
+    public ResponseEntity<InventoryResponseDTO> getByCode(
+            @PathVariable String code
     ) {
 
         return ResponseEntity.ok(
-                service.obtenerPorCodigo(codigo)
+                service.getByCode(code)
         );
     }
 
-    // SOLO ADMIN
+    // Solo ADMIN puede eliminar un producto por su codigo
     @PreAuthorize("hasRole('ADMIN')")
-    @DeleteMapping("/codigo/{codigo}")
-    public ResponseEntity<Void> eliminarPorCodigo(
-            @PathVariable String codigo
+    @DeleteMapping("/code/{code}")
+    public ResponseEntity<Void> deleteByCode(
+            @PathVariable String code
     ) {
 
-        service.eliminarPorCodigo(codigo);
+        service.deleteByCode(code);
 
         return ResponseEntity.noContent().build();
     }
 
-    // SOLO ADMIN
+    // Solo ADMIN puede actualizar un producto por su codigo
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/codigo/{codigo}")
-    public ResponseEntity<InventoryResponseDTO> actualizar(
-            @PathVariable String codigo,
-            @Valid @RequestBody InventoryUpdateDTO inventario
+    @PutMapping("/code/{code}")
+    public ResponseEntity<InventoryResponseDTO> update(
+            @PathVariable String code,
+            @Valid @RequestBody InventoryUpdateDTO inventory
     ) {
 
         return ResponseEntity.ok(
-                service.actualizar(codigo, inventario)
+                service.update(code, inventory)
         );
     }
 }

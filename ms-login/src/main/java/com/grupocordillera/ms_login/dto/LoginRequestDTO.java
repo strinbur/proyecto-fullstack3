@@ -9,7 +9,7 @@ public class LoginRequestDTO {
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo no es valido")
-    private String correo;
+    private String email;
 
     @NotBlank(message = "La contraseña es obligatoria")
     private String password;

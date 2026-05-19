@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 function Login() {
-  const [correo, setCorreo] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const auth = useContext(AuthContext);
@@ -14,13 +14,13 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      const user = await login(correo, password);
+      const user = await login(email, password);
 
       auth?.loginUser(user);
 
       toast.success("Login correcto");
 
-      navigate("/"); // 👈 esto es lo importante
+      navigate("/");
     } catch (error) {
       console.error(error);
       toast.error("Error");
@@ -36,7 +36,7 @@ function Login() {
           <input
             className="login-input"
             placeholder="Correo"
-            onChange={(e) => setCorreo(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input

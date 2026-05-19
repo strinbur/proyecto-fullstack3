@@ -9,14 +9,14 @@ import lombok.Data;
 public class LoginRegisterDTO {
 
     @NotBlank(message = "Nombre obligatorio")
-    private String nombre;
+    private String name;
 
     @NotBlank(message = "Apellido obligatorio")
-    private String apellido;
+    private String lastname;
 
     @NotBlank(message = "Correo obligatorio")
     @Email(message = "Correo inválido")
-    private String correo;
+    private String email;
 
     @NotBlank(message = "Password obligatoria")
     @Size(min = 6, message = "La password debe tener al menos 6 caracteres")

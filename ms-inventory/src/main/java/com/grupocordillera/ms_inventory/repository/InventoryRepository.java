@@ -8,11 +8,11 @@ import java.util.Optional;
 
 public interface InventoryRepository extends MongoRepository<Inventory, String> {
 
-    Optional<Inventory> findByCodigo(String codigo);
+    Optional<Inventory> findByCode(String code);
 
-    boolean existsByCodigo(String codigo);
+    boolean existsByCode(String code);
 
-    void deleteByCodigo(String codigo);
+    void deleteByCode(String code);
 
-    List<Inventory> findByCategoriaIgnoreCase(String categoria);
+    List<Inventory> findByCategoryIgnoreCase(String category);
 }

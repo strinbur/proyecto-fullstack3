@@ -8,18 +8,18 @@ import java.util.List;
 
 public interface InventoryService {
 
-    List<InventoryResponseDTO> obtenerTodos();
+    List<InventoryResponseDTO> getAll();
 
-    InventoryResponseDTO guardar(InventoryCreateDTO inventario);
+    InventoryResponseDTO save(InventoryCreateDTO inventory);
 
-    InventoryResponseDTO obtenerPorCodigo(String codigo);
+    InventoryResponseDTO getByCode(String code);
 
-    void eliminarPorCodigo(String codigo);
+    void deleteByCode(String code);
 
-    InventoryResponseDTO actualizar(
-            String codigo,
-            InventoryUpdateDTO inventario
+    InventoryResponseDTO update(
+            String code,
+            InventoryUpdateDTO inventory
     );
 
-    List<InventoryResponseDTO> obtenerPorCategoria(String categoria);
+    List<InventoryResponseDTO> getByCategory(String category);
 }

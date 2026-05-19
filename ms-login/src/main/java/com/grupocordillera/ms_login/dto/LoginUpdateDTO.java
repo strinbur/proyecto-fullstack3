@@ -8,12 +8,12 @@ import lombok.Data;
 public class LoginUpdateDTO {
 
     @NotBlank(message = "El nombre es obligatorio")
-    private String nombre;
+    private String name;
 
     @NotBlank(message = "El apellido es obligatorio")
-    private String apellido;
+    private String lastname;
 
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo no es valido")
-    private String correo;
+    private String email;
 }

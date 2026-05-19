@@ -1,38 +1,36 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { register } from "../../features/auth/authApi";
+import { createClient } from "../../features/auth/authApi";
 import "./Register.css";
 
 function Register() {
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [correo, setCorreo] = useState("");
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleRegister = async () => {
     try {
 
-      // =========================
-      // VALIDACIONES FRONTEND
-      // =========================
+      // Validaciones en el frontend
 
-      if (!nombre.trim()) {
+      if (!name.trim()) {
         toast.error("El nombre es obligatorio");
         return;
       }
 
-      if (!apellido.trim()) {
+      if (!lastname.trim()) {
         toast.error("El apellido es obligatorio");
         return;
       }
 
-      if (!correo.trim()) {
+      if (!email.trim()) {
         toast.error("El correo es obligatorio");
         return;
       }
 
-      if (!correo.includes("@")) {
+      if (!email.includes("@")) {
         toast.error("El correo no es válido");
         return;
       }
@@ -42,33 +40,27 @@ function Register() {
         return;
       }
 
-      // =========================
-      // PETICIÓN
-      // =========================
-
-      await register({
-        nombre,
-        apellido,
-        correo,
-        password,
-        rol: "CLIENTE"
+      // LLama a la api para crear el cliente
+      await createClient({
+        name,
+        lastname,
+        email,
+        password
       });
 
       toast.success("Usuario registrado con éxito");
 
-      setNombre("");
-      setApellido("");
-      setCorreo("");
+      setName("");
+      setLastname("");
+      setEmail("");
       setPassword("");
 
     } catch (error: unknown) {
 
       console.error(error);
 
-      // =========================
-      // ERRORES BACKEND
-      // =========================
 
+      // Manejo de errores específicos de Axios
       if (axios.isAxiosError(error)) {
 
         const status = error.response?.status;
@@ -78,8 +70,7 @@ function Register() {
           typeof data === "string"
             ? data
             : data?.message;
-
-        // 🔥 CASO ESPECÍFICO: correo ya registrado
+    
         if (
           status === 409 ||
           message?.toLowerCase().includes("correo")
@@ -107,22 +98,22 @@ function Register() {
           <input
             className="register-input"
             placeholder="Nombre"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
 
           <input
             className="register-input"
             placeholder="Apellido"
-            value={apellido}
-            onChange={(e) => setApellido(e.target.value)}
+            value={lastname}
+            onChange={(e) => setLastname(e.target.value)}
           />
 
           <input
             className="register-input"
             placeholder="Correo"
-            value={correo}
-            onChange={(e) => setCorreo(e.target.value)}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
           />
 
           <input

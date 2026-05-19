@@ -20,80 +20,67 @@ public class V001_InitLoginCollection {
     @Execution
     public void execution(MongoTemplate mongoTemplate) {
 
-        // Crea un indice unico para correo
         mongoTemplate
                 .getCollection("users")
                 .createIndex(
-                        new Document("correo", 1),
+                        new Document("email", 1),
                         new IndexOptions().unique(true)
                 );
 
-        // =========================
-        // Usuario Patricio
-        // =========================
-
-        Document patricioExiste = mongoTemplate
+        Document patricioExists = mongoTemplate
                 .getCollection("users")
-                .find(new Document("correo", "pa.olguine@duocuc.cl"))
+                .find(new Document("email", "pa.olguine@duocuc.cl"))
                 .first();
 
-        if (patricioExiste == null) {
+        if (patricioExists == null) {
 
             Document patricio = new Document();
 
-            patricio.put("nombre", "Patricio");
-            patricio.put("apellido", "Olguin");
-            patricio.put("correo", "pa.olguine@duocuc.cl");
+            patricio.put("name", "Patricio");
+            patricio.put("lastname", "Olguin");
+            patricio.put("email", "pa.olguine@duocuc.cl");
             patricio.put("password", "123456");
-            patricio.put("rol", Rol.ADMIN.name());
+            patricio.put("role", Rol.ADMIN.name());
 
             mongoTemplate
                     .getCollection("users")
                     .insertOne(patricio);
         }
 
-        // =========================
-        // Usuario Oscar
-        // =========================
-
-        Document oscarExiste = mongoTemplate
+        Document oscarExists = mongoTemplate
                 .getCollection("users")
-                .find(new Document("correo", "os.leyton@duocuc.cl"))
+                .find(new Document("email", "os.leyton@duocuc.cl"))
                 .first();
 
-        if (oscarExiste == null) {
+        if (oscarExists == null) {
 
             Document oscar = new Document();
 
-            oscar.put("nombre", "Oscar");
-            oscar.put("apellido", "Leyton");
-            oscar.put("correo", "os.leyton@duocuc.cl");
+            oscar.put("name", "Oscar");
+            oscar.put("lastname", "Leyton");
+            oscar.put("email", "os.leyton@duocuc.cl");
             oscar.put("password", "123456");
-            oscar.put("rol", Rol.ADMIN.name());
+            oscar.put("role", Rol.ADMIN.name());
 
             mongoTemplate
                     .getCollection("users")
                     .insertOne(oscar);
         }
 
-        // =========================
-        // Usuario Benjamin
-        // =========================
-
-        Document benjaminExiste = mongoTemplate
+        Document benjaminExists = mongoTemplate
                 .getCollection("users")
-                .find(new Document("correo", "benj.vasquezc@duocuc.cl"))
+                .find(new Document("email", "benj.vasquezc@duocuc.cl"))
                 .first();
 
-        if (benjaminExiste == null) {
+        if (benjaminExists == null) {
 
             Document benjamin = new Document();
 
-            benjamin.put("nombre", "Benjamin");
-            benjamin.put("apellido", "Vasquez");
-            benjamin.put("correo", "benj.vasquezc@duocuc.cl");
+            benjamin.put("name", "Benjamin");
+            benjamin.put("lastname", "Vasquez");
+            benjamin.put("email", "benj.vasquezc@duocuc.cl");
             benjamin.put("password", "123456");
-            benjamin.put("rol", Rol.ADMIN.name());
+            benjamin.put("role", Rol.ADMIN.name());
 
             mongoTemplate
                     .getCollection("users")
@@ -104,17 +91,15 @@ public class V001_InitLoginCollection {
     @RollbackExecution
     public void rollback(MongoTemplate mongoTemplate) {
 
-        // Eliminar indice
         mongoTemplate
                 .getCollection("users")
-                .dropIndex("correo_1");
+                .dropIndex("email_1");
 
-        // Eliminar usuarios creados
         mongoTemplate
                 .getCollection("users")
                 .deleteMany(
                         new Document(
-                                "correo",
+                                "email",
                                 new Document(
                                         "$in",
                                         List.of(
