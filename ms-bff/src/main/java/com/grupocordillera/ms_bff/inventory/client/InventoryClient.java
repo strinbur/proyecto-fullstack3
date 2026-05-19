@@ -9,32 +9,32 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(name = "ms-inventory", path = "/inventario")
+@FeignClient(name = "ms-inventory", path = "/inventory")
 public interface InventoryClient {
 
     @GetMapping
-    List<InventoryResponseDTO> listar(
-            @RequestParam(required = false) String categoria
+    List<InventoryResponseDTO> getAll(
+            @RequestParam(required = false) String category
     );
 
     @PostMapping
-    InventoryResponseDTO crear(
+    InventoryResponseDTO save(
             @RequestBody InventoryCreateDTO dto
     );
 
-    @GetMapping("/codigo/{codigo}")
-    InventoryResponseDTO obtenerPorCodigo(
-            @PathVariable("codigo") String codigo
+    @GetMapping("/code/{code}")
+    InventoryResponseDTO getByCode(
+            @PathVariable("code") String code
     );
 
-    @PutMapping("/codigo/{codigo}")
-    InventoryResponseDTO actualizar(
-            @PathVariable("codigo") String codigo,
+    @PutMapping("/code/{code}")
+    InventoryResponseDTO update(
+            @PathVariable("code") String code,
             @RequestBody InventoryUpdateDTO dto
     );
 
-    @DeleteMapping("/codigo/{codigo}")
-    void eliminar(
-            @PathVariable("codigo") String codigo
+    @DeleteMapping("/code/{code}")
+    void deleteByCode(
+            @PathVariable("code") String code
     );
 }

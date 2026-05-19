@@ -24,7 +24,7 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public List<InventoryResponseDTO> obtenerTodos() {
+    public List<InventoryResponseDTO> getAll() {
 
         return repository.findAll()
                 .stream()
@@ -33,26 +33,28 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public InventoryResponseDTO guardar(InventoryCreateDTO inventario) {
+    public InventoryResponseDTO save(InventoryCreateDTO inventoryDTO) {
 
-        Inventory nuevo = InventoryFactory.createInventory(inventario);
+        Inventory newInventory =
+                InventoryFactory.createInventory(inventoryDTO);
 
-        if (repository.existsByCodigo(nuevo.getCodigo())) {
+        if (repository.existsByCode(newInventory.getCode())) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Error, el codigo del producto ya existe"
             );
         }
 
-        Inventory guardado = repository.save(nuevo);
+        Inventory savedInventory =
+                repository.save(newInventory);
 
-        return InventoryFactory.toResponse(guardado);
+        return InventoryFactory.toResponse(savedInventory);
     }
 
     @Override
-    public InventoryResponseDTO obtenerPorCodigo(String codigo) {
+    public InventoryResponseDTO getByCode(String code) {
 
-        Inventory inventory = repository.findByCodigo(codigo)
+        Inventory inventory = repository.findByCode(code)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
                         "Error, producto no encontrado"
@@ -62,29 +64,32 @@ public class InventoryServiceImpl implements InventoryService {
     }
 
     @Override
-    public void eliminarPorCodigo(String codigo) {
+    public void deleteByCode(String code) {
 
-        if (!repository.existsByCodigo(codigo)) {
+        if (!repository.existsByCode(code)) {
             throw new ResponseStatusException(
                     HttpStatus.NOT_FOUND,
                     "Error, producto no encontrado"
             );
         }
 
-        repository.deleteByCodigo(codigo);
+        repository.deleteByCode(code);
     }
 
     @Override
-    public InventoryResponseDTO actualizar(
-            String codigo,
-            InventoryUpdateDTO nuevo
+    public InventoryResponseDTO update(
+            String code,
+            InventoryUpdateDTO updatedData
     ) {
 
-        Inventory actualizado = repository.findByCodigo(codigo)
+        Inventory updatedInventory = repository.findByCode(code)
                 .map(existing -> {
 
                     Inventory inventory =
-                            InventoryFactory.updateInventory(existing, nuevo);
+                            InventoryFactory.updateInventory(
+                                    existing,
+                                    updatedData
+                            );
 
                     return repository.save(inventory);
 
@@ -93,20 +98,20 @@ public class InventoryServiceImpl implements InventoryService {
                         "Error, producto no encontrado"
                 ));
 
-        return InventoryFactory.toResponse(actualizado);
+        return InventoryFactory.toResponse(updatedInventory);
     }
 
     @Override
-    public List<InventoryResponseDTO> obtenerPorCategoria(String categoria) {
+    public List<InventoryResponseDTO> getByCategory(String category) {
 
-        if (categoria == null || categoria.trim().isEmpty()) {
+        if (category == null || category.trim().isEmpty()) {
             throw new ResponseStatusException(
                     HttpStatus.BAD_REQUEST,
                     "Error, la categoria no puede estar vacia"
             );
         }
 
-        return repository.findByCategoriaIgnoreCase(categoria)
+        return repository.findByCategoryIgnoreCase(category)
                 .stream()
                 .map(InventoryFactory::toResponse)
                 .toList();

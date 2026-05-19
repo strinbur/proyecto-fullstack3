@@ -34,7 +34,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String authHeader =
                 request.getHeader("Authorization");
 
-        // NO HAY TOKEN
         if (authHeader == null ||
                 !authHeader.startsWith("Bearer ")) {
 
@@ -60,24 +59,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            // SI NO ESTA AUTENTICADO
             if (SecurityContextHolder
                     .getContext()
                     .getAuthentication() == null) {
 
-                String correo =
-                        jwtService.extractCorreo(token);
+                String email =
+                        jwtService.extractEmail(token);
 
-                String rol =
-                        jwtService.extractRol(token);
+                String role =
+                        jwtService.extractRole(token);
 
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                correo,
+                                email,
                                 null,
                                 List.of(
                                         new SimpleGrantedAuthority(
-                                                "ROLE_" + rol
+                                                "ROLE_" + role
                                         )
                                 )
                         );

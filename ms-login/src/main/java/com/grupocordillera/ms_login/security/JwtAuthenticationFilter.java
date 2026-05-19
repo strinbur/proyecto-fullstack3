@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource; // NUEVA IMPORTACIÓN
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -39,22 +39,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         final String token = authHeader.substring(7);
 
-        // Validar token y verificar que no estemos ya autenticados
-        if (jwtService.isTokenValid(token) && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (jwtService.isTokenValid(token) &&
+                SecurityContextHolder.getContext().getAuthentication() == null) {
 
-            String correo = jwtService.extractCorreo(token);
-            String rol = jwtService.extractClaims(token).get("rol", String.class);
+            String email = jwtService.extractEmail(token);
+            String role = jwtService.extractClaims(token).get("role", String.class);
 
-            if (correo != null) {
+            if (email != null) {
+
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                correo,
+                                email,
                                 null,
-                                List.of(new SimpleGrantedAuthority("ROLE_" + rol))
+                                List.of(new SimpleGrantedAuthority("ROLE_" + role))
                         );
 
-                // IMPORTANTE: Establecer los detalles de la autenticación desde la request
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                authentication.setDetails(
+                        new WebAuthenticationDetailsSource().buildDetails(request)
+                );
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }

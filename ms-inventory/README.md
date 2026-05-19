@@ -36,11 +36,11 @@ Microservicio responsable de la gestión del inventario de productos. Ofrece end
 - **Dependency Injection**: Spring gestiona dependencias para bajo acoplamiento.
 
 ## Endpoints Principales
-- `GET /inventario` — Listar productos (público), opcional `?categoria={categoria}`
-- `GET /inventario/{codigo}` — Obtener producto por código (restringido según configuración de seguridad)
-- `POST /inventario` — Crear producto (requiere rol `ADMIN`)
-- `PUT /inventario/{codigo}` — Actualizar producto (requiere rol `ADMIN`)
-- `DELETE /inventario/{codigo}` — Eliminar producto (requiere rol `ADMIN`)
+- `GET /inventory` — Listar productos (público), opcional `?category={category}`
+- `GET /inventory/code/{code}` — Obtener producto por código (restringido según configuración de seguridad)
+- `POST /inventory` — Crear producto (requiere rol `ADMIN`)
+- `PUT /inventory/code/{code}` — Actualizar producto (requiere rol `ADMIN`)
+- `DELETE /inventory/code/{code}` — Eliminar producto (requiere rol `ADMIN`)
 
 ## Reglas de Negocio y Validaciones
 ### Validaciones de Productos
@@ -56,9 +56,9 @@ Microservicio responsable de la gestión del inventario de productos. Ofrece end
 - Soporta atributos dinámicos adicionales en el producto.
 
 ### Seguridad
-- `GET /inventario` es público.
-- Crear/actualizar/eliminar productos requiere rol `ADMIN`.
-- Tokens JWT expiran en 24 horas (`86400000 ms`).
+- `GET /inventory` y `GET /inventory/code/{code}` son de acceso público.
+- Las operaciones de escritura, edición y borrado (`POST`, `PUT`, `DELETE`) un usuario con rol `ADMIN`
+- Los tokens JWT tienen una validez extendida de 24 horas (`86400000 ms`).
 
 ### Manejo de Errores
 - Respuestas adecuadas: 400 para validaciones, 404 para no encontrado, etc.

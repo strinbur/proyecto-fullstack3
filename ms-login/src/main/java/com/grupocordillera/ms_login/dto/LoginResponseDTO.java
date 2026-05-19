@@ -6,17 +6,17 @@ import lombok.Data;
 
 @Data
 @JsonPropertyOrder({
-        "nombre",
-        "apellido",
-        "correo",
+        "name",
+        "lastname",
+        "email",
         "id",
-        "rol"
+        "role"
 })
 public class LoginResponseDTO {
 
     private String id;
-    private String nombre;
-    private String apellido;
-    private String correo;
-    private Rol rol;
+    private String name;
+    private String lastname;
+    private String email;
+    private Rol role;
 }

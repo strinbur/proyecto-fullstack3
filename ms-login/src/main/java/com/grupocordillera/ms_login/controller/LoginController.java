@@ -25,19 +25,19 @@ public class LoginController {
         this.service = service;
     }
 
-    // 1. PÚBLICO: Registro de clientes
+    // Registro publico crea un usuario con rol CLIENTE
     @PostMapping("/register")
-    public ResponseEntity<LoginResponseDTO> registrar(
+    public ResponseEntity<LoginResponseDTO> createClient(
             @Valid @RequestBody RegisterDTO dto
     ) {
 
         return new ResponseEntity<>(
-                service.registrar(dto),
+                service.createClient(dto),
                 HttpStatus.CREATED
         );
     }
 
-    // 2. PÚBLICO: LOGIN
+    // Login
     @PostMapping("/auth")
     public ResponseEntity<AuthResponseDTO> login(
             @Valid @RequestBody LoginRequestDTO request
@@ -45,68 +45,68 @@ public class LoginController {
 
         return ResponseEntity.ok(
                 service.login(
-                        request.getCorreo(),
+                        request.getEmail(),
                         request.getPassword()
                 )
         );
     }
 
-    // 3. SOLO ADMIN Y VENTAS: LISTAR
+    // Solo ADMIN y VENTAS: Listar todos los usuarios
     @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping
-    public ResponseEntity<List<LoginResponseDTO>> listar() {
+    public ResponseEntity<List<LoginResponseDTO>> getAllUsers() {
 
         return ResponseEntity.ok(
-                service.listar()
+                service.getAllUsers()
         );
     }
 
-    // 4. SOLO ADMIN Y VENTAS: BUSCAR POR ID
+    // Solo ADMIN y VENTAS: Obtener usuario por ID
     @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping("/{id}")
-    public ResponseEntity<LoginResponseDTO> obtenerPorId(
+    public ResponseEntity<LoginResponseDTO> getUserById(
             @PathVariable String id
     ) {
 
         return ResponseEntity.ok(
-                service.buscarPorId(id)
+                service.getUserById(id)
         );
     }
 
-    // 5. USUARIO LOGEADO PUEDE ACTUALIZAR
+    // Usuario propio, ADMIN y VENTAS: Actualizar usuario sin cambiar rol
     @PreAuthorize("hasAnyRole('ADMIN','VENTAS','CLIENTE')")
     @PutMapping("/{id}")
-    public ResponseEntity<LoginResponseDTO> actualizar(
+    public ResponseEntity<LoginResponseDTO> updateUser(
             @PathVariable String id,
             @Valid @RequestBody LoginUpdateDTO dto
     ) {
 
         return ResponseEntity.ok(
-                service.actualizar(id, dto)
+                service.updateUser(id, dto)
         );
     }
 
-    // 6. SOLO ADMIN: ELIMINAR
+    // Solo ADMIN: Eliminar usuario por ID
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminar(
+    public ResponseEntity<Void> deleteUser(
             @PathVariable String id
     ) {
 
-        service.eliminar(id);
+        service.deleteUser(id);
 
         return ResponseEntity.noContent().build();
     }
 
-    // 7. SOLO ADMIN: CREAR USUARIO CON ROL
+    // Solo ADMIN puede crear un usuario con rol especifico
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/create")
-    public ResponseEntity<LoginResponseDTO> crearUsuario(
+    public ResponseEntity<LoginResponseDTO> createUser(
             @Valid @RequestBody CreateUserDTO dto
     ) {
 
         return new ResponseEntity<>(
-                service.crearUsuario(dto),
+                service.createUser(dto),
                 HttpStatus.CREATED
         );
     }

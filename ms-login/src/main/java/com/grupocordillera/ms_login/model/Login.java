@@ -10,9 +10,10 @@ public class Login {
 
     @Id
     private String id;
-    private String nombre;
-    private String apellido;
-    private String correo;
+
+    private String name;
+    private String lastname;
+    private String email;
     private String password;
-    private Rol rol;
+    private Rol role;
 }

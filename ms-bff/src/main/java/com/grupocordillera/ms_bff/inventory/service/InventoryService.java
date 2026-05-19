@@ -8,13 +8,13 @@ import java.util.List;
 
 public interface InventoryService {
 
-    List<InventoryResponseDTO> listar(String categoria);
+    List<InventoryResponseDTO> getAll(String category);
 
-    InventoryResponseDTO crear(InventoryCreateDTO dto);
+    InventoryResponseDTO save(InventoryCreateDTO dto);
 
-    InventoryResponseDTO obtenerPorCodigo(String codigo);
+    InventoryResponseDTO getByCode(String code);
 
-    InventoryResponseDTO actualizar(String codigo, InventoryUpdateDTO dto);
+    InventoryResponseDTO update(String code, InventoryUpdateDTO dto);
 
-    void eliminar(String codigo);
+    void deleteByCode(String code);
 }

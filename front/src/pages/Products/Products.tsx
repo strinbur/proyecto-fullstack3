@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react";
-import { listarProductos } from "../../features/inventory/inventoryApi";
+import { getAllProducts } from "../../features/inventory/inventoryApi";
 import "./Products.css";
 
 interface Product {
   id: string;
-  codigo: string;
-  nombre: string;
-  marca: string;
-  precio: number;
-  cantidad: number;
-  categoria: string;
+  code: string;
+  name: string;
+  brand: string;
+  price: number;
+  quantity: number;
+  category: string;
 }
 
 export default function Products() {
@@ -21,11 +21,11 @@ export default function Products() {
 
   useEffect(() => {
 
-    const fetchProductos = async () => {
+    const fetchProducts = async () => {
 
       try {
 
-        const data = await listarProductos();
+        const data = await getAllProducts();
         setProducts(data);
 
       } catch (error) {
@@ -36,13 +36,13 @@ export default function Products() {
 
     };
 
-    fetchProductos();
+    fetchProducts();
 
   }, []);
 
-  const getProductImage = (nombre: string) => {
+  const getProductImage = (name: string) => {
 
-    const productName = nombre.toLowerCase();
+    const productName = name.toLowerCase();
 
     if (productName.includes("lenovo")) {
 
@@ -74,18 +74,13 @@ export default function Products() {
 
   };
 
-  const handleQuantityChange = (
-    value: number
-  ) => {
+  const handleQuantityChange = (value: number) => {
 
     if (!selectedProduct) return;
 
-    if (value > selectedProduct.cantidad) {
+    if (value > selectedProduct.quantity) {
 
-      setStockError(
-        `Solo hay ${selectedProduct.cantidad} unidades disponibles`
-      );
-
+      setStockError(`Solo hay ${selectedProduct.quantity} unidades disponibles`);
       return;
 
     }
@@ -139,34 +134,32 @@ export default function Products() {
               <div className="product-image">
 
                 <img
-                  src={getProductImage(product.nombre)}
-                  alt={product.nombre}
+                  src={getProductImage(product.name)}
+                  alt={product.name}
                 />
 
                 <span className="product-category">
-                  {product.categoria}
+                  {product.category}
                 </span>
 
               </div>
 
               <div className="product-content">
 
-                <h2>
-                  {product.nombre}
-                </h2>
+                <h2>{product.name}</h2>
 
                 <p className="product-brand">
-                  {product.marca}
+                  {product.brand}
                 </p>
 
                 <div className="product-info">
 
                   <p>
-                    Código: {product.codigo}
+                    Código: {product.code}
                   </p>
 
                   <p>
-                    Stock: {product.cantidad}
+                    Stock: {product.quantity}
                   </p>
 
                 </div>
@@ -174,7 +167,7 @@ export default function Products() {
                 <div className="product-footer">
 
                   <span className="product-price">
-                    ${product.precio}
+                    ${product.price}
                   </span>
 
                   <button className="buy-btn">
@@ -213,51 +206,37 @@ export default function Products() {
             </button>
 
             <img
-              src={getProductImage(selectedProduct.nombre)}
-              alt={selectedProduct.nombre}
+              src={getProductImage(selectedProduct.name)}
+              alt={selectedProduct.name}
               className="modal-image"
             />
 
             <div className="modal-info">
 
               <span className="modal-category">
-                {selectedProduct.categoria}
+                {selectedProduct.category}
               </span>
 
-              <h2>
-                {selectedProduct.nombre}
-              </h2>
+              <h2>{selectedProduct.name}</h2>
 
-              <p>
-                Marca: {selectedProduct.marca}
-              </p>
+              <p>Marca: {selectedProduct.brand}</p>
 
-              <p>
-                Código: {selectedProduct.codigo}
-              </p>
+              <p>Código: {selectedProduct.code}</p>
 
-              <p>
-                Stock disponible: {selectedProduct.cantidad}
-              </p>
+              <p>Stock disponible: {selectedProduct.quantity}</p>
 
-              <h3>
-                ${selectedProduct.precio}
-              </h3>
+              <h3>${selectedProduct.price}</h3>
 
               <div className="quantity-container">
 
-                <label>
-                  Cantidad
-                </label>
+                <label>Cantidad</label>
 
                 <input
                   type="number"
                   value={quantity}
                   min={1}
                   onChange={(e) =>
-                    handleQuantityChange(
-                      Number(e.target.value)
-                    )
+                    handleQuantityChange(Number(e.target.value))
                   }
                   className="quantity-input"
                 />
@@ -265,18 +244,13 @@ export default function Products() {
               </div>
 
               {stockError && (
-
                 <div className="stock-alert">
                   {stockError}
                 </div>
-
               )}
 
               <button className="modal-buy-btn">
-
-                Comprar {quantity} producto
-                {quantity > 1 ? "s" : ""}
-
+                Comprar {quantity} producto{quantity > 1 ? "s" : ""}
               </button>
 
             </div>

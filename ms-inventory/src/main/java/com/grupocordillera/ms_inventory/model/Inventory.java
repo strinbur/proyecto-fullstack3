@@ -1,6 +1,5 @@
 package com.grupocordillera.ms_inventory.model;
 
-
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -14,12 +13,12 @@ public class Inventory {
     @Id
     private String id;
 
-    private String codigo;
-    private String nombre;
-    private String marca;
-    private double precio;
-    private int cantidad;
-    private String categoria;
+    private String code;
+    private String name;
+    private String brand;
+    private double price;
+    private int quantity;
+    private String category;
 
-    private Map<String, Object> atributos;
+    private Map<String, Object> specs;
 }

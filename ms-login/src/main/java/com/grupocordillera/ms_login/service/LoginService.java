@@ -10,17 +10,17 @@ import java.util.List;
 
 public interface LoginService {
 
-    LoginResponseDTO registrar(RegisterDTO dto);
+    LoginResponseDTO createClient(RegisterDTO dto);
 
-    AuthResponseDTO login(String correo, String password);
+    AuthResponseDTO login(String email, String password);
 
-    List<LoginResponseDTO> listar();
+    List<LoginResponseDTO> getAllUsers();
 
-    LoginResponseDTO buscarPorId(String id);
+    LoginResponseDTO getUserById(String id);
 
-    LoginResponseDTO crearUsuario(CreateUserDTO dto);
+    LoginResponseDTO createUser(CreateUserDTO dto);
 
-    LoginResponseDTO actualizar(String id, LoginUpdateDTO dto);
+    LoginResponseDTO updateUser(String id, LoginUpdateDTO dto);
 
-    void eliminar(String id);
+    void deleteUser(String id);
 }

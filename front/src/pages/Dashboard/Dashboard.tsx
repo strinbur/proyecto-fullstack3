@@ -1,48 +1,45 @@
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { listarProductos } from "../../features/inventory/inventoryApi";
-import { createUserWithRole, getUsers, deleteUser } from "../../features/auth/authApi";
+import { getAllProducts } from "../../features/inventory/inventoryApi";
+import { createUser, getAllUsers, deleteUser } from "../../features/auth/authApi";
 
 import "./Dashboard.css";
 
-/* =========================
-   TIPADO
-========================= */
-type Rol = "CLIENTE" | "ADMIN" | "VENTAS";
+
+type Role = "CLIENTE" | "ADMIN" | "VENTAS";
 
 type User = {
   id: string;
-  nombre: string;
-  apellido: string;
-  correo: string;
-  rol: Rol;
+  name: string;
+  lastname: string;
+  email: string;
+  role: Role;
 };
 
-type Producto = {
+type Product = {
   id: string;
-  nombre: string;
-  precio: number;
+  code: string;
+  name: string;
+  price: number;
 };
 
 export default function Dashboard() {
 
   const [users, setUsers] = useState<User[]>([]);
-  const [productos, setProductos] = useState<Producto[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  const [nombre, setNombre] = useState("");
-  const [apellido, setApellido] = useState("");
-  const [correo, setCorreo] = useState("");
+  const [name, setName] = useState("");
+  const [lastname, setLastname] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rol, setRol] = useState<Rol>("CLIENTE");
+  const [role, setRole] = useState<Role>("CLIENTE");
 
-  /* =========================
-      CARGAR USUARIOS
-  ========================== */
+//Carga los usuarios
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data: User[] = await getUsers();
+        const data: User[] = await getAllUsers();
         setUsers(data);
       } catch (error) {
         console.error(error);
@@ -53,14 +50,12 @@ export default function Dashboard() {
     fetchUsers();
   }, []);
 
-  /* =========================
-      CARGAR PRODUCTOS
-  ========================== */
+//Carga los productos
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const data: Producto[] = await listarProductos();
-        setProductos(data);
+        const data: Product[] = await getAllProducts();
+        setProducts(data);
       } catch (error) {
         console.error(error);
         toast.error("Error al cargar productos");
@@ -70,28 +65,26 @@ export default function Dashboard() {
     fetchProducts();
   }, []);
 
-  /* =========================
-      CREAR USUARIO
-  ========================== */
+//Crea un nuevo usuario
   const handleCreateUser = async () => {
     try {
-      await createUserWithRole({
-        nombre,
-        apellido,
-        correo,
+      await createUser({
+        name,
+        lastname,
+        email,
         password,
-        rol
+        role
       });
 
-      toast.success(`Usuario ${rol} creado correctamente`);
+      toast.success(`Usuario ${role} creado correctamente`);
 
-      setNombre("");
-      setApellido("");
-      setCorreo("");
+      setName("");
+      setLastname("");
+      setEmail("");
       setPassword("");
-      setRol("CLIENTE");
+      setRole("CLIENTE");
 
-      const data: User[] = await getUsers();
+      const data: User[] = await getAllUsers();
       setUsers(data);
 
     } catch (error: unknown) {
@@ -108,7 +101,6 @@ export default function Dashboard() {
             ? data
             : data?.message;
 
-        // 🔥 CASO ESPECÍFICO: correo ya registrado
         if (status === 409 || message?.toLowerCase().includes("correo")) {
           toast.error("El correo ya está registrado");
           return;
@@ -122,15 +114,13 @@ export default function Dashboard() {
     }
   };
 
-  /* =========================
-      ELIMINAR USUARIO
-  ========================== */
+//Elimina un usuario por su ID
   const handleDeleteUser = async (id: string) => {
     try {
       await deleteUser(id);
       toast.success("Usuario eliminado");
 
-      const data: User[] = await getUsers();
+      const data: User[] = await getAllUsers();
       setUsers(data);
 
     } catch (error) {
@@ -148,14 +138,13 @@ export default function Dashboard() {
           <p>Bienvenido al centro de control de Grupo Cordillera</p>
         </header>
 
-        {/* STATS */}
         <div className="stats-grid-centered">
 
           <div className="stat-card">
             <div className="stat-icon blue">📦</div>
             <div>
               <span className="stat-label">Productos</span>
-              <span className="stat-number">{productos.length}</span>
+              <span className="stat-number">{products.length}</span>
             </div>
           </div>
 
@@ -177,17 +166,16 @@ export default function Dashboard() {
 
         </div>
 
-        {/* CREAR USUARIO */}
         <div className="create-user-card">
 
           <h2>Crear Usuario</h2>
 
-          <input placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
-          <input placeholder="Apellido" value={apellido} onChange={(e) => setApellido(e.target.value)} />
-          <input placeholder="Correo" value={correo} onChange={(e) => setCorreo(e.target.value)} />
+          <input placeholder="Nombre" value={name} onChange={(e) => setName(e.target.value)} />
+          <input placeholder="Apellido" value={lastname} onChange={(e) => setLastname(e.target.value)} />
+          <input placeholder="Correo" value={email} onChange={(e) => setEmail(e.target.value)} />
           <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
 
-          <select value={rol} onChange={(e) => setRol(e.target.value as Rol)}>
+          <select value={role} onChange={(e) => setRole(e.target.value as Role)}>
             <option value="CLIENTE">Cliente</option>
             <option value="ADMIN">Administrador</option>
             <option value="VENTAS">Ventas</option>
@@ -199,7 +187,6 @@ export default function Dashboard() {
 
         </div>
 
-        {/* TABLA USUARIOS */}
         <div className="dashboard-main-card">
 
           <h3>Gestión de Usuarios</h3>
@@ -218,9 +205,9 @@ export default function Dashboard() {
             <tbody>
               {users.map((user) => (
                 <tr key={user.id}>
-                  <td>{user.nombre} {user.apellido}</td>
-                  <td>{user.correo}</td>
-                  <td>{user.rol}</td>
+                  <td>{user.name} {user.lastname}</td>
+                  <td>{user.email}</td>
+                  <td>{user.role}</td>
                   <td>
                     <button
                       className="delete-btn"

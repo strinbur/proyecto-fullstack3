@@ -27,33 +27,29 @@ public class LoginServiceImpl implements LoginService {
         this.jwtService = jwtService;
     }
 
-    // =========================================================
-    // MAPEO DTO
-    // =========================================================
+//Mapeo de entidad a DTO
     private LoginResponseDTO toDTO(Login login) {
 
         LoginResponseDTO dto =
                 new LoginResponseDTO();
 
         dto.setId(login.getId());
-        dto.setNombre(login.getNombre());
-        dto.setApellido(login.getApellido());
-        dto.setCorreo(login.getCorreo());
-        dto.setRol(login.getRol());
+        dto.setName(login.getName());
+        dto.setLastname(login.getLastname());
+        dto.setEmail(login.getEmail());
+        dto.setRole(login.getRole());
 
         return dto;
     }
 
-    // =========================================================
-    // REGISTRO CLIENTE
-    // =========================================================
+//Crea un nuevo usuario, pero no se puede crear un ADMIN
     @Override
-    public LoginResponseDTO registrar(
+    public LoginResponseDTO createClient(
             RegisterDTO dto
     ) {
 
         if (
-                repository.findByCorreo(dto.getCorreo())
+                repository.findByEmail(dto.getEmail())
                         .isPresent()
         ) {
 
@@ -64,28 +60,26 @@ public class LoginServiceImpl implements LoginService {
 
         Login login = new Login();
 
-        login.setNombre(dto.getNombre());
-        login.setApellido(dto.getApellido());
-        login.setCorreo(dto.getCorreo());
+        login.setName(dto.getName());
+        login.setLastname(dto.getLastname());
+        login.setEmail(dto.getEmail());
         login.setPassword(dto.getPassword());
-        login.setRol(Rol.CLIENTE);
+        login.setRole(Rol.CLIENTE);
 
         return toDTO(
                 repository.save(login)
         );
     }
 
-    // =========================================================
-    // LOGIN
-    // =========================================================
+//Login de usuario, genera un token JWT si las credenciales son correctas
     @Override
     public AuthResponseDTO login(
-            String correo,
+            String email,
             String password
     ) {
 
-        Login usuario =
-                repository.findByCorreo(correo)
+        Login user =
+                repository.findByEmail(email)
                         .orElseThrow(() ->
                                 new LoginException(
                                         "Usuario no encontrado"
@@ -93,7 +87,7 @@ public class LoginServiceImpl implements LoginService {
                         );
 
         if (
-                !usuario.getPassword()
+                !user.getPassword()
                         .equals(password)
         ) {
 
@@ -103,22 +97,20 @@ public class LoginServiceImpl implements LoginService {
         }
 
         String token =
-                jwtService.generateToken(usuario);
+                jwtService.generateToken(user);
 
         AuthResponseDTO response =
                 new AuthResponseDTO();
 
         response.setToken(token);
-        response.setUsuario(toDTO(usuario));
+        response.setUser(toDTO(user));
 
         return response;
     }
 
-    // =========================================================
-    // LISTAR
-    // =========================================================
+//Get todos los usuarios
     @Override
-    public List<LoginResponseDTO> listar() {
+    public List<LoginResponseDTO> getAllUsers() {
 
         return repository.findAll()
                 .stream()
@@ -126,11 +118,9 @@ public class LoginServiceImpl implements LoginService {
                 .collect(Collectors.toList());
     }
 
-    // =========================================================
-    // BUSCAR POR ID
-    // =========================================================
+//Get un usuario por su ID
     @Override
-    public LoginResponseDTO buscarPorId(
+    public LoginResponseDTO getUserById(
             String id
     ) {
 
@@ -143,16 +133,14 @@ public class LoginServiceImpl implements LoginService {
                 );
     }
 
-    // =========================================================
-    // CREAR USUARIO CON ROL
-    // =========================================================
+//Crea un nuevo usuario con rol de CLIENTE
     @Override
-    public LoginResponseDTO crearUsuario(
+    public LoginResponseDTO createUser(
             CreateUserDTO dto
     ) {
 
         if (
-                repository.findByCorreo(dto.getCorreo())
+                repository.findByEmail(dto.getEmail())
                         .isPresent()
         ) {
 
@@ -163,27 +151,25 @@ public class LoginServiceImpl implements LoginService {
 
         Login login = new Login();
 
-        login.setNombre(dto.getNombre());
-        login.setApellido(dto.getApellido());
-        login.setCorreo(dto.getCorreo());
+        login.setName(dto.getName());
+        login.setLastname(dto.getLastname());
+        login.setEmail(dto.getEmail());
         login.setPassword(dto.getPassword());
-        login.setRol(dto.getRol());
+        login.setRole(dto.getRole());
 
         return toDTO(
                 repository.save(login)
         );
     }
 
-    // =========================================================
-    // ACTUALIZAR
-    // =========================================================
+//Actualiza un usuario por su ID
     @Override
-    public LoginResponseDTO actualizar(
+    public LoginResponseDTO updateUser(
             String id,
             LoginUpdateDTO dto
     ) {
 
-        Login existente =
+        Login existing =
                 repository.findById(id)
                         .orElseThrow(() ->
                                 new LoginException(
@@ -192,11 +178,11 @@ public class LoginServiceImpl implements LoginService {
                         );
 
         if (
-                dto.getNombre().trim().isEmpty()
+                dto.getName().trim().isEmpty()
                         ||
-                dto.getApellido().trim().isEmpty()
+                dto.getLastname().trim().isEmpty()
                         ||
-                dto.getCorreo().trim().isEmpty()
+                dto.getEmail().trim().isEmpty()
         ) {
 
             throw new LoginException(
@@ -204,11 +190,11 @@ public class LoginServiceImpl implements LoginService {
             );
         }
 
-        repository.findByCorreo(dto.getCorreo())
-                .ifPresent(usuario -> {
+        repository.findByEmail(dto.getEmail())
+                .ifPresent(user -> {
 
                     if (
-                            !usuario.getId().equals(id)
+                            !user.getId().equals(id)
                     ) {
 
                         throw new LoginException(
@@ -217,34 +203,30 @@ public class LoginServiceImpl implements LoginService {
                     }
                 });
 
-        existente.setNombre(dto.getNombre());
-        existente.setApellido(dto.getApellido());
-        existente.setCorreo(dto.getCorreo());
+        existing.setName(dto.getName());
+        existing.setLastname(dto.getLastname());
+        existing.setEmail(dto.getEmail());
 
         return toDTO(
-                repository.save(existente)
+                repository.save(existing)
         );
     }
 
-    // =========================================================
-    // ELIMINAR
-    // =========================================================
+//Elimina un usuario por su ID, pero no se puede eliminar un ADMIN
     @Override
-    public void eliminar(
+    public void deleteUser(
             String id
     ) {
 
-        Login usuario =
+        Login user =
                 repository.findById(id)
                         .orElseThrow(() ->
                                 new LoginException(
                                         "Usuario no encontrado"
                                 )
                         );
-
-        // NO ELIMINAR ADMINS
         if (
-                usuario.getRol() == Rol.ADMIN
+                user.getRole() == Rol.ADMIN
         ) {
 
             throw new LoginException(

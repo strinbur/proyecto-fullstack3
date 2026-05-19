@@ -6,19 +6,18 @@ import java.util.List;
 
 public interface LoginService {
 
-    // LOGIN: Retorna Token + Usuario
+
     AuthResponseDTO login(LoginRequestDTO request);
 
-    LoginResponseDTO register(LoginRegisterDTO request);
+    LoginResponseDTO createClient(LoginRegisterDTO request);
 
-    LoginResponseDTO createUserWithRole(LoginAdminCreateDTO request);
+    LoginResponseDTO createUser(LoginAdminCreateDTO request);
 
-    LoginResponseDTO update(String id, LoginUpdateDTO request);
+    LoginResponseDTO updateUser(String id, LoginUpdateDTO request);
 
-    LoginResponseDTO getById(String id);
+    LoginResponseDTO getUserById(String id);
 
-    // GET ALL: Corregido (solo una lista)
-    List<LoginResponseDTO> getAll();
+    List<LoginResponseDTO> getAllUsers();
 
-    void delete(String id);
+    void deleteUser(String id);
 }

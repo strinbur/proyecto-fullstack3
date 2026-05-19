@@ -12,58 +12,59 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // VALIDACIONES DTO
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> manejarValidaciones(
+    public ResponseEntity<Map<String, Object>> handleValidationExceptions(
             MethodArgumentNotValidException ex
     ) {
 
-        Map<String, Object> respuesta = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-        List<String> errores = ex.getBindingResult()
+        List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(error -> error.getDefaultMessage())
                 .toList();
 
-        respuesta.put("status", 400);
-        respuesta.put("errores", errores);
+        response.put("status", 400);
+        response.put("errores", errors);
 
         return ResponseEntity
                 .badRequest()
-                .body(respuesta);
+                .body(response);
     }
 
-    // ERRORES PERSONALIZADOS
+
     @ExceptionHandler(ResponseStatusException.class)
-    public ResponseEntity<Map<String, Object>> manejarErrores(
+    public ResponseEntity<Map<String, Object>> handleResponseStatusException(
             ResponseStatusException ex
     ) {
 
-        Map<String, Object> respuesta = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-        respuesta.put("status", ex.getStatusCode().value());
-        respuesta.put("errores", List.of(ex.getReason()));
+        response.put("status", ex.getStatusCode().value());
+        response.put("errores", List.of(ex.getReason()));
 
         return ResponseEntity
                 .status(ex.getStatusCode())
-                .body(respuesta);
+                .body(response);
     }
 
-    // FALLBACK GENERAL
+    // Fallback general para cualquier otra excepción no manejada específicamente
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Map<String, Object>> manejarGeneral(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGeneralException(
+            Exception ex
+    ) {
 
-        Map<String, Object> respuesta = new HashMap<>();
+        Map<String, Object> response = new HashMap<>();
 
-        respuesta.put("status", 500);
-        respuesta.put(
+        response.put("status", 500);
+        response.put(
                 "errores",
                 List.of("Error interno del servidor")
         );
 
         return ResponseEntity
                 .internalServerError()
-                .body(respuesta);
+                .body(response);
     }
 }

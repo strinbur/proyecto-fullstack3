@@ -16,45 +16,45 @@ public class LoginServiceImpl implements LoginService {
         this.loginClient = loginClient;
     }
 
-    // LOGIN: Corregido para manejar el DTO que contiene el Token
+    // Login
     @Override
     public AuthResponseDTO login(LoginRequestDTO request) {
         return loginClient.login(request);
     }
 
-    // REGISTER
+    // Crear cliente (registro publico)
     @Override
-    public LoginResponseDTO register(LoginRegisterDTO request) {
-        return loginClient.register(request);
+    public LoginResponseDTO createClient(LoginRegisterDTO request) {
+        return loginClient.createClient(request);
     }
 
-    // CREACION CON ROL
+    // Creacion de usuario con rol (solo admin)
     @Override
-    public LoginResponseDTO createUserWithRole(LoginAdminCreateDTO request) {
-        return loginClient.createUserWithRole(request);
+    public LoginResponseDTO createUser(LoginAdminCreateDTO request) {
+        return loginClient.createUser(request);
     }
 
-    // UPDATE
+    // Update usuario
     @Override
-    public LoginResponseDTO update(String id, LoginUpdateDTO request) {
-        return loginClient.update(id, request);
+    public LoginResponseDTO updateUser(String id, LoginUpdateDTO request) {
+        return loginClient.updateUser(id, request);
     }
 
-    // GET POR ID
+    // Get usuarios por id
     @Override
-    public LoginResponseDTO getById(String id) {
-        return loginClient.getById(id);
+    public LoginResponseDTO getUserById(String id) {
+        return loginClient.getUserById(id);
     }
 
-    // GET ALL
+    // Get all usuarios
     @Override
-    public List<LoginResponseDTO> getAll() {
-        return loginClient.getAll();
+    public List<LoginResponseDTO> getAllUsers() {
+        return loginClient.getAllUsers();
     }
 
-    // DELETE
+    // Delete usuario
     @Override
-    public void delete(String id) {
-        loginClient.delete(id);
+    public void deleteUser(String id) {
+        loginClient.deleteUser(id);
     }
 }

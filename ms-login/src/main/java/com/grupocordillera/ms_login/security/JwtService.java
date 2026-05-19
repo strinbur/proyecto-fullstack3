@@ -29,9 +29,10 @@ public class JwtService {
     public String generateToken(Login usuario) {
 
         return Jwts.builder()
-                .setSubject(usuario.getCorreo())
-                .claim("rol", usuario.getRol().name())
-                .claim("nombre", usuario.getNombre())
+                .setSubject(usuario.getEmail())
+                .claim("role", usuario.getRole().name())
+                .claim("name", usuario.getName())
+                .claim("lastname", usuario.getLastname())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(
                         new Date(System.currentTimeMillis() + expirationTime)
@@ -49,7 +50,7 @@ public class JwtService {
                 .getBody();
     }
 
-    public String extractCorreo(String token) {
+    public String extractEmail(String token) {
 
         return extractClaims(token).getSubject();
     }

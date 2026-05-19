@@ -23,73 +23,73 @@ public class LoginController {
         this.service = service;
     }
 
-    // LOGIN: Corregido para retornar AuthResponseDTO (Token + Usuario)
+    // Login
     @PostMapping
     public AuthResponseDTO login(@Valid @RequestBody LoginRequestDTO request) {
 
-        log.info("BFF LOGIN RECIBIDO: {}", request.getCorreo());
+        log.info("BFF LOGIN RECIBIDO: {}", request.getEmail());
 
         return service.login(request);
     }
 
-    // REGISTER
+    // Crear cliente (registro publico)
     @PostMapping("/register")
-    public LoginResponseDTO register(@Valid @RequestBody LoginRegisterDTO request) {
+    public LoginResponseDTO createClient(@Valid @RequestBody LoginRegisterDTO request) {
 
-        log.info("BFF REGISTER: {}", request.getCorreo());
+        log.info("BFF REGISTER: {}", request.getEmail());
 
-        return service.register(request);
+        return service.createClient(request);
     }
 
-    // CREAR USUARIO CON ROL
+    // Crear usuario con rol (solo admin)
     @PostMapping("/admin")
-    public LoginResponseDTO createUserWithRole(
+    public LoginResponseDTO createUser(
             @Valid @RequestBody LoginAdminCreateDTO request) {
 
         log.info(
                 "BFF CREATE USER ROLE: {} - {}",
-                request.getCorreo(),
-                request.getRol()
+                request.getEmail(),
+                request.getRole()
         );
 
-        return service.createUserWithRole(request);
+        return service.createUser(request);
     }
 
-    // UPDATE
+    // Put usuario
     @PutMapping("/{id}")
-    public LoginResponseDTO update(
+    public LoginResponseDTO updateUser(
             @PathVariable String id,
             @Valid @RequestBody LoginUpdateDTO request) {
 
         log.info("BFF UPDATE PERFIL ID: {}", id);
 
-        return service.update(id, request);
+        return service.updateUser(id, request);
     }
 
-    // GET BY ID
+    // Get usuario por id
     @GetMapping("/{id}")
-    public LoginResponseDTO getById(@PathVariable String id) {
+    public LoginResponseDTO getUserById(@PathVariable String id) {
 
         log.info("BFF GET USER ID: {}", id);
 
-        return service.getById(id);
+        return service.getUserById(id);
     }
 
-    // GET ALL
+    // Get todos los usuarios
     @GetMapping
-    public List<LoginResponseDTO> getAll() {
+    public List<LoginResponseDTO> getAllUsers() {
 
         log.info("BFF GET ALL USERS");
 
-        return service.getAll();
+        return service.getAllUsers();
     }
 
-    // DELETE
+    // Delete usuario
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable String id) {
+    public void deleteUser(@PathVariable String id) {
 
         log.info("BFF DELETE USER ID: {}", id);
 
-        service.delete(id);
+        service.deleteUser(id);
     }
 }

@@ -11,22 +11,22 @@ import java.util.Map;
 public class InventoryCreateDTO {
 
     @NotBlank(message = "Error, falta codigo del producto")
-    private String codigo;
+    private String code;
 
     @NotBlank(message = "Error, falta nombre del producto")
-    private String nombre;
+    private String name;
 
     @NotBlank(message = "Error, falta marca del producto")
-    private String marca;
+    private String brand;
 
     @PositiveOrZero(message = "Error, precio no valido")
-    private double precio;
+    private double price;
 
     @Min(value = 0, message = "Error, cantidad ingresada no valida")
-    private int cantidad;
+    private int quantity;
 
     @NotBlank(message = "Error, falta categoria del producto")
-    private String categoria;
+    private String category;
 
-    private Map<String, Object> atributos;
+    private Map<String, Object> specs;
 }

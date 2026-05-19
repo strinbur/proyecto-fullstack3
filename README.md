@@ -1,16 +1,15 @@
 # Fullstack 3 Grupo Cordillera
 
-## Introducción
+## Contexto
 
+En este documento se dara a conocer el diseño arquitectonico para la nueva plataforma de monitoreo de Grupo Cordillera. Esta empresa se centra en la comercialización de productos para el hogar y tecnologia. Actual mente presenta el desafio para la gestion y analisis de informacion de sus sistemas, nosotros proponemos un sistema basado en microservicios, gracias a este enfoque nos permitira consolidar la informacion, asegurar su disponibilidad y facilitar la toma de desiciones generales de la empresa.
 
 
 ---
 
 ## Descripción General
 
-Versión de un proyecto fullstack desarrollado por el Grupo Cordillera, implementando una arquitectura de microservicios con un Backend for Frontend (BFF) como patrón de integración. El sistema integra un frontend responsivo en React (Vite) con múltiples microservicios backend en Spring Boot, utilizando MongoDB como base de datos centralizada.
-
-Este repositorio busca validar la arquitectura, mostrar la comunicación entre los componentes y ofrecer una demostración funcional básica. Aún no representa la solución final completa.
+Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual implementa una arquitectura basada en microservicios desacoplados e integrados a traves de un BFF, la cual cuenta con un Frontend que maneja la sesion con AtuhContext y persistencia de datos basicos en localstorage, el BFF centralizar la comunicacion entre el frontend y los microservicios, ambos microservicios usan validacion mediante JWT.
 
 ---
 
@@ -49,7 +48,6 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 - **Rendimiento**: Respuesta rápida (< 3s) en operaciones críticas
 - **Seguridad**: Autenticación JWT y autorización basada en roles
 - **Disponibilidad**: Despliegue mediante Docker Compose para reproducibilidad
-- **Testabilidad**: Suite de pruebas unitarias en servicios backend
 
 ---
 

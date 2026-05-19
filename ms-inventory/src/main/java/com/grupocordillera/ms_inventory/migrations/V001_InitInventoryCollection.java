@@ -19,78 +19,72 @@ public class V001_InitInventoryCollection {
     @Execution
     public void execution(MongoTemplate mongoTemplate) {
 
-        // CREAR INDICE UNICO PARA CODIGO
+        // CREAR INDICE UNICO PARA CODE
         mongoTemplate
                 .getCollection("products")
                 .createIndex(
-                        new Document("codigo", 1),
+                        new Document("code", 1),
                         new IndexOptions().unique(true)
                 );
 
-        // =========================
-        // NOTEBOOK
-        // =========================
+        // Notebook Lenovo
 
         Document notebook = new Document();
 
-        notebook.put("codigo", "P001");
-        notebook.put("nombre", "Notebook Lenovo IdeaPad");
-        notebook.put("marca", "Lenovo");
-        notebook.put("precio", 799990.0);
-        notebook.put("cantidad", 10);
-        notebook.put("categoria", "tecnologia");
+        notebook.put("code", "P001");
+        notebook.put("name", "Notebook Lenovo IdeaPad");
+        notebook.put("brand", "Lenovo");
+        notebook.put("price", 799990.0);
+        notebook.put("quantity", 10);
+        notebook.put("category", "tecnologia");
 
-        Document atributosNotebook = new Document();
+        Document notebookSpecs = new Document();
 
-        atributosNotebook.put("procesador", "Intel Core i7");
-        atributosNotebook.put("ram", "16GB");
-        atributosNotebook.put("almacenamiento", "512GB SSD");
-        atributosNotebook.put("pantalla", "15.6 pulgadas");
-        atributosNotebook.put("sistemaOperativo", "Windows 11");
+        notebookSpecs.put("procesador", "Intel Core i7");
+        notebookSpecs.put("ram", "16GB");
+        notebookSpecs.put("almacenamiento", "512GB SSD");
+        notebookSpecs.put("pantalla", "15.6 pulgadas");
+        notebookSpecs.put("sistemaOperativo", "Windows 11");
 
-        notebook.put("atributos", atributosNotebook);
+        notebook.put("specs", notebookSpecs);
 
-        // =========================
         // SMART TV SAMSUNG
-        // =========================
 
         Document smartTv = new Document();
 
-        smartTv.put("codigo", "P002");
-        smartTv.put("nombre", "Smart TV Samsung");
-        smartTv.put("marca", "Samsung");
-        smartTv.put("precio", 599990.0);
-        smartTv.put("cantidad", 5);
-        smartTv.put("categoria", "television");
+        smartTv.put("code", "P002");
+        smartTv.put("name", "Smart TV Samsung");
+        smartTv.put("brand", "Samsung");
+        smartTv.put("price", 599990.0);
+        smartTv.put("quantity", 5);
+        smartTv.put("category", "television");
 
-        Document atributosSmartTv = new Document();
+        Document smartTvSpecs = new Document();
 
-        atributosSmartTv.put("smartTv", true);
-        atributosSmartTv.put("pulgadas", 55);
-        atributosSmartTv.put("resolucion", "4K");
+        smartTvSpecs.put("smartTv", true);
+        smartTvSpecs.put("pulgadas", 55);
+        smartTvSpecs.put("resolucion", "4K");
 
-        smartTv.put("atributos", atributosSmartTv);
+        smartTv.put("specs", smartTvSpecs);
 
-        // =========================
-        // TV LG NO SMART
-        // =========================
+        // TV LG
 
         Document tvLg = new Document();
 
-        tvLg.put("codigo", "P003");
-        tvLg.put("nombre", "TV LG");
-        tvLg.put("marca", "LG");
-        tvLg.put("precio", 449990.0);
-        tvLg.put("cantidad", 3);
-        tvLg.put("categoria", "television");
+        tvLg.put("code", "P003");
+        tvLg.put("name", "TV LG");
+        tvLg.put("brand", "LG");
+        tvLg.put("price", 449990.0);
+        tvLg.put("quantity", 3);
+        tvLg.put("category", "television");
 
-        Document atributosTvLg = new Document();
+        Document tvLgSpecs = new Document();
 
-        atributosTvLg.put("smartTv", false);
-        atributosTvLg.put("pulgadas", 50);
-        atributosTvLg.put("resolucion", "4K");
+        tvLgSpecs.put("smartTv", false);
+        tvLgSpecs.put("pulgadas", 50);
+        tvLgSpecs.put("resolucion", "4K");
 
-        tvLg.put("atributos", atributosTvLg);
+        tvLg.put("specs", tvLgSpecs);
 
         // INSERTAR PRODUCTOS
         mongoTemplate
@@ -105,17 +99,17 @@ public class V001_InitInventoryCollection {
     @RollbackExecution
     public void rollback(MongoTemplate mongoTemplate) {
 
-        // ELIMINAR INDICE
+
         mongoTemplate
                 .getCollection("products")
-                .dropIndex("codigo_1");
+                .dropIndex("code_1");
 
-        // ELIMINAR PRODUCTOS INSERTADOS
+
         mongoTemplate
                 .getCollection("products")
                 .deleteMany(
                         new Document(
-                                "codigo",
+                                "code",
                                 new Document(
                                         "$in",
                                         List.of("P001", "P002", "P003")

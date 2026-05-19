@@ -1,21 +1,15 @@
 package com.grupocordillera.ms_inventory.config;
 
 import com.grupocordillera.ms_inventory.security.JwtAuthenticationFilter;
-
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
-
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-
 import org.springframework.security.config.http.SessionCreationPolicy;
-
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -50,7 +44,6 @@ public class SecurityConfig {
 
             .exceptionHandling(ex -> ex
 
-
                     .authenticationEntryPoint((request, response, authException) -> {
 
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -65,7 +58,6 @@ public class SecurityConfig {
                             }
                         """);
                     })
-
 
                     .accessDeniedHandler((request, response, accessDeniedException) -> {
 
@@ -83,7 +75,7 @@ public class SecurityConfig {
                     })
             )
 
-            // AUTORIZACION
+            // AUTHORIZATION
             .authorizeHttpRequests(auth -> auth
 
                     // SWAGGER
@@ -92,17 +84,17 @@ public class SecurityConfig {
                             "/v3/api-docs/**"
                     ).permitAll()
 
-                    // GET PUBLICOS
+                    // PUBLIC GET
                     .requestMatchers(
                             HttpMethod.GET,
-                            "/inventario/**"
+                            "/inventory/**"
                     ).permitAll()
 
                     // TODO LO DEMAS REQUIERE JWT
                     .anyRequest().authenticated()
             )
 
-            // FILTRO JWT
+            // JWT FILTER
             .addFilterBefore(
                     jwtFilter,
                     UsernamePasswordAuthenticationFilter.class

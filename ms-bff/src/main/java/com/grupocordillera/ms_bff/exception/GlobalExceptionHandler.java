@@ -24,15 +24,15 @@ public class GlobalExceptionHandler {
     ) {
 
         String[] order = {
-                "nombre",
-                "apellido",
-                "correo",
+                "name",
+                "lastName",
+                "email",
                 "password",
-                "codigo",
-                "marca",
-                "precio",
-                "cantidad",
-                "categoria"
+                "code",
+                "brand",
+                "price",
+                "quantity",
+                "category"
         };
 
         String error = null;
