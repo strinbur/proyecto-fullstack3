@@ -35,11 +35,11 @@ El BFF actúa como punto de entrada unificado entre el frontend y los microservi
 - `GET /bff/login/{id}` — Obtener usuario por ID (envía la solicitud a `ms-login`)
 - `GET /bff/login` — Listar usuarios (envía la solicitud a `ms-login`)
 - `DELETE /bff/login/{id}` — Eliminar usuario (envía la solicitud a `ms-login`)
-- `GET /bff/inventory` — Listar productos (envía la solicitud a `ms-inventory`, opcional `?categoria=`)
+- `GET /bff/inventory` — Listar productos (envía la solicitud a `ms-inventory`, opcional `?category={category}`)
 - `POST /bff/inventory` — Crear producto (envía la solicitud a `ms-inventory`)
-- `GET /bff/inventory/codigo/{codigo}` — Obtener producto por código (envía la solicitud a `ms-inventory`)
-- `PUT /bff/inventory/codigo/{codigo}` — Actualizar producto (envía la solicitud a `ms-inventory`)
-- `DELETE /bff/inventory/codigo/{codigo}` — Eliminar producto (envía la solicitud a `ms-inventory`)
+- `GET /bff/inventory/code/{code}` — Obtener producto por código (envía la solicitud a `ms-inventory`)
+- `PUT /bff/inventory/code/{code}` — Actualizar producto (envía la solicitud a `ms-inventory`)
+- `DELETE /bff/inventory/code/{code}` — Eliminar producto (envía la solicitud a `ms-inventory`)
 
 ## Cómo maneja los tokens JWT
 - El token lo genera `ms-login` cuando el usuario inicia sesión.

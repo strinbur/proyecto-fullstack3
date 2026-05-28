@@ -1,0 +1,17 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: ms-cart
+
+  mongodb:
+    uri: mongodb://host.docker.internal:27017/cart_bd
+
+inventory:
+  url: http://ms-inventory:8082
+
+jwt:
+  secret:
+    key: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+  expiration: 86400000
