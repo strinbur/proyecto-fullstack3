@@ -27,6 +27,9 @@ Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual
 ## ms-inventory
 [Ver README de ms-inventory](./ms-inventory/README.md)
 
+## ms-cart
+[Ver README de ms-cart](./ms-cart/README.md)
+
 ---
 
 ## Requerimientos Funcionales
@@ -86,6 +89,7 @@ docker-compose up --build
 - BFF: http://localhost:8080
 - ms-login: http://localhost:8081
 - ms-inventory: http://localhost:8082
+- ms-cart: http://localhost:8083
 - MongoDB: localhost:27017
 
 3. **Detener los servicios**:

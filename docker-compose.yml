@@ -26,6 +26,16 @@ services:
     depends_on:
       - mongodb
 
+  ms-cart:
+    build:
+      context: ./ms-cart
+    container_name: ms-cart
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongodb
+      - ms-inventory
+
   ms-bff:
     build:
       context: ./ms-bff
@@ -35,6 +45,7 @@ services:
     depends_on:
       - ms-login
       - ms-inventory
+      - ms-cart
 
   front:
     build:
