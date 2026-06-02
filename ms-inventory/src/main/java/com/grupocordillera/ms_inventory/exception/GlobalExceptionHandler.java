@@ -55,6 +55,8 @@ public class GlobalExceptionHandler {
             Exception ex
     ) {
 
+        ex.printStackTrace();
+
         Map<String, Object> response = new HashMap<>();
 
         response.put("status", 500);

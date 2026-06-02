@@ -36,6 +36,17 @@ services:
       - mongodb
       - ms-inventory
 
+  ms-order:
+    build:
+      context: ./ms-order
+    container_name: ms-order
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mongodb
+      - ms-cart
+      - ms-inventory
+
   ms-bff:
     build:
       context: ./ms-bff
@@ -46,6 +57,7 @@ services:
       - ms-login
       - ms-inventory
       - ms-cart
+      - ms-order
 
   front:
     build:

@@ -13,10 +13,7 @@ public class Cart {
 
     @Id
     private String id;
-
     private String userEmail;
-
     private List<CartItem> items = new ArrayList<>();
-
     private double total;
 }

@@ -52,7 +52,7 @@ public class LoginController {
     }
 
     // Solo ADMIN y VENTAS: Listar todos los usuarios
-    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
+    //@PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping
     public ResponseEntity<List<LoginResponseDTO>> getAllUsers() {
 
@@ -62,7 +62,7 @@ public class LoginController {
     }
 
     // Solo ADMIN y VENTAS: Obtener usuario por ID
-    @PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
+    //@PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> getUserById(
             @PathVariable String id
@@ -74,7 +74,7 @@ public class LoginController {
     }
 
     // Usuario propio, ADMIN y VENTAS: Actualizar usuario sin cambiar rol
-    @PreAuthorize("hasAnyRole('ADMIN','VENTAS','CLIENTE')")
+    //@PreAuthorize("hasAnyRole('ADMIN','VENTAS','CLIENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> updateUser(
             @PathVariable String id,
@@ -87,7 +87,7 @@ public class LoginController {
     }
 
     // Solo ADMIN: Eliminar usuario por ID
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
             @PathVariable String id
@@ -99,7 +99,7 @@ public class LoginController {
     }
 
     // Solo ADMIN puede crear un usuario con rol especifico
-    @PreAuthorize("hasRole('ADMIN')")
+    //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/create")
     public ResponseEntity<LoginResponseDTO> createUser(
             @Valid @RequestBody CreateUserDTO dto
