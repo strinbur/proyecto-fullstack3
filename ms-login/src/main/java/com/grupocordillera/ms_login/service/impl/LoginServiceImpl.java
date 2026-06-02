@@ -1,7 +1,7 @@
 package com.grupocordillera.ms_login.service.impl;
 
+import com.grupocordillera.ms_login.common.exception.LoginException;
 import com.grupocordillera.ms_login.dto.*;
-import com.grupocordillera.ms_login.exception.LoginException;
 import com.grupocordillera.ms_login.model.Login;
 import com.grupocordillera.ms_login.model.Rol;
 import com.grupocordillera.ms_login.repository.LoginRepository;

@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_login.exception;
+package com.grupocordillera.ms_login.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

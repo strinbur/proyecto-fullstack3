@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_login.config;
+package com.grupocordillera.ms_login.common.config;
 
 import com.grupocordillera.ms_login.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;

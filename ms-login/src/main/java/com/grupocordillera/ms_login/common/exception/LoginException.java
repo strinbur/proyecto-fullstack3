@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_login.exception;
+package com.grupocordillera.ms_login.common.exception;
 
 public class LoginException extends RuntimeException {
 
