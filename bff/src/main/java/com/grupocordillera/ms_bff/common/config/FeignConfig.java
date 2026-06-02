@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_bff.config;
+package com.grupocordillera.ms_bff.common.config;
 
 import feign.RequestInterceptor;
 

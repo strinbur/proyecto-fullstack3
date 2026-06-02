@@ -2,14 +2,10 @@ package com.grupocordillera.ms_login.controller;
 
 import com.grupocordillera.ms_login.dto.*;
 import com.grupocordillera.ms_login.service.LoginService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.access.prepost.PreAuthorize;
-
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

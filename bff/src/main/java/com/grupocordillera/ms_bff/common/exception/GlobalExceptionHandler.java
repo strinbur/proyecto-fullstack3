@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_bff.exception;
+package com.grupocordillera.ms_bff.common.exception;
 
 import feign.FeignException;
 

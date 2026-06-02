@@ -38,7 +38,7 @@ services:
 
   ms-bff:
     build:
-      context: ./ms-bff
+      context: ./bff
     container_name: ms-bff
     ports:
       - "8080:8080"
