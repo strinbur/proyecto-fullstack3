@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_inventory.config;
+package com.grupocordillera.ms_inventory.common.config;
 
 import com.grupocordillera.ms_inventory.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
