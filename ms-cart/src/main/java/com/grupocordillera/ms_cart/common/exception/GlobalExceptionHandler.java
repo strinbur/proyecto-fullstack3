@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_cart.exception;
+package com.grupocordillera.ms_cart.common.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

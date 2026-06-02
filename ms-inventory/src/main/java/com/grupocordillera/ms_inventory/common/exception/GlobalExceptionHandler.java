@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_inventory.exception;
+package com.grupocordillera.ms_inventory.common.exception;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

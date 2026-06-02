@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_cart.config;
+package com.grupocordillera.ms_cart.common.config;
 
 import com.grupocordillera.ms_cart.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;

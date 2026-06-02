@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_inventory.config;
+package com.grupocordillera.ms_inventory.common.config;
 
 import io.mongock.runner.springboot.EnableMongock;
 import org.springframework.context.annotation.Configuration;
