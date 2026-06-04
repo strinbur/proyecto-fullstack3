@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ms-bff
+
+  cloud:
+    openfeign:
+      client:
+        config:
+
+          default:
+            connectTimeout: 3000
+            readTimeout: 5000
+
+          ms-login:
+            url: http://ms-login:8081
+
+          ms-inventory:
+            url: http://ms-inventory:8082
+
+          ms-cart:
+            url: http://ms-cart:8083
+
+server:
+  port: 8080
