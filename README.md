@@ -30,7 +30,7 @@ Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual
 ## ms-cart
 [Ver README de ms-cart](./ms-cart/README.md)
 
-## ms-cart
+## ms-order
 [Ver README de ms-order](./ms-order/README.md)
 
 ---
