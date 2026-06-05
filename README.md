@@ -27,6 +27,12 @@ Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual
 ## ms-inventory
 [Ver README de ms-inventory](./ms-inventory/README.md)
 
+## ms-cart
+[Ver README de ms-cart](./ms-cart/README.md)
+
+## ms-order
+[Ver README de ms-order](./ms-order/README.md)
+
 ---
 
 ## Requerimientos Funcionales
@@ -58,6 +64,8 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 ├── ms-bff/                 # Backend for Frontend (Spring Boot)
 ├── ms-login/               # Microservicio de Autenticación (Spring Boot)
 ├── ms-inventory/           # Microservicio de Inventario (Spring Boot)
+├── ms-cart/                # Microservicio de Carrito (Spring Boot)
+├── ms-order/               # Microservicio de Compra (Spring Boot)
 ├── docker-compose.yml      # Orquestación de contenedores
 └── README.md              # Este archivo
 ```
@@ -86,6 +94,8 @@ docker-compose up --build
 - BFF: http://localhost:8080
 - ms-login: http://localhost:8081
 - ms-inventory: http://localhost:8082
+- ms-cart: http://localhost:8083
+- ms-order http://localhost:8084
 - MongoDB: localhost:27017
 
 3. **Detener los servicios**:

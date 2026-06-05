@@ -10,7 +10,7 @@ services:
 
   ms-login:
     build:
-      context: ./ms-login
+      context: ./backend/ms-login
     container_name: ms-login
     ports:
       - "8081:8081"
@@ -19,26 +19,48 @@ services:
 
   ms-inventory:
     build:
-      context: ./ms-inventory
+      context: ./backend/ms-inventory
     container_name: ms-inventory
     ports:
       - "8082:8082"
     depends_on:
       - mongodb
 
+  ms-cart:
+    build:
+      context: ./backend/ms-cart
+    container_name: ms-cart
+    ports:
+      - "8083:8083"
+    depends_on:
+      - mongodb
+      - ms-inventory
+
+  ms-order:
+    build:
+      context: ./backend/ms-order
+    container_name: ms-order
+    ports:
+      - "8084:8084"
+    depends_on:
+      - mongodb
+      - ms-cart
+      - ms-inventory
+
   ms-bff:
     build:
-      context: ./ms-bff
+      context: ./backend/bff
     container_name: ms-bff
     ports:
       - "8080:8080"
     depends_on:
       - ms-login
       - ms-inventory
+      - ms-cart
 
   front:
     build:
-      context: ./front
+      context: ./frontend
     container_name: front
     ports:
       - "5173:5173"

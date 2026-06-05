@@ -1,0 +1,24 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: ms-order
+
+  mongodb:
+    uri: mongodb://host.docker.internal:27017/order_bd
+
+cart:
+  url: http://ms-cart:8083
+
+inventory:
+  url: http://ms-inventory:8082
+
+jwt:
+  secret:
+    key: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+  expiration: 86400000
+
+mongock:
+  migration-scan-package:
+    - com.grupocordillera.ms_order.migrations
