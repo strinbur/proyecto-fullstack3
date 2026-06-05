@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_order.exception;
+package com.grupocordillera.ms_order.common.exception;
 
 import feign.FeignException;
 import org.springframework.http.HttpStatus;

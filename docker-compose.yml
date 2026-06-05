@@ -44,6 +44,8 @@ services:
       - "8084:8084"
     depends_on:
       - mongodb
+      - ms-cart
+      - ms-inventory
 
   ms-bff:
     build:

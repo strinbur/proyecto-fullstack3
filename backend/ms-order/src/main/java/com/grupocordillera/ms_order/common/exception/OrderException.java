@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_order.exception;
+package com.grupocordillera.ms_order.common.exception;
 
 public class OrderException extends RuntimeException {
 

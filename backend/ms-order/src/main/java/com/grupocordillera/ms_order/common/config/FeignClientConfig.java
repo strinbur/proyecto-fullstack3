@@ -1,4 +1,4 @@
-package com.grupocordillera.ms_order.config;
+package com.grupocordillera.ms_order.common.config;
 
 import feign.RequestInterceptor;
 import jakarta.servlet.http.HttpServletRequest;

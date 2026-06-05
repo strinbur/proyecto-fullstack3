@@ -3,7 +3,7 @@ package com.grupocordillera.ms_order.service.impl;
 import com.grupocordillera.ms_order.cart.client.CartClient;
 import com.grupocordillera.ms_order.cart.client.CartResponseDTO;
 import com.grupocordillera.ms_order.dto.OrderResponseDTO;
-import com.grupocordillera.ms_order.exception.OrderException;
+import com.grupocordillera.ms_order.common.exception.OrderException;
 import com.grupocordillera.ms_order.factory.OrderFactory;
 import com.grupocordillera.ms_order.model.Order;
 import com.grupocordillera.ms_order.repository.OrderRepository;
