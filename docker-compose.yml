@@ -60,7 +60,7 @@ services:
 
   front:
     build:
-      context: ./frontend/front
+      context: ./frontend
     container_name: front
     ports:
       - "5173:5173"
