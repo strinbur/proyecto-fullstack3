@@ -30,6 +30,9 @@ Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual
 ## ms-cart
 [Ver README de ms-cart](./ms-cart/README.md)
 
+## ms-order
+[Ver README de ms-order](./ms-order/README.md)
+
 ---
 
 ## Requerimientos Funcionales
@@ -61,6 +64,8 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 ├── ms-bff/                 # Backend for Frontend (Spring Boot)
 ├── ms-login/               # Microservicio de Autenticación (Spring Boot)
 ├── ms-inventory/           # Microservicio de Inventario (Spring Boot)
+├── ms-cart/                # Microservicio de Carrito (Spring Boot)
+├── ms-order/               # Microservicio de Compra (Spring Boot)
 ├── docker-compose.yml      # Orquestación de contenedores
 └── README.md              # Este archivo
 ```
@@ -90,6 +95,7 @@ docker-compose up --build
 - ms-login: http://localhost:8081
 - ms-inventory: http://localhost:8082
 - ms-cart: http://localhost:8083
+- ms-order http://localhost:8084
 - MongoDB: localhost:27017
 
 3. **Detener los servicios**:
@@ -118,15 +124,15 @@ El frontend estará disponible en http://localhost:5173
 
 ## Arquitectura del Sistema
 
-<img width="1324" height="989" alt="Fullstack 3 diagrama drawio" src="https://github.com/user-attachments/assets/b9872c5e-cb80-4673-a76a-ac6345d95740" />
+
+<img width="1324" height="989" alt="Fullstack 3 diagrama drawio" src="https://github.com/user-attachments/assets/1014b7be-8d6a-4904-9918-37850dfb4f55" />
+
 
 El sistema implementa una arquitectura de microservicios donde:
 - El **Frontend** se comunica únicamente con el **BFF**
 - El **BFF** orquesta las llamadas a ms-login y ms-inventory
 - Cada microservicio usa su propia base de datos dentro de MongoDB
 - MongoDB actúa como almacenamiento centralizado con bases de datos independientes por servicio
-
----
 
 ## Guía de Contribución
 
