@@ -281,6 +281,16 @@
   border: 1px solid #fca5a5;
 }
 
+.page-alert {
+  max-width: 980px;
+  margin: 0 auto 20px auto;
+  padding: 18px 22px;
+  background: #dbeafe;
+  color: #1e3a8a;
+  border-radius: 18px;
+  font-weight: 700;
+}
+
 @keyframes shake {
 
   0% {

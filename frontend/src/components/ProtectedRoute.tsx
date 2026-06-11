@@ -9,7 +9,7 @@ interface Props {
 
 function ProtectedRoute({ children }: Props) {
   const auth = useContext(AuthContext);
-  const usuario = auth?.usuario;
+  const usuario = auth?.user;
 
   if (!usuario) {
     return <Navigate to="/login" replace />;

@@ -129,3 +129,67 @@
 .profile-button:active {
   transform: scale(0.98);
 }
+
+.profile-orders {
+  margin-top: 2rem;
+  width: 100%;
+}
+
+.profile-orders h2 {
+  margin-bottom: 1rem;
+  color: #1f2937;
+  font-size: 1.25rem;
+}
+
+.no-orders {
+  color: #475569;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.orders-table-wrapper {
+  overflow-x: auto;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 1rem 0.9rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.orders-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+}
+
+.orders-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.order-status {
+  display: inline-flex;
+  padding: 0.35rem 0.75rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.order-products {
+  max-width: 28rem;
+  white-space: normal;
+  line-height: 1.4;
+}

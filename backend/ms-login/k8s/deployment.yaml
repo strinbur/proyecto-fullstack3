@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-login
+  labels:
+    app: ms-login
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ms-login
+  template:
+    metadata:
+      labels:
+        app: ms-login
+    spec:
+      containers:
+      - name: ms-login
+        image: proyecto-fullstack3-ms-login:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+        env:
+        - name: JAVA_OPTS
+          value: "-Xmx256m -Xms128m"
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/ready
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 5
