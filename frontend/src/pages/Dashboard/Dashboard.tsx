@@ -15,6 +15,7 @@ type User = {
   lastname: string;
   email: string;
   role: Role;
+  comprado?: number;
 };
 
 type Product = {
@@ -28,6 +29,7 @@ export default function Dashboard() {
 
   const [users, setUsers] = useState<User[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
+  const [purchaseStats, setPurchaseStats] = useState<Record<string, number>>({});
 
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
@@ -36,11 +38,17 @@ export default function Dashboard() {
   const [role, setRole] = useState<Role>("CLIENTE");
 
 //Carga los usuarios
+  const loadPurchaseStats = () => {
+    const stored = localStorage.getItem("purchaseStats");
+    return stored ? (JSON.parse(stored) as Record<string, number>) : {};
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const data: User[] = await getAllUsers();
         setUsers(data);
+        setPurchaseStats(loadPurchaseStats());
       } catch (error) {
         console.error(error);
         toast.error("Error al cargar usuarios");
@@ -48,6 +56,12 @@ export default function Dashboard() {
     };
 
     fetchUsers();
+  }, []);
+
+  useEffect(() => {
+    const handleStorage = () => setPurchaseStats(loadPurchaseStats());
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
 //Carga los productos
@@ -198,6 +212,7 @@ export default function Dashboard() {
                 <th>Nombre</th>
                 <th>Correo</th>
                 <th>Rol</th>
+                <th>Comprado</th>
                 <th>Gestión</th>
               </tr>
             </thead>
@@ -208,6 +223,7 @@ export default function Dashboard() {
                   <td>{user.name} {user.lastname}</td>
                   <td>{user.email}</td>
                   <td>{user.role}</td>
+                  <td>{purchaseStats[user.id] ?? user.comprado ?? 0}</td>
                   <td>
                     <button
                       className="delete-btn"

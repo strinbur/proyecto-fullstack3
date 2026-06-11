@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { getAllProducts } from "../../features/inventory/inventoryApi";
+import { CartContext } from "../../features/cart/CartContext";
 import "./Products.css";
 
 interface Product {
@@ -18,6 +19,8 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [stockError, setStockError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const { addToCart, items } = useContext(CartContext);
 
   useEffect(() => {
 
@@ -97,6 +100,45 @@ export default function Products() {
 
   };
 
+  const handleAddToCart = (product: Product, quantityToAdd: number) => {
+    if (quantityToAdd < 1) return;
+
+    const currentCartItem = items.find((item) => item.code === product.code);
+    const currentCartQuantity = currentCartItem?.quantity ?? 0;
+    const allowedQuantity = product.quantity - currentCartQuantity;
+
+    if (allowedQuantity <= 0) {
+      setStockError("No hay unidades disponibles para este producto");
+      setStatusMessage("");
+      return;
+    }
+
+    if (quantityToAdd > allowedQuantity) {
+      setStockError(`Solo hay ${allowedQuantity} unidades disponibles en stock`);
+      setStatusMessage("");
+      return;
+    }
+
+    addToCart(
+      {
+        id: product.id,
+        code: product.code,
+        name: product.name,
+        brand: product.brand,
+        price: product.price,
+        category: product.category,
+        imageUrl: getProductImage(product.name),
+        stock: product.quantity,
+      },
+      quantityToAdd
+    );
+
+    setStatusMessage(`${quantityToAdd} producto${quantityToAdd > 1 ? "s" : ""} agregado${quantityToAdd > 1 ? "n" : ""} al carrito`);
+    setStockError("");
+    setSelectedProduct(null);
+    setQuantity(1);
+  };
+
   return (
 
     <div className="products-page">
@@ -120,6 +162,12 @@ export default function Products() {
           </button>
 
         </div>
+
+        {statusMessage && (
+          <div className="status-alert page-alert">
+            {statusMessage}
+          </div>
+        )}
 
         <div className="products-grid">
 
@@ -170,7 +218,13 @@ export default function Products() {
                     ${product.price}
                   </span>
 
-                  <button className="buy-btn">
+                  <button
+                    className="buy-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product, 1);
+                    }}
+                  >
                     Comprar
                   </button>
 
@@ -249,7 +303,16 @@ export default function Products() {
                 </div>
               )}
 
-              <button className="modal-buy-btn">
+              {statusMessage && (
+                <div className="status-alert">
+                  {statusMessage}
+                </div>
+              )}
+
+              <button
+                className="modal-buy-btn"
+                onClick={() => handleAddToCart(selectedProduct, quantity)}
+              >
                 Comprar {quantity} producto{quantity > 1 ? "s" : ""}
               </button>
 

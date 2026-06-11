@@ -1,9 +1,25 @@
-import { useState, useContext } from "react";
+import { useState, useEffect, useContext } from "react";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { AuthContext } from "../../features/auth/AuthContext";
 import { updateUser } from "../../features/auth/authApi";
 import "./Profile.css";
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+  subtotal: number;
+}
+
+interface OrderEntry {
+  id: string;
+  createdAt: string;
+  totalItems: number;
+  totalPrice: number;
+  status: string;
+  items: OrderItem[];
+}
 
 function Profile() {
   const auth = useContext(AuthContext);
@@ -15,6 +31,14 @@ function Profile() {
   const { user, logout } = auth;
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({ name: "", lastname: "", email: "" });
+  const [orderHistory, setOrderHistory] = useState<OrderEntry[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+    const stored = localStorage.getItem("orderHistory");
+    const history = stored ? (JSON.parse(stored) as Record<string, OrderEntry[]>) : {};
+    setOrderHistory(history[user.id] ?? []);
+  }, [user]);
 
   if (!user) {
     return <h1 style={{ textAlign: "center" }}>No estás logueado</h1>;
@@ -168,6 +192,50 @@ function Profile() {
           </button>
 
         </div>
+      </div>
+
+      <div className="profile-orders">
+        <h2>Pedidos recientes</h2>
+
+        {orderHistory.length === 0 ? (
+          <p className="no-orders">Aún no has registrado pedidos en esta sesión.</p>
+        ) : (
+          <div className="orders-table-wrapper">
+            <table className="orders-table">
+              <thead>
+                <tr>
+                  <th>ID pedido</th>
+                  <th>Fecha</th>
+                  <th>Estado</th>
+                  <th>Productos</th>
+                  <th>Total</th>
+                  <th>Unidades</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orderHistory.map((order) => (
+                  <tr key={order.id}>
+                    <td>{order.id.slice(-6)}</td>
+                    <td>{new Date(order.createdAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</td>
+                    <td>
+                      <span className="order-status">{order.status}</span>
+                    </td>
+                    <td className="order-products">
+                      {order.items.map((item, index) => (
+                        <span key={`${order.id}-${item.name}-${index}`}>
+                          {item.name} x{item.quantity}
+                          {index < order.items.length - 1 ? ", " : ""}
+                        </span>
+                      ))}
+                    </td>
+                    <td>${order.totalPrice.toFixed(2)}</td>
+                    <td>{order.totalItems}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
