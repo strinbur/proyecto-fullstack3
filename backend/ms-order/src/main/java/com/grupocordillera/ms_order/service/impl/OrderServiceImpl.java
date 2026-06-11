@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.grupocordillera.ms_order.inventory.client.InventoryClient;
 import com.grupocordillera.ms_order.inventory.client.InventoryResponseDTO;
 import com.grupocordillera.ms_order.inventory.client.InventoryUpdateDTO;
-
+import com.grupocordillera.ms_order.model.OrderStatus;
 import java.util.List;
 
 @Service
@@ -73,4 +73,31 @@ public class OrderServiceImpl implements OrderService {
 
         return OrderFactory.toResponse(order);
     }
+
+    @Override
+    public List<OrderResponseDTO> getAllOrders() {
+
+        return orderRepository.findAll()
+                .stream()
+                .map(OrderFactory::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<OrderResponseDTO> getOrdersByStatus(String status) {
+
+        OrderStatus orderStatus;
+
+        try {
+            orderStatus = OrderStatus.valueOf(status.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new OrderException("Estado inválido: " + status);
+        }
+
+        return orderRepository.findByStatus(orderStatus)
+                .stream()
+                .map(OrderFactory::toResponse)
+                .toList();
+    }
+
 }

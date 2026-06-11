@@ -20,5 +20,8 @@ spring:
           ms-cart:
             url: http://ms-cart:8083
 
+          ms-order:
+            url: http://ms-order:8084
+
 server:
   port: 8080

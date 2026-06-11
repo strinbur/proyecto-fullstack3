@@ -6,7 +6,6 @@ import com.grupocordillera.ms_inventory.dto.InventoryUpdateDTO;
 import com.grupocordillera.ms_inventory.service.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
