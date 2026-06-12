@@ -2,13 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.6</version>
-        <relativePath/> </parent>
+        <relativePath/>
+    </parent>
 
     <groupId>com.grupocordillera</groupId>
     <artifactId>ms-order</artifactId>
@@ -18,7 +20,8 @@
 
     <properties>
         <java.version>25</java.version>
-        <spring-cloud.version>2025.1.1</spring-cloud.version> <jjwt.version>0.11.5</jjwt.version>
+        <spring-cloud.version>2025.1.1</spring-cloud.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
     <dependencies>
@@ -119,76 +122,112 @@
         </dependencies>
     </dependencyManagement>
 
-	<build>
-		<plugins>
+    <build>
+        <plugins>
 
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
 
-				<configuration>
-					<excludes>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
 
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
+                <executions>
 
-					</excludes>
-				</configuration>
-			</plugin>
+                    <execution>
+                        <id>default-compile</id>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
+                        <phase>compile</phase>
 
-				<executions>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
 
-					<execution>
-						<id>default-compile</id>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
 
-						<phase>compile</phase>
+                    </execution>
 
-						<goals>
-							<goal>compile</goal>
-						</goals>
+                    <execution>
+                        <id>default-testCompile</id>
 
-						<configuration>
-							<annotationProcessorPaths>
+                        <phase>test-compile</phase>
 
-								<path>
-									<groupId>org.projectlombok</groupId>
-									<artifactId>lombok</artifactId>
-								</path>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
 
-							</annotationProcessorPaths>
-						</configuration>
-					</execution>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
 
-					<execution>
-						<id>default-testCompile</id>
+                    </execution>
 
-						<phase>test-compile</phase>
+                </executions>
 
-						<goals>
-							<goal>testCompile</goal>
-						</goals>
+            </plugin>
 
-						<configuration>
-							<annotationProcessorPaths>
+            <!-- ✅ JA COCO CORREGIDO -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.13</version>
 
-								<path>
-									<groupId>org.projectlombok</groupId>
-									<artifactId>lombok</artifactId>
-								</path>
+                <executions>
 
-							</annotationProcessorPaths>
-						</configuration>
-					</execution>
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
 
-				</executions>
-			</plugin>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
 
-		</plugins>
-	</build>
+                </executions>
+
+                <configuration>
+                    <excludes>
+
+                        <exclude>**/migrations/**</exclude>
+                        <exclude>**/security/**</exclude>
+                        <exclude>**/common/config/**</exclude>
+                        <exclude>**/dto/**</exclude>
+                        <exclude>**/MsOrderApplication*</exclude>
+
+                    </excludes>
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+    </build>
+
 </project>
