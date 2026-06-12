@@ -53,4 +53,10 @@ public class OrderController {
         log.info("GET ORDERS BY STATUS - {}", status);
         return service.getOrdersByStatus(status);
     }
+
+    @PutMapping("/{id}/status/{status}")
+    public OrderResponseDTO updateOrderStatus(@PathVariable String id, @PathVariable String status) {
+        log.info("UPDATE ORDER STATUS - id: {} status: {}", id, status);
+        return service.updateOrderStatus(id, status);
+    }
 }
