@@ -25,6 +25,12 @@ type Product = {
   price: number;
 };
 
+type OrderEntrySimple = {
+  id: string;
+  totalItems: number;
+  totalPrice: number;
+};
+
 export default function Dashboard() {
 
   const [users, setUsers] = useState<User[]>([]);
@@ -40,7 +46,21 @@ export default function Dashboard() {
 //Carga los usuarios
   const loadPurchaseStats = () => {
     const stored = localStorage.getItem("purchaseStats");
-    return stored ? (JSON.parse(stored) as Record<string, number>) : {};
+    if (stored) return (JSON.parse(stored) as Record<string, number>);
+
+    // If purchaseStats not present, try to build it from orderHistory
+    const ordersStored = localStorage.getItem("orderHistory");
+    if (!ordersStored) return {};
+    try {
+      const history = JSON.parse(ordersStored) as Record<string, OrderEntrySimple[]>;
+      const stats: Record<string, number> = {};
+      Object.keys(history).forEach((uid) => {
+        stats[uid] = history[uid].reduce((s, o) => s + (o.totalItems || 0), 0);
+      });
+      return stats;
+    } catch (e) {
+      return {};
+    }
   };
 
   useEffect(() => {
@@ -63,6 +83,23 @@ export default function Dashboard() {
     window.addEventListener("storage", handleStorage);
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
+
+  const computeTotalSales = () => {
+    // Prefer orderHistory when available
+    const ordersStored = localStorage.getItem("orderHistory");
+    if (ordersStored) {
+      try {
+        const history = JSON.parse(ordersStored) as Record<string, OrderEntrySimple[]>;
+        return Object.keys(history).reduce((sum, uid) => sum + history[uid].reduce((s, o) => s + (o.totalItems || 0), 0), 0);
+      } catch (e) {
+        // fallthrough
+      }
+    }
+
+    // Fallback to purchaseStats totals
+    const stats = loadPurchaseStats();
+    return Object.values(stats).reduce((s, v) => s + (v || 0), 0);
+  };
 
 //Carga los productos
   useEffect(() => {
@@ -166,7 +203,7 @@ export default function Dashboard() {
             <div className="stat-icon green">💰</div>
             <div>
               <span className="stat-label">Ventas</span>
-              <span className="stat-number">128</span>
+              <span className="stat-number">{computeTotalSales()}</span>
             </div>
           </div>
 

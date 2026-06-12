@@ -117,7 +117,7 @@ public class CartServiceImpl implements CartService {
     public void clearCart() {
         String email = getAuthenticatedEmail();
         Cart cart = repository.findByUserEmail(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Carrito no encontrado"));
+                .orElseGet(() -> repository.save(CartFactory.createCart(email)));
 
         cart.getItems().clear();
         cart.setTotal(0);

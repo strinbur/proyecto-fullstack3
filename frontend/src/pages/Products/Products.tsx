@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { getAllProducts } from "../../features/inventory/inventoryApi";
 import { CartContext } from "../../features/cart/CartContext";
+import { formatCurrency } from "../../utils/format";
 import "./Products.css";
 
 interface Product {
@@ -215,18 +216,24 @@ export default function Products() {
                 <div className="product-footer">
 
                   <span className="product-price">
-                    ${product.price}
+                    {formatCurrency(product.price)}
                   </span>
 
-                  <button
-                    className="buy-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product, 1);
-                    }}
-                  >
-                    Comprar
-                  </button>
+                  {product.quantity === 0 ? (
+                    <button className="buy-btn" disabled>
+                      Producto agotado
+                    </button>
+                  ) : (
+                    <button
+                      className="buy-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product, 1);
+                      }}
+                    >
+                      Añadir al carrito
+                    </button>
+                  )}
 
                 </div>
 
@@ -279,7 +286,7 @@ export default function Products() {
 
               <p>Stock disponible: {selectedProduct.quantity}</p>
 
-              <h3>${selectedProduct.price}</h3>
+              <h3>{formatCurrency(selectedProduct.price)}</h3>
 
               <div className="quantity-container">
 
@@ -293,6 +300,7 @@ export default function Products() {
                     handleQuantityChange(Number(e.target.value))
                   }
                   className="quantity-input"
+                  disabled={selectedProduct.quantity === 0}
                 />
 
               </div>
@@ -312,8 +320,11 @@ export default function Products() {
               <button
                 className="modal-buy-btn"
                 onClick={() => handleAddToCart(selectedProduct, quantity)}
+                disabled={selectedProduct.quantity === 0}
               >
-                Comprar {quantity} producto{quantity > 1 ? "s" : ""}
+                {selectedProduct.quantity === 0
+                  ? "Producto agotado"
+                  : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
               </button>
 
             </div>
