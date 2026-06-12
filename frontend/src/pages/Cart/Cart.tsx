@@ -2,6 +2,10 @@ import { useContext, useState } from "react";
 import { CartContext } from "../../features/cart/CartContext";
 import { AuthContext } from "../../features/auth/AuthContext";
 import "./Cart.css";
+import { formatCurrency } from "../../utils/format";
+import { getAllProducts } from "../../features/inventory/inventoryApi";
+import { api } from "../../api/api";
+import axios from "axios";
 
 interface OrderItem {
   name: string;
@@ -24,23 +28,7 @@ export default function Cart() {
   const auth = useContext(AuthContext);
   const [checkoutMessage, setCheckoutMessage] = useState("");
 
-  const getPurchaseStats = () => {
-    const stored = localStorage.getItem("purchaseStats");
-    return stored ? (JSON.parse(stored) as Record<string, number>) : {};
-  };
-
-  const savePurchaseStats = (stats: Record<string, number>) => {
-    localStorage.setItem("purchaseStats", JSON.stringify(stats));
-  };
-
-  const getOrderHistory = () => {
-    const stored = localStorage.getItem("orderHistory");
-    return stored ? (JSON.parse(stored) as Record<string, OrderEntry[]>) : {};
-  };
-
-  const saveOrderHistory = (history: Record<string, OrderEntry[]>) => {
-    localStorage.setItem("orderHistory", JSON.stringify(history));
-  };
+  // server-side cart and order will be used (BFF + ms-order).
 
   const handleQuantityChange = (code: string, value: number, stock: number) => {
     if (value < 1) return;
@@ -53,7 +41,7 @@ export default function Cart() {
     updateQuantity(code, value);
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!auth?.user) {
       setCheckoutMessage("Debes iniciar sesión para pagar");
       return;
@@ -64,30 +52,47 @@ export default function Cart() {
       return;
     }
 
-    const purchasedCount = items.reduce((sum, item) => sum + item.quantity, 0);
-    const orderEntry: OrderEntry = {
-      id: `${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      totalItems,
-      totalPrice: Number(totalPrice.toFixed(2)),
-      status: "COMPLETADO",
-      items: items.map((item) => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.price,
-        subtotal: Number((item.price * item.quantity).toFixed(2)),
-      })),
-    };
+    // Validate against current stock from inventory
+    try {
+      const currentProducts = await getAllProducts();
+      for (const item of items) {
+        const prod = currentProducts.find((p: any) => p.code === item.code || p.id === item.id);
+        const available = prod ? prod.quantity : 0;
+        if (available === 0) {
+          setCheckoutMessage(`Producto agotado: ${item.name}`);
+          return;
+        }
+        if (item.quantity > available) {
+          setCheckoutMessage(`No hay suficientes unidades de ${item.name}. Disponible: ${available}`);
+          return;
+        }
+      }
+    } catch (e) {
+      setCheckoutMessage("No se pudo validar stock actual. Intenta más tarde.");
+      return;
+    }
 
-    const history = getOrderHistory();
-    history[auth.user.id] = [orderEntry, ...(history[auth.user.id] ?? [])];
-    saveOrderHistory(history);
+    // Sync cart to server via BFF (/bff/cart)
+    try {
+      await api.delete(`/cart/clear`);
+      for (const item of items) {
+        await api.post(`/cart/add`, { productCode: item.code, quantity: item.quantity });
+      }
 
-    const stats = getPurchaseStats();
-    stats[auth.user.id] = (stats[auth.user.id] || 0) + purchasedCount;
-    savePurchaseStats(stats);
-    clearCart();
-    setCheckoutMessage(`Compra realizada: ${purchasedCount} producto${purchasedCount > 1 ? "s" : ""}`);
+      // Call ms-order to create order (ms-order will use Feign to read the server cart)
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = { userEmail: auth.user.email };
+      if (token) headers.Authorization = `Bearer ${token}`;
+
+      await axios.post("http://localhost:8084/orders", null, { headers });
+
+      // success
+      clearCart();
+      setCheckoutMessage("Compra realizada correctamente");
+    } catch (e: any) {
+      const message = e?.response?.data || e.message || "Error al procesar la compra";
+      setCheckoutMessage(String(message));
+    }
   };
 
   return (
@@ -101,7 +106,7 @@ export default function Cart() {
           <>
             <div className="cart-summary">
               <p>Productos: {totalItems}</p>
-              <p>Total: ${totalPrice.toFixed(2)}</p>
+              <p>Total: {formatCurrency(totalPrice)}</p>
               <button className="clear-cart-btn" onClick={clearCart}>
                 Vaciar carrito
               </button>
@@ -125,9 +130,9 @@ export default function Cart() {
                           onChange={(e) => handleQuantityChange(item.code, Number(e.target.value), item.stock)}
                         />
                       </div>
-                      <p className="cart-price">Precio: ${item.price.toFixed(2)}</p>
+                      <p className="cart-price">Precio: {formatCurrency(item.price)}</p>
                       <p className="cart-stock">Stock disponible: {item.stock}</p>
-                      <p className="cart-subtotal">Subtotal: ${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="cart-subtotal">Subtotal: {formatCurrency(item.price * item.quantity)}</p>
                       <button className="remove-item-btn" onClick={() => removeFromCart(item.code)}>
                         Eliminar
                       </button>
@@ -144,7 +149,7 @@ export default function Cart() {
                 <div className="checkout-card">
                   <h2>Resumen</h2>
                   <p>Productos: {totalItems}</p>
-                  <p className="checkout-total">Total: ${totalPrice.toFixed(2)}</p>
+                  <p className="checkout-total">Total: {formatCurrency(totalPrice)}</p>
                   {checkoutMessage && <p className="checkout-message">{checkoutMessage}</p>}
                   <button className="checkout-btn" onClick={handleCheckout}>Pagar</button>
                 </div>
