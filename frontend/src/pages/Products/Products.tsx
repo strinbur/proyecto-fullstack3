@@ -1,8 +1,9 @@
 import { useContext, useEffect, useState } from "react";
-import { getAllProducts } from "../../features/inventory/inventoryApi";
+import { getAllProducts, updateProduct } from "../../features/inventory/inventoryApi";
 import { CartContext } from "../../features/cart/CartContext";
 import { formatCurrency } from "../../utils/format";
 import "./Products.css";
+import { AuthContext } from "../../features/auth/AuthContext";
 
 interface Product {
   id: string;
@@ -22,6 +23,8 @@ export default function Products() {
   const [stockError, setStockError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const { addToCart, items } = useContext(CartContext);
+  const auth = useContext(AuthContext);
+  const [adminQuantity, setAdminQuantity] = useState<number | null>(null);
 
   useEffect(() => {
 
@@ -75,6 +78,7 @@ export default function Products() {
     setSelectedProduct(product);
     setQuantity(1);
     setStockError("");
+    setAdminQuantity(product.quantity);
 
   };
 
@@ -138,6 +142,32 @@ export default function Products() {
     setStockError("");
     setSelectedProduct(null);
     setQuantity(1);
+  };
+
+  const handleAdminUpdate = async () => {
+    if (!selectedProduct || adminQuantity == null) return;
+
+    try {
+      const payload = {
+        name: selectedProduct.name,
+        brand: selectedProduct.brand,
+        price: selectedProduct.price,
+        quantity: adminQuantity,
+        category: selectedProduct.category,
+        specs: {}
+      };
+
+      await updateProduct(selectedProduct.code, payload);
+
+      setStatusMessage("Stock actualizado correctamente");
+      setSelectedProduct(null);
+      // refresh products
+      const data = await getAllProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error("Error actualizando stock", err);
+      setStatusMessage("Error actualizando stock");
+    }
   };
 
   return (
@@ -235,6 +265,18 @@ export default function Products() {
                     </button>
                   )}
 
+                  {auth?.user?.role === "ADMIN" && (
+                    <button
+                      className="admin-edit-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openProductDetail(product);
+                      }}
+                    >
+                      Editar stock
+                    </button>
+                  )}
+
                 </div>
 
               </div>
@@ -317,15 +359,30 @@ export default function Products() {
                 </div>
               )}
 
-              <button
-                className="modal-buy-btn"
-                onClick={() => handleAddToCart(selectedProduct, quantity)}
-                disabled={selectedProduct.quantity === 0}
-              >
-                {selectedProduct.quantity === 0
-                  ? "Producto agotado"
-                  : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
-              </button>
+              {auth?.user?.role === "ADMIN" ? (
+                <div className="admin-update-row">
+                  <label>Stock:</label>
+                  <input
+                    type="number"
+                    value={adminQuantity ?? 0}
+                    min={0}
+                    onChange={(e) => setAdminQuantity(Number(e.target.value))}
+                  />
+                  <button className="admin-update-btn" onClick={handleAdminUpdate}>
+                    Actualizar stock
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="modal-buy-btn"
+                  onClick={() => handleAddToCart(selectedProduct, quantity)}
+                  disabled={selectedProduct.quantity === 0}
+                >
+                  {selectedProduct.quantity === 0
+                    ? "Producto agotado"
+                    : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
+                </button>
+              )}
 
             </div>
 

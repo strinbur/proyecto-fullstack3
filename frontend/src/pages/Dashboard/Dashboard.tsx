@@ -25,10 +25,23 @@ type Product = {
   price: number;
 };
 
-type OrderEntrySimple = {
+type OrderItemDetail = {
+  productCode: string;
+  name: string;
+  price: number;
+  quantity: number;
+  category: string;
+  subtotal: number;
+};
+
+type OrderRecord = {
   id: string;
-  totalItems: number;
-  totalPrice: number;
+  userEmail: string;
+  userName: string;
+  items: OrderItemDetail[];
+  total: number;
+  status: string;
+  createdAt: string;
 };
 
 export default function Dashboard() {
@@ -36,6 +49,9 @@ export default function Dashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [purchaseStats, setPurchaseStats] = useState<Record<string, number>>({});
+  const [orders, setOrders] = useState<OrderRecord[]>([]);
+  const [showOrders, setShowOrders] = useState(false);
+  const [ordersLoading, setOrdersLoading] = useState(false);
 
   const [name, setName] = useState("");
   const [lastname, setLastname] = useState("");
@@ -43,23 +59,35 @@ export default function Dashboard() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Role>("CLIENTE");
 
-//Carga los usuarios
-  const loadPurchaseStats = () => {
-    const stored = localStorage.getItem("purchaseStats");
-    if (stored) return (JSON.parse(stored) as Record<string, number>);
-
-    // If purchaseStats not present, try to build it from orderHistory
-    const ordersStored = localStorage.getItem("orderHistory");
-    if (!ordersStored) return {};
-    try {
-      const history = JSON.parse(ordersStored) as Record<string, OrderEntrySimple[]>;
-      const stats: Record<string, number> = {};
-      Object.keys(history).forEach((uid) => {
-        stats[uid] = history[uid].reduce((s, o) => s + (o.totalItems || 0), 0);
-      });
+  const computePurchaseStats = (loadedOrders: OrderRecord[]) => {
+    return loadedOrders.reduce((stats, order) => {
+      const totalItems = order.items.reduce((sum, item) => sum + item.quantity, 0);
+      const key = order.userEmail;
+      stats[key] = (stats[key] || 0) + totalItems;
       return stats;
-    } catch (e) {
-      return {};
+    }, {} as Record<string, number>);
+  };
+
+  const loadAllSales = async (showPanel = false) => {
+    setOrdersLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+
+      const response = await axios.get<OrderRecord[]>("http://localhost:8084/orders", { headers });
+      setOrders(response.data);
+      setPurchaseStats(computePurchaseStats(response.data));
+      if (showPanel) {
+        setShowOrders(true);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("No se pudieron cargar las ventas");
+    } finally {
+      setOrdersLoading(false);
     }
   };
 
@@ -68,7 +96,6 @@ export default function Dashboard() {
       try {
         const data: User[] = await getAllUsers();
         setUsers(data);
-        setPurchaseStats(loadPurchaseStats());
       } catch (error) {
         console.error(error);
         toast.error("Error al cargar usuarios");
@@ -76,29 +103,13 @@ export default function Dashboard() {
     };
 
     fetchUsers();
-  }, []);
-
-  useEffect(() => {
-    const handleStorage = () => setPurchaseStats(loadPurchaseStats());
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
+    loadAllSales();
   }, []);
 
   const computeTotalSales = () => {
-    // Prefer orderHistory when available
-    const ordersStored = localStorage.getItem("orderHistory");
-    if (ordersStored) {
-      try {
-        const history = JSON.parse(ordersStored) as Record<string, OrderEntrySimple[]>;
-        return Object.keys(history).reduce((sum, uid) => sum + history[uid].reduce((s, o) => s + (o.totalItems || 0), 0), 0);
-      } catch (e) {
-        // fallthrough
-      }
-    }
-
-    // Fallback to purchaseStats totals
-    const stats = loadPurchaseStats();
-    return Object.values(stats).reduce((s, v) => s + (v || 0), 0);
+    return orders.reduce((sum, order) => {
+      return sum + order.items.reduce((s, item) => s + item.quantity, 0);
+    }, 0);
   };
 
 //Carga los productos
@@ -180,6 +191,20 @@ export default function Dashboard() {
     }
   };
 
+  const toggleOrdersPanel = () => {
+    if (showOrders) {
+      setShowOrders(false);
+      return;
+    }
+
+    if (orders.length === 0) {
+      loadAllSales(true);
+      return;
+    }
+
+    setShowOrders(true);
+  };
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">
@@ -240,40 +265,87 @@ export default function Dashboard() {
 
         <div className="dashboard-main-card">
 
-          <h3>Gestión de Usuarios</h3>
+          <div className="dashboard-main-card-header">
+            <h3>Gestión de Usuarios</h3>
+            <button
+              className="view-sales-btn"
+              onClick={toggleOrdersPanel}
+              disabled={ordersLoading}
+            >
+              {showOrders ? "Ocultar ventas" : "Ver todas las ventas"}
+            </button>
+          </div>
 
-          <table className="custom-table">
+          {/* Single interchangeable table area: Usuarios or Ventas */}
+          {!showOrders ? (
+            <table className="custom-table">
 
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Correo</th>
-                <th>Rol</th>
-                <th>Comprado</th>
-                <th>Gestión</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map((user) => (
-                <tr key={user.id}>
-                  <td>{user.name} {user.lastname}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>{purchaseStats[user.id] ?? user.comprado ?? 0}</td>
-                  <td>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteUser(user.id)}
-                    >
-                      Eliminar
-                    </button>
-                  </td>
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                  <th>Comprado</th>
+                  <th>Gestión</th>
                 </tr>
-              ))}
-            </tbody>
+              </thead>
 
-          </table>
+              <tbody>
+                {users.map((user) => (
+                  <tr key={user.id}>
+                    <td>{user.name} {user.lastname}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                    <td>{purchaseStats[user.email] ?? 0}</td>
+                    <td>
+                      <button
+                        className="delete-btn"
+                        onClick={() => handleDeleteUser(user.id)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+
+            </table>
+          ) : (
+            <div className="sales-area">
+              {ordersLoading ? (
+                <p>Cargando ventas...</p>
+              ) : orders.length === 0 ? (
+                <p>No hay ventas registradas.</p>
+              ) : (
+                <table className="custom-table sales-table">
+                  <thead>
+                    <tr>
+                      <th>ID Pedido</th>
+                      <th>Cliente</th>
+                      <th>Correo cliente</th>
+                      <th>Estado</th>
+                      <th>Total</th>
+                      <th>Productos</th>
+                      <th>Fecha</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orders.map((order) => (
+                      <tr key={order.id}>
+                        <td>{order.id.slice(-6)}</td>
+                        <td>{order.userName}</td>
+                        <td>{order.userEmail}</td>
+                        <td>{order.status}</td>
+                        <td>${order.total.toFixed(2)}</td>
+                        <td>{order.items.length}</td>
+                        <td>{new Date(order.createdAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          )}
 
         </div>
 

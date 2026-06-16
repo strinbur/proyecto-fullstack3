@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*", exposedHeaders = "*")
 public class OrderController {
 
     private static final Logger log = LoggerFactory.getLogger(OrderController.class);
@@ -25,6 +25,12 @@ public class OrderController {
     public OrderResponseDTO createOrder(@RequestHeader String userEmail) {
         log.info("CREATE ORDER - email: {}", userEmail);
         return service.createOrder(userEmail, userEmail);
+    }
+
+    @GetMapping
+    public List<OrderResponseDTO> getAllOrders() {
+        log.info("GET ALL ORDERS");
+        return service.getAllOrders();
     }
 
     @GetMapping("/user/{email}")

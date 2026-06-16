@@ -10,5 +10,7 @@ public interface OrderService {
 
     List<OrderResponseDTO> getOrdersByUser(String userEmail);
 
+    List<OrderResponseDTO> getAllOrders();
+
     OrderResponseDTO getOrderById(String id);
 }

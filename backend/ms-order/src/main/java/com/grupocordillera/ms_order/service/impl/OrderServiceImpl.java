@@ -67,6 +67,13 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<OrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
+                .map(OrderFactory::toResponse)
+                .toList();
+    }
+
+    @Override
     public OrderResponseDTO getOrderById(String id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new OrderException("Orden no encontrada"));
