@@ -35,9 +35,38 @@ function Profile() {
 
   useEffect(() => {
     if (!user) return;
-    const stored = localStorage.getItem("orderHistory");
-    const history = stored ? (JSON.parse(stored) as Record<string, OrderEntry[]>) : {};
-    setOrderHistory(history[user.id] ?? []);
+
+    const fetchOrderHistory = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const headers: Record<string, string> = {};
+
+        if (token) {
+          headers.Authorization = `Bearer ${token}`;
+        }
+
+        const response = await axios.get<OrderEntry[]>(
+          `http://localhost:8084/orders/user/${encodeURIComponent(user.email)}`,
+          { headers }
+        );
+
+        const orders = response.data.map((order) => ({
+          id: order.id,
+          createdAt: order.createdAt,
+          totalItems: order.items?.reduce((sum, item) => sum + (item.quantity ?? 0), 0) ?? 0,
+          totalPrice: (order as any).total ?? order.totalPrice ?? 0,
+          status: String(order.status),
+          items: order.items ?? [],
+        }));
+
+        setOrderHistory(orders);
+      } catch (error) {
+        console.error("Error cargando historial de pedidos:", error);
+        setOrderHistory([]);
+      }
+    };
+
+    fetchOrderHistory();
   }, [user]);
 
   if (!user) {
@@ -45,7 +74,7 @@ function Profile() {
   }
 
   const initial = user.name?.charAt(0).toUpperCase();
-
+  const showRole = !["cliente", "client"].includes(user.role?.toLowerCase() ?? "");
 
   const startEditing = () => {
     setForm({
@@ -112,13 +141,14 @@ function Profile() {
 
   return (
     <div className="profile-container">
-      <div className="profile-card">
+      <div className="profile-main">
+        <div className="profile-card">
 
-        <div className="profile-avatar">{initial}</div>
+          <div className="profile-avatar">{initial}</div>
 
-        <h1 className="profile-title">Mi Perfil</h1>
+          <h1 className="profile-title">Mi Perfil</h1>
 
-        <div className="profile-info">
+          <div className="profile-info">
 
           {editing ? (
             <>
@@ -151,7 +181,7 @@ function Profile() {
               <p><strong>Nombre:</strong> {user.name}</p>
               <p><strong>Apellido:</strong> {user.lastname}</p>
               <p><strong>Correo:</strong> {user.email}</p>
-              <p><strong>Rol:</strong> {user.role}</p>
+              {showRole && <p><strong>Rol:</strong> {user.role}</p>}
             </>
           )}
 
@@ -192,10 +222,11 @@ function Profile() {
           </button>
 
         </div>
+        </div>
       </div>
 
       <div className="profile-orders">
-        <h2>Pedidos recientes</h2>
+          <h2>Pedidos recientes</h2>
 
         {orderHistory.length === 0 ? (
           <p className="no-orders">Aún no has registrado pedidos en esta sesión.</p>

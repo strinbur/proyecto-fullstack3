@@ -100,11 +100,64 @@
   box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
 }
 
-.dashboard-main-card h3 {
+.dashboard-main-card-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.dashboard-main-card-header h3 {
   color: #1e3a8a;
   font-size: 22px;
   font-weight: 700;
-  margin-bottom: 20px;
+  margin: 0;
+}
+
+.view-sales-btn {
+  background: linear-gradient(90deg, #2563eb, #1e3a8a);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.view-sales-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  opacity: 0.95;
+}
+
+.view-sales-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.sales-panel {
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sales-panel h3 {
+  color: #1e3a8a;
+  font-size: 20px;
+  margin-bottom: 14px;
+}
+
+.sales-table th,
+.sales-table td {
+  padding: 14px 15px;
+}
+
+.sales-table tbody tr:hover {
+  background: #f8fafc;
 }
 
 /* tabla */

@@ -3,6 +3,101 @@
 ## Descripción
 Este microservicio maneja la autenticación y la gestión de usuarios para la aplicación fullstack. Proporciona endpoints para registro, inicio de sesión, consulta, actualización y eliminación de usuarios, con seguridad basada en JWT y roles.
 
+---
+
+## Diagrama C3 - Componentes de ms-login
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│               ms-login (Spring Boot - Port 8081)                    │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │            AuthController                                    │ │
+│  │  @RestController @RequestMapping(/login)                    │ │
+│  │  - POST /auth (Login - public)                              │ │
+│  │  - POST /register (Register - public)                       │ │
+│  │  - POST /admin/create (Create admin - requires ADMIN)      │ │
+│  │  - GET / (List users - requires ADMIN/VENTAS)             │ │
+│  │  - GET /{id} (Get user - requires ADMIN/VENTAS)           │ │
+│  │  - PUT /{id} (Update - requires AUTH)                      │ │
+│  │  - DELETE /{id} (Delete - requires ADMIN)                 │ │
+│  └────────┬──────────────────────────────────────────────────┘ │
+│           │                                                     │
+│  ┌────────▼──────────────────────────────────────────────────┐ │
+│  │            AuthService (Interface)                       │ │
+│  │  ┌──────────────────────────────────────────────────┐   │ │
+│  │  │  AuthServiceImpl                                │   │ │
+│  │  │  - register(RegisterDTO): AuthResponse         │   │ │
+│  │  │  - authenticate(LoginDTO): AuthResponse        │   │ │
+│  │  │  - validateEmail(email): boolean               │   │ │
+│  │  │  - validatePassword(password): boolean         │   │ │
+│  │  │  - getUserById(id): UserResponse               │   │ │
+│  │  │  - updateUser(id, UserDTO): UserResponse      │   │ │
+│  │  │  - getAllUsers(): List<UserResponse>          │   │ │
+│  │  │  - deleteUser(id): void                       │   │ │
+│  │  └──────────┬───────────────────────────────────┘   │ │
+│  └─────────────┼───────────────────────────────────────┘ │
+│                │                                         │
+│  ┌─────────────▼───────────────────────────────────────┐ │
+│  │       UserRepository (MongoRepository)             │ │
+│  │  extends MongoRepository<User, String>             │ │
+│  │  - findByEmail(email): Optional<User>              │ │
+│  │  - existsByEmail(email): boolean                   │ │
+│  │  - findByRole(role): List<User>                    │ │
+│  └─────────────┬───────────────────────────────────────┘ │
+│                │                                         │
+│  ┌─────────────▼───────────────────────────────────────┐ │
+│  │       Security & JWT Layer                         │ │
+│  │  ┌───────────────────────────────────────────────┐ │ │
+│  │  │ JwtProvider                                   │ │ │
+│  │  │ - generateToken(user): String                 │ │ │
+│  │  │ - validateToken(token): boolean              │ │ │
+│  │  │ - extractEmail(token): String                │ │ │
+│  │  │ - extractRole(token): String                 │ │ │
+│  │  │ - getExpirationDate(token): Date             │ │ │
+│  │  │ - SECRET_KEY, EXPIRATION_TIME (24h)         │ │ │
+│  │  └───────────────────────────────────────────────┘ │ │
+│  │  ┌───────────────────────────────────────────────┐ │ │
+│  │  │ JwtAuthenticationFilter                       │ │ │
+│  │  │ - Intercepts all requests                     │ │ │
+│  │  │ - Validates JWT from Authorization header    │ │ │
+│  │  │ - Sets SecurityContext                       │ │ │
+│  │  │ - Skips /login/auth, /login/register         │ │ │
+│  │  └───────────────────────────────────────────────┘ │ │
+│  │  ┌───────────────────────────────────────────────┐ │ │
+│  │  │ PasswordEncoder (BCrypt)                      │ │ │
+│  │  │ - encode(password): String                   │ │ │
+│  │  │ - matches(raw, encoded): boolean            │ │ │
+│  │  └───────────────────────────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Validation & Exception Handling                   │ │
+│  │  - @Valid on DTOs                                │ │
+│  │  - @NotBlank, @Email, @Size validators           │ │
+│  │  - GlobalExceptionHandler                        │ │
+│  │  - AuthException, UserNotFoundException          │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Configuration                                     │ │
+│  │  - SecurityConfig (JWT, CORS)                    │ │
+│  │  - MongockConfig (DB migrations)                 │ │
+│  │  - UserFactory (User creation with role)         │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘
+                         │
+          ┌──────────────▼──────────────┐
+          │    MongoDB (Port 27017)     │
+          │  Database: login_bd         │
+          │  Collections:               │
+          │  - users                    │
+          │  - user_sequences           │
+          └─────────────────────────────┘
+```
+
+---
+
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
 - **Framework**: Spring Boot 4.0.6
@@ -10,6 +105,32 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
 - **Autenticación**: JWT (JSON Web Tokens)
 - **Documentación**: OpenAPI/Swagger
 - **Herramientas**: Lombok, Mongock, Spring Security
+
+---
+
+## Dependencias Principales (Top 5)
+
+1. **MongoDB** (`spring-boot-starter-data-mongodb`)
+   - Integración con MongoDB usando Spring Data
+   - Persistencia de usuarios y roles
+
+2. **Mongock** (`mongock-springboot-v3`)
+   - Migraciones de base de datos en MongoDB
+   - Versionado y control de cambios en la BD
+
+3. **Lombok** (`lombok`)
+   - Generación automática de getters/setters
+   - Reduce código boilerplate significativamente
+
+4. **JWT** (`jjwt-api`, `jjwt-impl`, `jjwt-jackson`)
+   - Creación y validación de JSON Web Tokens
+   - Autenticación segura con expiración configurable
+
+5. **Spring Validation** (`spring-boot-starter-validation`)
+   - Validación de DTOs y datos de entrada
+   - Anotaciones declarativas para validación
+
+---
 
 ## Dependencias
 - `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
@@ -27,11 +148,13 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
 - `jjwt-jackson` (runtime) — serialización JSON para JWT
 
 ## Principales Patrones de Diseño
-- **Repository Pattern**: Acceso a datos con `MongoRepository`.
+- **Repository Pattern**: Acceso a datos con `MongoRepository` para abstraer la BD.
 - **Service Layer Pattern**: Lógica de negocio separada de controladores.
 - **DTO Pattern**: Transferencia de datos entre capas con objetos específicos.
 - **Filter Pattern**: `JwtAuthenticationFilter` valida tokens en cada petición.
+- **Factory Pattern**: Creación de usuarios con roles específicos.
 - **Dependency Injection**: Spring gestiona dependencias para reducir acoplamiento.
+- **Strategy Pattern**: Diferentes estrategias de autenticación (JWT, roles).
 
 ## Endpoints Principales
 - `POST /login/auth` — Iniciar sesión (público)
@@ -102,22 +225,61 @@ java -jar target/ms-login-0.0.1-SNAPSHOT.jar
 Una vez levantado, accede a Swagger en:
 `http://localhost:8081/swagger-ui.html`
 
+## Testing
+Ejecuta las pruebas unitarias con:
+```bash
+mvn test
+```
+
 ## Notas
 - Este microservicio forma parte de una solución de microservicios completa.
 - Para levantar el sistema completo, usa `docker-compose up` desde la raíz del proyecto.
 - Mongock ejecuta las migraciones de base de datos automáticamente al iniciar.
 
 ## Arquitectura del Proyecto
+
+### Estructura de Directorios
 ```
 src/main/java/com/grupocordillera/ms_login/
-├── config/          # Configuraciones de Spring (Seguridad, Mongock)
-├── controller/      # Controladores REST
-├── dto/             # Data Transfer Objects
-├── exception/       # Excepciones personalizadas
-├── migrations/      # Scripts de migración de BD (Mongock)
-├── model/           # Entidades de dominio
-├── repository/      # Interfaces de repositorio
-├── security/        # Servicios de JWT y filtros de autenticación
-└── service/         # Lógica de negocio
-    └── impl/        # Implementaciones de servicios
+├── config/             # Configuraciones de Spring
+│   ├── SecurityConfig.java
+│   ├── MongockConfig.java
+│   └── WebConfig.java
+├── controller/         # Controladores REST
+│   └── AuthController.java
+├── dto/                # Data Transfer Objects
+│   ├── LoginRequestDTO.java
+│   ├── RegisterRequestDTO.java
+│   ├── UserResponseDTO.java
+│   └── AuthResponseDTO.java
+├── exception/          # Excepciones personalizadas
+│   ├── AuthException.java
+│   ├── UserNotFoundException.java
+│   └── GlobalExceptionHandler.java
+├── factory/            # Factory Pattern
+│   └── UserFactory.java
+├── migrations/         # Scripts de migración (Mongock)
+│   ├── ChangeLogs.java
+│   └── InitialData.java
+├── model/              # Entidades de dominio
+│   ├── User.java
+│   └── Role.java
+├── repository/         # Interfaces MongoRepository
+│   └── UserRepository.java
+├── security/           # JWT y Autenticación
+│   ├── JwtProvider.java
+│   ├── JwtAuthenticationFilter.java
+│   ├── PasswordEncoder.java
+│   └── SecurityUtil.java
+├── service/            # Lógica de negocio
+│   ├── AuthService.java
+│   └── impl/
+│       └── AuthServiceImpl.java
+└── MsLoginApplication.java
 ```
+
+### Patrones de Arquitectura
+- **Layered Architecture**: Separación clara entre capas (Controller → Service → Repository)
+- **Hexagonal Architecture**: Independencia de frameworks externos
+- **Domain-Driven Design**: Entidades de dominio bien definidas (User, Role)
+- **SOLID Principles**: Responsabilidad única, abierto/cerrado, inversión de dependencias
