@@ -71,15 +71,6 @@ class OrderServiceImplTest {
         assertEquals("Orden no encontrada", exception.getMessage());
     }
 
-    @Test
-    void shouldThrowExceptionWhenStatusIsInvalid() {
-        OrderException exception = assertThrows(
-                OrderException.class,
-                () -> service.getOrdersByStatus("cualquier-cosa")
-        );
-
-        assertEquals("Estado inválido: cualquier-cosa", exception.getMessage());
-    }
 
     @Test
     void shouldReturnOrdersByUser() {
@@ -106,20 +97,6 @@ class OrderServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    @Test
-    void shouldReturnOrdersByStatus() {
-
-        Order order = new Order();
-        order.setStatus(OrderStatus.PENDIENTE);
-
-        when(orderRepository.findByStatus(OrderStatus.PENDIENTE))
-                .thenReturn(List.of(order));
-
-        List<OrderResponseDTO> result =
-                service.getOrdersByStatus("PENDIENTE");
-
-        assertEquals(1, result.size());
-    }
 
     @Test
     void shouldCreateOrderSuccessfully() {

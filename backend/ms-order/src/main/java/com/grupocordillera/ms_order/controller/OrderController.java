@@ -44,25 +44,4 @@ public class OrderController {
         log.info("GET ORDER BY ID - id: {}", id);
         return service.getOrderById(id);
     }
-
-    @GetMapping
-    public List<OrderResponseDTO> getAllOrders() {
-        log.info("GET ALL ORDERS");
-        return service.getAllOrders();
-    }
-
-    @GetMapping("/status/{status}")
-    public List<OrderResponseDTO> getOrdersByStatus(
-            @PathVariable String status
-    ) {
-
-        log.info("GET ORDERS BY STATUS - {}", status);
-        return service.getOrdersByStatus(status);
-    }
-
-    @PutMapping("/{id}/status/{status}")
-    public OrderResponseDTO updateOrderStatus(@PathVariable String id, @PathVariable String status) {
-        log.info("UPDATE ORDER STATUS - id: {} status: {}", id, status);
-        return service.updateOrderStatus(id, status);
-    }
 }

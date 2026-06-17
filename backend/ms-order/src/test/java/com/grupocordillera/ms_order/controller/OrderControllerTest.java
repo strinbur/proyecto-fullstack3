@@ -95,20 +95,5 @@ class OrderControllerTest {
         verify(orderService).getAllOrders();
     }
 
-    @Test
-    void shouldGetOrdersByStatus() {
-        String status = "pendiente";
 
-        OrderResponseDTO dto = new OrderResponseDTO();
-        dto.setStatus(OrderStatus.PENDIENTE);
-
-        when(orderService.getOrdersByStatus(status)).thenReturn(List.of(dto));
-
-        List<OrderResponseDTO> result = orderController.getOrdersByStatus(status);
-
-        assertEquals(1, result.size());
-        assertEquals(OrderStatus.PENDIENTE, result.get(0).getStatus());
-
-        verify(orderService).getOrdersByStatus(status);
-    }
 }
