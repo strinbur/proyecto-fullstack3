@@ -3,7 +3,6 @@ package com.grupocordillera.ms_inventory.security;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -16,12 +15,10 @@ public class JwtService {
     private String secretKey;
 
     private SecretKey getSigningKey() {
-
         return Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public Claims extractClaims(String token) {
-
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
                 .build()
