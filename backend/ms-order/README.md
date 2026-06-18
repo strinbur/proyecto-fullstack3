@@ -7,85 +7,6 @@ Microservicio responsable de la gestión de órdenes de compra. Permite crear, c
 
 ## Diagrama C3 - Componentes de ms-order
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│              ms-order (Spring Boot - Port 8084)                     │
-│                                                                      │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │            OrderController                                   │ │
-│  │  @RestController @RequestMapping(/order)                   │ │
-│  │  - POST / (Create order, requires AUTH)                    │ │
-│  │  - GET /{orderId} (Get order details, AUTH)               │ │
-│  │  - GET /user/{userId} (List user orders, AUTH)            │ │
-│  │  - PUT /{orderId} (Update status, ADMIN/owner)           │ │
-│  │  - DELETE /{orderId} (Cancel order, AUTH/ADMIN)          │ │
-│  │  - GET /{orderId}/status (Get status, AUTH)              │ │
-│  └────────┬──────────────────────────────────────────────────┘ │\n│           │                                                     │
-│  ┌────────▼──────────────────────────────────────────────────┐ │
-│  │            OrderService (Interface)                      │ │
-│  │  ┌──────────────────────────────────────────────────┐   │ │
-│  │  │  OrderServiceImpl                                │   │ │
-│  │  │  - createOrder(OrderDTO): Order                │   │ │
-│  │  │  - validateOrder(order): boolean               │   │ │
-│  │  │  - processPayment(order): PaymentResult        │   │ │
-│  │  │  - updateOrderStatus(orderId, status)          │   │ │
-│  │  │  - calculateTotals(order)                      │   │ │\n│  │  - trackInventory(order)                        │   │ │
-│  │  - getOrderHistory(userId): List<Order>           │   │ │
-│  │  - cancelOrder(orderId): void                     │   │ │
-│  │  └──────────┬───────────────────────────────────┘   │ │
-│  └─────────────┼───────────────────────────────────────┘ │
-│                │                                         │\n│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       OrderRepository (MongoRepository)             │ │
-│  │  extends MongoRepository<Order, String>             │ │
-│  │  - findByUserId(userId): List<Order>                │ │
-│  │  - findByStatus(status): List<Order>                │ │
-│  │  - findByOrderDate(date): List<Order>               │ │
-│  │  - updateStatus(orderId, status): void              │ │
-│  └─────────────┬───────────────────────────────────────┘ │
-│                │                                         │
-│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       Security & Validation Layer                  │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ JwtAuthenticationFilter                       │ │ │
-│  │  │ - Intercepts all requests                     │ │ │
-│  │  │ - Validates JWT token                        │ │ │
-│  │  │ - Extracts userId and role                   │ │ │
-│  │  │ - Enforces user can only see own orders     │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ JwtProvider                                   │ │ │
-│  │  │ - validateToken(token)                       │ │ │
-│  │  │ - extractUserId(token)                       │ │ │
-│  │  │ - extractRole(token)                         │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Validation & Exception Handling                   │ │
-│  │  - @Valid on OrderDTO                             │ │
-│  │  - @NotNull, @Size validators                     │ │
-│  │  - GlobalExceptionHandler                        │ │
-│  │  - OrderException, InvalidOrderStatusException   │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Configuration                                     │ │
-│  │  - SecurityConfig (JWT, CORS)                    │ │
-│  │  - MongockConfig (DB migrations)                 │ │
-│  │  - OrderFactory (Order creation)                 │ │\n│  │  - OrderStatusPublisher (Events)                  │ │
-│  └────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-                         │
-          ┌──────────────▼──────────────┐
-          │    MongoDB (Port 27017)     │
-          │  Database: order_bd         │
-          │  Collections:               │
-          │  - orders                   │
-          │  - order_items              │
-          │  - order_status_history     │
-          └─────────────────────────────┘\n```
-
----
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
@@ -121,19 +42,6 @@ Microservicio responsable de la gestión de órdenes de compra. Permite crear, c
 
 ---
 
-## Dependencias Completas
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-webmvc` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-test` (test) — utilidades de pruebas unitarias e integración
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
 - `jjwt-jackson` (runtime) — serialización JSON para JWT
 
 ## Principales Patrones de Diseño

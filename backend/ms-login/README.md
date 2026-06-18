@@ -7,94 +7,9 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
 
 ## Diagrama C3 - Componentes de ms-login
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│               ms-login (Spring Boot - Port 8081)                    │
-│                                                                      │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │            AuthController                                    │ │
-│  │  @RestController @RequestMapping(/login)                    │ │
-│  │  - POST /auth (Login - public)                              │ │
-│  │  - POST /register (Register - public)                       │ │
-│  │  - POST /admin/create (Create admin - requires ADMIN)      │ │
-│  │  - GET / (List users - requires ADMIN/VENTAS)             │ │
-│  │  - GET /{id} (Get user - requires ADMIN/VENTAS)           │ │
-│  │  - PUT /{id} (Update - requires AUTH)                      │ │
-│  │  - DELETE /{id} (Delete - requires ADMIN)                 │ │
-│  └────────┬──────────────────────────────────────────────────┘ │
-│           │                                                     │
-│  ┌────────▼──────────────────────────────────────────────────┐ │
-│  │            AuthService (Interface)                       │ │
-│  │  ┌──────────────────────────────────────────────────┐   │ │
-│  │  │  AuthServiceImpl                                │   │ │
-│  │  │  - register(RegisterDTO): AuthResponse         │   │ │
-│  │  │  - authenticate(LoginDTO): AuthResponse        │   │ │
-│  │  │  - validateEmail(email): boolean               │   │ │
-│  │  │  - validatePassword(password): boolean         │   │ │
-│  │  │  - getUserById(id): UserResponse               │   │ │
-│  │  │  - updateUser(id, UserDTO): UserResponse      │   │ │
-│  │  │  - getAllUsers(): List<UserResponse>          │   │ │
-│  │  │  - deleteUser(id): void                       │   │ │
-│  │  └──────────┬───────────────────────────────────┘   │ │
-│  └─────────────┼───────────────────────────────────────┘ │
-│                │                                         │
-│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       UserRepository (MongoRepository)             │ │
-│  │  extends MongoRepository<User, String>             │ │
-│  │  - findByEmail(email): Optional<User>              │ │
-│  │  - existsByEmail(email): boolean                   │ │
-│  │  - findByRole(role): List<User>                    │ │
-│  └─────────────┬───────────────────────────────────────┘ │
-│                │                                         │
-│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       Security & JWT Layer                         │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ JwtProvider                                   │ │ │
-│  │  │ - generateToken(user): String                 │ │ │
-│  │  │ - validateToken(token): boolean              │ │ │
-│  │  │ - extractEmail(token): String                │ │ │
-│  │  │ - extractRole(token): String                 │ │ │
-│  │  │ - getExpirationDate(token): Date             │ │ │
-│  │  │ - SECRET_KEY, EXPIRATION_TIME (24h)         │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ JwtAuthenticationFilter                       │ │ │
-│  │  │ - Intercepts all requests                     │ │ │
-│  │  │ - Validates JWT from Authorization header    │ │ │
-│  │  │ - Sets SecurityContext                       │ │ │
-│  │  │ - Skips /login/auth, /login/register         │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ PasswordEncoder (BCrypt)                      │ │ │
-│  │  │ - encode(password): String                   │ │ │
-│  │  │ - matches(raw, encoded): boolean            │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Validation & Exception Handling                   │ │
-│  │  - @Valid on DTOs                                │ │
-│  │  - @NotBlank, @Email, @Size validators           │ │
-│  │  - GlobalExceptionHandler                        │ │
-│  │  - AuthException, UserNotFoundException          │ │
-│  └────────────────────────────────────────────────────┘ │
-│                                                          │
-│  ┌────────────────────────────────────────────────────┐ │
-│  │  Configuration                                     │ │
-│  │  - SecurityConfig (JWT, CORS)                    │ │
-│  │  - MongockConfig (DB migrations)                 │ │
-│  │  - UserFactory (User creation with role)         │ │
-│  └────────────────────────────────────────────────────┘ │
-└──────────────────────────────────────────────────────────┘
-                         │
-          ┌──────────────▼──────────────┐
-          │    MongoDB (Port 27017)     │
-          │  Database: login_bd         │
-          │  Collections:               │
-          │  - users                    │
-          │  - user_sequences           │
-          └─────────────────────────────┘
-```
+---
+
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/Fullstack%203%20diagrama%20c3%20login.drawio.png" />
 
 ---
 
@@ -131,21 +46,6 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
    - Anotaciones declarativas para validación
 
 ---
-
-## Dependencias
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-web` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-test` (test) — utilidades de pruebas unitarias e integración
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
-- `jjwt-jackson` (runtime) — serialización JSON para JWT
 
 ## Principales Patrones de Diseño
 - **Repository Pattern**: Acceso a datos con `MongoRepository` para abstraer la BD.
