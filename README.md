@@ -23,53 +23,7 @@ Este repositorio contiene una solución completa de fullstack con arquitectura d
 - [Ver README de ms-inventory](./backend/ms-inventory/README.md)
 - [Ver README de ms-cart](./backend/ms-cart/README.md)
 - [Ver README de ms-order](./backend/ms-order/README.md)
-
----
-
-## Diagrama C3 - Componentes del Sistema
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                     Frontend (React + TypeScript)                        │
-│  ┌────────────────┐  ┌──────────────┐  ┌─────────────────────────────┐ │
-│  │  App Router    │  │  Components  │  │  Features (Context)         │ │
-│  │  - Home        │  │  - Navbar    │  │  - AuthContext/Provider     │ │
-│  │  - Login       │  │  - Header    │  │  - InventoryAPI             │ │
-│  │  - Register    │  │  - Footer    │  │  - CartAPI                  │ │
-│  │  - Products    │  │  - Protected │  │  - OrderAPI                 │ │
-│  └────────────────┘  └──────────────┘  └─────────────────────────────┘ │
-└────────────────────────────┬────────────────────────────────────────────┘
-                             │ HTTP/JSON + JWT
-    ┌────────────────────────▼───────────────────────────┐
-    │          BFF (Spring Boot - Port 8080)             │
-    │  ┌──────────────┐  ┌──────────────┐  ┌──────────┐ │
-    │  │ Controllers  │  │ Feign Clients│  │ Service  │ │
-    │  │ - Login      │  │ - LoginClient │  │ Layer    │ │
-    │  │ - Inventory  │  │ - Inventory  │  │(Adapters)│ │
-    │  │ - Cart       │  │ - CartClient │  └──────────┘ │
-    │  │ - Order      │  │ - OrderClient│                │
-    │  └──────────────┘  └──────────────┘  ┌──────────┐ │
-    │                                       │Interceptor│ │
-    │                                       │(JWT PropG)│ │
-    │                                       └──────────┘ │
-    └────┬─────────────┬──────────────┬─────────────┬──┘
-         │             │              │             │
-    ┌────▼──┐  ┌──────▼──┐  ┌──────▼───┐  ┌──────▼──┐
-    │ms-lgn │  │ms-invent│  │ ms-cart  │  │ms-order│
-    │:8081  │  │:8082    │  │  :8083   │  │ :8084  │
-    └───────┘  └─────────┘  └──────────┘  └────────┘
-         │             │              │             │
-         └─────────────┴──────────────┴─────────────┘
-                      │
-           ┌──────────▼──────────┐
-           │  MongoDB Database   │
-           │  (puerto 27017)     │
-           │  - login_bd         │
-           │  - inventory_bd     │
-           │  - cart_bd          │
-           │  - order_bd         │
-           └─────────────────────┘
-```
+- [Ver README de ms-data-aggregation](./backend/ms-data-aggregation/README.md)
 
 ---
 
@@ -201,12 +155,12 @@ Las ramas siempre deben derivar de la rama `develop`:
 ```bash
 git checkout develop
 git pull origin develop
-git checkout -b feature-nombre-tarea-o-colaborador
+git checkout -b feature/nombre/tarea/o/colaborador
 ```
 
-**Nomenclatura de ramas**: `feature-descripcion` o `feature-nombre-colaborador`
+**Nomenclatura de ramas**: `feature/descripcion` o `feature/nombre/colaborador`
 
-Ejemplo: `feature-login-validation` o `feature-juan-perez`
+Ejemplo: `feature/login/validation` o `feature/juan/perez`
 
 ### 3. Realizar Cambios
 
@@ -223,7 +177,7 @@ git commit -m "feat: descripción clara del cambio"
 ### 4. Enviar Pull Request
 
 ```bash
-git push origin feature-nombre-tarea-o-colaborador
+git push origin feature/nombre/tarea/o/colaborador
 ```
 
 Crear un Pull Request hacia `develop` con:

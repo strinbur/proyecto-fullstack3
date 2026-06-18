@@ -118,22 +118,6 @@ Microservicio responsable de la gestión del inventario de productos. Ofrece end
 
 ---
 
-## Dependencias
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-webmvc` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-data-mongodb-test` (test) — pruebas de integración con MongoDB
-- `spring-boot-starter-webmvc-test` (test) — utilidades de prueba para MVC
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
-- `jjwt-jackson` (runtime) — soporte JSON para JWT
-
 ## Principales Patrones de Diseño
 - **Repository Pattern**: Acceso a datos con `MongoRepository`.
 - **Service Layer Pattern**: Lógica de negocio separada de los controladores.
