@@ -174,8 +174,7 @@ El frontend estará disponible en http://localhost:5173
 
 ## Arquitectura del Sistema
 
-
-<img width="1324" height="989" alt="Fullstack 3 diagrama drawio" src="https://github.com/user-attachments/assets/1014b7be-8d6a-4904-9918-37850dfb4f55" />
+<img width="1324" alt="Fullstack 3 arquitectura" src="./docs/Fullstack%203%20arquitectura.drawio.png" />
 
 
 El sistema implementa una arquitectura de microservicios donde:
@@ -238,9 +237,3 @@ Crear un Pull Request hacia `develop` con:
 - Una vez aprobado, hacer merge a `develop`
 
 ---
-
-## Gestión del Proyecto
-
-Para ver el estado de tareas y seguimiento del proyecto:
-
-[📋 Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)

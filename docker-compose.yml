@@ -47,6 +47,17 @@ services:
       - ms-cart
       - ms-inventory
 
+  ms-data-aggregation:
+    build:
+      context: ./backend/ms-data-aggregation
+    container_name: ms-data-aggregation
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mongodb
+      - ms-order
+      - ms-inventory
+
   ms-bff:
     build:
       context: ./backend/bff

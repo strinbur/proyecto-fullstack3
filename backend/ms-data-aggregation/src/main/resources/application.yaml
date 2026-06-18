@@ -1,0 +1,22 @@
+server:
+  port: 8085
+
+spring:
+  application:
+    name: ms-data-aggregation
+
+  mongodb:
+    uri: mongodb://host.docker.internal:27017/dataaggregation
+
+order:
+  url: http://ms-order:8084
+
+inventory:
+  url: http://ms-inventory:8082
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
