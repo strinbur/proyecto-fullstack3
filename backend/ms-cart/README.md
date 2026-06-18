@@ -7,53 +7,7 @@ Microservicio responsable de la gestión del carrito de compras. Permite a los u
 
 ## Diagrama C3 - Componentes de ms-cart
 
-```
-┌──────────────────────────────────────────────────────────────────────┐
-│              ms-cart (Spring Boot - Port 8083)                      │
-│                                                                      │
-│  ┌────────────────────────────────────────────────────────────────┐ │
-│  │            CartController                                    │ │
-│  │  @RestController @RequestMapping(/cart)                    │ │
-│  │  - POST / (Add to cart, requires AUTH)                     │ │
-│  │  - GET /{userId} (Get cart, requires AUTH)                │ │
-│  │  - PUT /{userId} (Update cart, requires AUTH)             │ │
-│  │  - DELETE /{userId}/item/{itemId} (Remove item, AUTH)    │ │
-│  │  - DELETE /{userId} (Empty cart, requires AUTH)           │ │
-│  │  - GET /{userId}/total (Get total, requires AUTH)         │ │
-│  └────────┬──────────────────────────────────────────────────┘ │
-│           │                                                     │
-│  ┌────────▼──────────────────────────────────────────────────┐ │
-│  │            CartService (Interface)                       │ │
-│  │  ┌──────────────────────────────────────────────────┐   │ │
-│  │  │  CartServiceImpl                                 │   │ │
-│  │  │  - addItemToCart(userId, item)                 │   │ │
-│  │  │  - removeItemFromCart(userId, itemId)          │   │ │
-│  │  │  - calculateTotal(cart)                        │   │ │
-│  │  │  - applyDiscount(cart, discount)               │   │ │
-│  │  │  - syncWithInventory(cart)                     │   │ │
-│  │  │  - validateCartItems(items)                    │   │ │
-│  │  │  - getCartByUserId(userId)                     │   │ │
-│  │  │  - clearCart(userId)                           │   │ │
-│  │  └──────────┬───────────────────────────────────┘   │ │\n│  └─────────────┼───────────────────────────────────────┘ │
-│                │                                         │
-│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       CartRepository (MongoRepository)             │ │
-│  │  extends MongoRepository<Cart, String>             │ │
-│  │  - findByUserId(userId): Optional<Cart>            │ │
-│  │  - deleteByUserId(userId): void                    │ │
-│  │  - existsByUserId(userId): boolean                 │ │
-│  └─────────────┬───────────────────────────────────────┘ │
-│                │                                         │
-│  ┌─────────────▼───────────────────────────────────────┐ │
-│  │       Security & Validation Layer                  │ │
-│  │  ┌───────────────────────────────────────────────┐ │ │
-│  │  │ JwtAuthenticationFilter                       │ │ │
-│  │  │ - Validates JWT from Authorization header    │ │ │
-│  │  │ - Extracts userId from token                │ │ │
-│  │  │ - Enforces user owns their cart             │ │ │
-│  │  └───────────────────────────────────────────────┘ │ │\n│  │  ┌───────────────────────────────────────────────┐ │ │\n│  │  │ JwtProvider                                   │ │ │\n│  │  │ - validateToken(token)                       │ │ │\n│  │  │ - extractUserId(token)                       │ │ │\n│  │  └───────────────────────────────────────────────┘ │ │\n│  └────────────────────────────────────────────────────┘ │\n│                                                          │\n│  ┌────────────────────────────────────────────────────┐ │\n│  │  Validation & Exception Handling                   │ │\n│  │  - @Valid on CartItemDTO                          │ │\n│  │  - @NotNull, @Min validators                      │ │\n│  │  - GlobalExceptionHandler                        │ │\n│  │  - CartException, CartItemException              │ │\n│  └────────────────────────────────────────────────────┘ │\n│                                                          │\n│  ┌────────────────────────────────────────────────────┐ │\n│  │  Configuration                                     │ │\n│  │  - SecurityConfig (JWT, CORS)                    │ │\n│  │  - MongockConfig (DB migrations)                 │ │\n│  │  - CartFactory (Cart creation)                   │ │\n│  └────────────────────────────────────────────────────┘ │\n└──────────────────────────────────────────────────────────┘\n                         │\n          ┌──────────────▼──────────────┐\n          │    MongoDB (Port 27017)     │\n          │  Database: cart_bd          │\n          │  Collections:               │\n          │  - carts                    │\n          │  - cart_items               │\n          └─────────────────────────────┘\n```
-
----
+<img width="1324" alt="Diagrama C3 Cart" src="../../docs/Fullstack%203%20diagrama%20c3%20cart.drawio.png" />
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
@@ -88,21 +42,6 @@ Microservicio responsable de la gestión del carrito de compras. Permite a los u
    - Anotaciones declarativas para validación
 
 ---
-
-## Dependencias Completas
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-webmvc` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-test` (test) — utilidades de pruebas unitarias e integración
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
-- `jjwt-jackson` (runtime) — serialización JSON para JWT
 
 ## Principales Patrones de Diseño
 - **Repository Pattern**: Acceso a datos con `MongoRepository`.
