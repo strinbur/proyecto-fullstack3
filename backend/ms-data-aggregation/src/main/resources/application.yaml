@@ -20,3 +20,8 @@ feign:
       default:
         connectTimeout: 5000
         readTimeout: 5000
+
+jwt:
+  secret:
+    key: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+  expiration: 86400000

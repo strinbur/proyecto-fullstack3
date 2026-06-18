@@ -21,10 +21,9 @@
     <properties>
         <java.version>25</java.version>
 
-        <!-- 🔥 FIX: alineado con ms-order -->
         <spring-cloud.version>2025.1.1</spring-cloud.version>
 
-        <jjwt.version>0.12.6</jjwt.version>
+        <jjwt.version>0.11.5</jjwt.version>
     </properties>
 
     <dependencies>
@@ -146,7 +145,6 @@
                 <artifactId>maven-compiler-plugin</artifactId>
 
                 <executions>
-
                     <execution>
                         <id>default-compile</id>
                         <phase>compile</phase>
