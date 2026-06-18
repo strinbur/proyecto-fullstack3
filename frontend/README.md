@@ -3,7 +3,94 @@
 ## Descripción
 Aplicación frontend en React que consume el BFF (`ms-bff`) para manejar autenticación, usuarios y productos. La UI usa `AuthContext` para mantener el usuario logueado y agrega automáticamente el token JWT a las peticiones.
 
-## Stack Tecnológico
+---
+
+## Diagrama C3 - Componentes del Frontend
+
+### C3 - Componentes
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│              Frontend (React + TypeScript - Port 5173)               │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │                  React Router (App.tsx)                      │ │
+│  │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────┐   │ │
+│  │  │ Home Page    │  │ Auth Pages   │  │ Dashboard Pages  │   │ │
+│  │  │              │  │ - Login      │  │ - Products       │   │ │
+│  │  │              │  │ - Register   │  │ - Cart           │   │ │
+│  │  │              │  │ - Profile    │  │ - Profile        │   │ │
+│  │  └──────────────┘  └──────────────┘  └──────────────────┘   │ │
+│  └─────────────────┬────────────────────────────────────────────┘ │
+│                    │                                              │
+│  ┌─────────────────▼────────────────────────────────────────────┐ │
+│  │               Features Layer (Context + API)                 │ │
+│  │  ┌──────────────────┐  ┌──────────────────────────────────┐ │ │
+│  │  │  auth/                                                 │ │ │
+│  │  │  - AuthProvider.tsx (manages login state)             │ │ │
+│  │  │  - AuthContext.tsx (exposes auth methods)             │ │ │
+│  │  │  - authApi.ts (calls /bff/login endpoints)            │ │ │
+│  │  └──────────────────┘  ├─ inventory/                     │ │ │
+│  │                         │ - inventoryApi.ts              │ │ │
+│  │                         │ (calls /bff/inventory)         │ │ │
+│  │                         ├─ cart/                         │ │ │
+│  │                         │ - CartContext.tsx              │ │ │
+│  │                         │ - cartApi.ts                   │ │ │
+│  │                         │ (calls /bff/cart)              │ │ │
+│  │                         └─ order/                        │ │ │
+│  │                           - orderApi.ts                  │ │ │
+│  │                           (calls /bff/order)             │ │ │
+│  │  ┌──────────────────────────────────────────────────────┐ │ │
+│  │  │  api/                                               │ │ │
+│  │  │  - api.ts (Axios instance + interceptors)           │ │ │
+│  │  │    * Adds Authorization: Bearer {token} header      │ │ │
+│  │  │    * Reads token from localStorage                 │ │ │
+│  │  │    * Handles errors globally                       │ │ │
+│  │  └──────────────────────────────────────────────────────┘ │ │
+│  └─────────────────┬────────────────────────────────────────────┘ │
+│                    │                                              │
+│  ┌─────────────────▼────────────────────────────────────────────┐ │
+│  │                   Components (UI Layer)                      │ │
+│  │  ┌──────────────────┐  ┌──────────────────────────────────┐ │ │
+│  │  │ Navbar.tsx       │  │ ProtectedRoute.tsx              │ │ │
+│  │  │ - Display user    │  │ - Checks if user is logged in │ │ │
+│  │  │ - Logout button   │  │ - Redirects to login if needed  │ │ │
+│  │  │ - Navigation menu │  │ - Renders protected page      │ │ │
+│  │  └──────────────────┘  └──────────────────────────────────┘ │ │
+│  │  ┌──────────────────────────────────────────────────────────┐ │ │
+│  │  │ Header.tsx, Footer.tsx                                 │ │ │
+│  │  │ - Layout components                                    │ │ │
+│  │  │ - Page structure                                       │ │ │
+│  │  └──────────────────────────────────────────────────────────┘ │ │
+│  └─────────────────┬────────────────────────────────────────────┘ │
+│                    │                                              │
+│  ┌─────────────────▼────────────────────────────────────────────┐ │
+│  │              Utils & Helpers                                 │
+│  │  - format.ts (Date, currency formatting)                   │ │
+│  │  - validators.ts (Form validation)                          │ │
+│  │  - constants.ts (App constants)                             │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                    │                                              │
+│  ┌─────────────────▼────────────────────────────────────────────┐ │
+│  │           LocalStorage Management                            │ │
+│  │  - Persist user token                                        │ │
+│  │  - Persist user info (name, email, role)                    │ │
+│  │  - Persist UI preferences (theme, language)                 │ │
+│  └────────────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────────────────┘
+                            │
+                   HTTP/JSON │ (Axios)
+                 Authorization│ Bearer {token}
+                            │
+          ┌─────────────────▼──────────────┐
+          │   BFF (Port 8080)              │
+          │   /bff/login                   │
+          │   /bff/inventory               │
+          │   /bff/cart                    │
+          │   /bff/order                   │
+          └────────────────────────────────┘
+```
+
+---
 - **Framework**: React 19
 - **Lenguaje**: TypeScript
 - **Bundler**: Vite

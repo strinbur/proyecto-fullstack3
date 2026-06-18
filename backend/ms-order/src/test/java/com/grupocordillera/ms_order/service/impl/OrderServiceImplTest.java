@@ -71,15 +71,6 @@ class OrderServiceImplTest {
         assertEquals("Orden no encontrada", exception.getMessage());
     }
 
-    @Test
-    void shouldThrowExceptionWhenStatusIsInvalid() {
-        OrderException exception = assertThrows(
-                OrderException.class,
-                () -> service.getOrdersByStatus("cualquier-cosa")
-        );
-
-        assertEquals("Estado inválido: cualquier-cosa", exception.getMessage());
-    }
 
     @Test
     void shouldReturnOrdersByUser() {
@@ -106,20 +97,6 @@ class OrderServiceImplTest {
         assertEquals(1, result.size());
     }
 
-    @Test
-    void shouldReturnOrdersByStatus() {
-
-        Order order = new Order();
-        order.setStatus(OrderStatus.PENDIENTE);
-
-        when(orderRepository.findByStatus(OrderStatus.PENDIENTE))
-                .thenReturn(List.of(order));
-
-        List<OrderResponseDTO> result =
-                service.getOrdersByStatus("PENDIENTE");
-
-        assertEquals(1, result.size());
-    }
 
     @Test
     void shouldCreateOrderSuccessfully() {
@@ -169,4 +146,51 @@ class OrderServiceImplTest {
         assertEquals("ORD-1", result.getId());
         assertEquals("test@test.com", result.getUserEmail());
     }
+
+    
+@Test
+void shouldReturnOrdersByStatus() {
+    Order order = new Order();
+    order.setStatus(OrderStatus.PENDIENTE);
+
+    when(orderRepository.findByStatus(OrderStatus.PENDIENTE)).thenReturn(List.of(order));
+
+    List<OrderResponseDTO> result = service.getOrdersByStatus("PENDIENTE");
+
+    assertEquals(1, result.size());
+}
+
+@Test
+void shouldThrowExceptionWhenStatusIsInvalid() {
+    OrderException exception = assertThrows(OrderException.class, 
+            () -> service.getOrdersByStatus("estado-invalido"));
+
+    assertEquals("Estado inválido: estado-invalido", exception.getMessage());
+}
+
+@Test
+void shouldUpdateOrderStatusSuccessfully() {
+    Order order = new Order();
+    order.setId("ORD-1");
+    order.setStatus(OrderStatus.PENDIENTE);
+
+    when(orderRepository.findById("ORD-1")).thenReturn(java.util.Optional.of(order));
+    when(orderRepository.save(any(Order.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    OrderResponseDTO result = service.updateOrderStatus("ORD-1", "COMPLETADO");
+
+    assertNotNull(result);
+    assertEquals(OrderStatus.COMPLETADO, order.getStatus());
+}
+
+@Test
+void shouldThrowExceptionWhenUpdatingNonExistingOrder() {
+    when(orderRepository.findById("123")).thenReturn(java.util.Optional.empty());
+
+    OrderException exception = assertThrows(OrderException.class, 
+            () -> service.updateOrderStatus("123", "COMPLETADO"));
+
+    assertEquals("Orden no encontrada", exception.getMessage());
+}
+
 }

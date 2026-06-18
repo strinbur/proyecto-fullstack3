@@ -6,13 +6,14 @@ import com.grupocordillera.ms_order.dto.OrderResponseDTO;
 import com.grupocordillera.ms_order.common.exception.OrderException;
 import com.grupocordillera.ms_order.factory.OrderFactory;
 import com.grupocordillera.ms_order.model.Order;
+import com.grupocordillera.ms_order.model.OrderStatus;
 import com.grupocordillera.ms_order.repository.OrderRepository;
 import com.grupocordillera.ms_order.service.OrderService;
 import org.springframework.stereotype.Service;
 import com.grupocordillera.ms_order.inventory.client.InventoryClient;
 import com.grupocordillera.ms_order.inventory.client.InventoryResponseDTO;
 import com.grupocordillera.ms_order.inventory.client.InventoryUpdateDTO;
-import com.grupocordillera.ms_order.model.OrderStatus;
+
 import java.util.List;
 
 @Service
@@ -37,43 +38,24 @@ public class OrderServiceImpl implements OrderService {
         }
 
         for (var item : cart.getItems()) {
-            InventoryResponseDTO product =
-                    inventoryClient.getByCode(item.getProductCode());
+            InventoryResponseDTO product = inventoryClient.getByCode(item.getProductCode());
 
             if (product.getQuantity() < item.getQuantity()) {
-                throw new OrderException(
-                        "Stock insuficiente: " + item.getProductCode()
-                );
+                throw new OrderException("Stock insuficiente: " + item.getProductCode());
             }
 
-            InventoryUpdateDTO update =
-                    new InventoryUpdateDTO();
-
+            InventoryUpdateDTO update = new InventoryUpdateDTO();
             update.setName(product.getName());
             update.setPrice(product.getPrice());
-            update.setQuantity(
-                    product.getQuantity() - item.getQuantity()
-            );
+            update.setQuantity(product.getQuantity() - item.getQuantity());
             update.setCategory(product.getCategory());
-            update.setBrand(product.getBrand());
+            update.setBrand(product.getBrand()); 
 
-            inventoryClient.update(
-                    item.getProductCode(),
-                    update
-            );
+            inventoryClient.update(item.getProductCode(), update);
         }
 
-        Order order =
-                OrderFactory.createOrder(
-                        userEmail,
-                        userName,
-                        cart
-                );
-
-        Order saved =
-                orderRepository.save(order);
-
-        cartClient.clearCart();
+        Order order = OrderFactory.createOrder(userEmail, userName, cart);
+        Order saved = orderRepository.save(order);
 
         return OrderFactory.toResponse(saved);
     }
@@ -81,6 +63,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderResponseDTO> getOrdersByUser(String userEmail) {
         return orderRepository.findByUserEmail(userEmail).stream()
+                .map(OrderFactory::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<OrderResponseDTO> getAllOrders() {
+        return orderRepository.findAll().stream()
                 .map(OrderFactory::toResponse)
                 .toList();
     }
@@ -94,19 +83,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<OrderResponseDTO> getAllOrders() {
-
-        return orderRepository.findAll()
-                .stream()
-                .map(OrderFactory::toResponse)
-                .toList();
-    }
-
-    @Override
     public List<OrderResponseDTO> getOrdersByStatus(String status) {
-
         OrderStatus orderStatus;
-
         try {
             orderStatus = OrderStatus.valueOf(status.toUpperCase());
         } catch (IllegalArgumentException e) {
@@ -132,52 +110,34 @@ public class OrderServiceImpl implements OrderService {
         }
 
         if (order.getStatus() == OrderStatus.CANCELADO) {
-            throw new OrderException(
-                    "No se puede modificar una orden cancelada"
-            );
+            throw new OrderException("No se puede modificar una orden cancelada");
         }
 
-        if (order.getStatus() == OrderStatus.COMPLETADO &&
-                newStatus == OrderStatus.CANCELADO) {
-            throw new OrderException(
-                    "No se puede cancelar una orden completada"
-            );
+        if (order.getStatus() == OrderStatus.COMPLETADO && newStatus == OrderStatus.CANCELADO) {
+            throw new OrderException("No se puede cancelar una orden completada");
         }
 
         if (order.getStatus() == newStatus) {
-            throw new OrderException(
-                    "La orden ya se encuentra en estado " + newStatus
-            );
+            throw new OrderException("La orden ya se encuentra en estado " + newStatus);
         }
 
-        if (newStatus == OrderStatus.CANCELADO &&
-                order.getStatus() == OrderStatus.PENDIENTE) {
+        if (newStatus == OrderStatus.CANCELADO && order.getStatus() == OrderStatus.PENDIENTE) {
             for (var item : order.getItems()) {
-                InventoryResponseDTO product =
-                        inventoryClient.getByCode(item.getProductCode());
+                InventoryResponseDTO product = inventoryClient.getByCode(item.getProductCode());
 
-                InventoryUpdateDTO update =
-                        new InventoryUpdateDTO();
-
+                InventoryUpdateDTO update = new InventoryUpdateDTO();
                 update.setName(product.getName());
                 update.setBrand(product.getBrand());
                 update.setPrice(product.getPrice());
                 update.setCategory(product.getCategory());
+                update.setQuantity(product.getQuantity() + item.getQuantity());
 
-                update.setQuantity(
-                        product.getQuantity() + item.getQuantity()
-                );
-
-                inventoryClient.update(
-                        item.getProductCode(),
-                        update
-                );
+                inventoryClient.update(item.getProductCode(), update);
             }
         }
 
         order.setStatus(newStatus);
         Order saved = orderRepository.save(order);
-
         return OrderFactory.toResponse(saved);
     }
 

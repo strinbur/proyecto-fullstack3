@@ -10,9 +10,9 @@ public interface OrderService {
 
     List<OrderResponseDTO> getOrdersByUser(String userEmail);
 
-    OrderResponseDTO getOrderById(String id);
-
     List<OrderResponseDTO> getAllOrders();
+
+    OrderResponseDTO getOrderById(String id);
 
     List<OrderResponseDTO> getOrdersByStatus(String status);
 
