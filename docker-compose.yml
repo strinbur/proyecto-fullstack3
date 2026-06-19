@@ -58,6 +58,37 @@ services:
       - ms-order
       - ms-inventory
 
+  ms-analytics:
+    build:
+      context: ./backend/ms-analytics
+    container_name: ms-analytics
+    ports:
+      - "8086:8086"
+    environment:
+      - DATA_AGGREGATION_URL=http://ms-data-aggregation:8085
+      - JWT_SECRET_KEY=f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD
+      - JWT_ALGORITHM=HS256
+      - CRITICAL_STOCK_THRESHOLD=5
+      - MONGODB_URL=mongodb://mongodb:27017
+      - MONGODB_DATABASE=ms-analytics
+    depends_on:
+      - ms-data-aggregation
+      - mongodb
+
+  ms-reporting:
+    build:
+      context: ./backend/ms-reporting
+    container_name: ms-reporting
+    ports:
+      - "8087:8087"
+    environment:
+      - ANALYTICS_URL=http://ms-analytics:8086
+      - JWT_SECRET_KEY=f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD
+      - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/reporting_bd
+    depends_on:
+      - ms-analytics
+      - mongodb
+
   ms-bff:
     build:
       context: ./backend/bff
