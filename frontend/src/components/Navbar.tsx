@@ -3,13 +3,16 @@ import "./Navbar.css";
 import { Link } from "react-router-dom";
 import { useState, useRef, useEffect, useContext } from "react";
 import { AuthContext } from "../features/auth/AuthContext";
+import { CartContext } from "../features/cart/CartContext";
 
 function Navbar() {
 
   const auth = useContext(AuthContext);
+  const cart = useContext(CartContext);
 
   const user = auth?.user;
   const logout = auth?.logout;
+  const totalCartItems = cart?.totalItems ?? 0;
 
   const [open, setOpen] = useState(false);
 
@@ -55,6 +58,13 @@ function Navbar() {
 
           <Link to="/products" className="navbar-link">
             Productos
+          </Link>
+
+          <Link to="/cart" className="navbar-link">
+            Carrito
+            {totalCartItems > 0 && (
+              <span className="cart-badge">{totalCartItems}</span>
+            )}
           </Link>
 
           {user && (

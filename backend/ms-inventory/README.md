@@ -3,6 +3,87 @@
 ## Descripción
 Microservicio responsable de la gestión del inventario de productos. Ofrece endpoints para crear, leer, actualizar y eliminar productos, con validaciones y reglas de negocio orientadas a inventario, y seguridad basada en JWT.
 
+---
+
+## Diagrama C3 - Componentes de ms-inventory
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│             ms-inventory (Spring Boot - Port 8082)                  │
+│                                                                      │
+│  ┌────────────────────────────────────────────────────────────────┐ │
+│  │            InventoryController                               │ │
+│  │  @RestController @RequestMapping(/inventory)                │ │
+│  │  - GET  / (List, filterable by category)                   │ │
+│  │  - GET  /{code} (Get by code)                             │ │
+│  │  - POST / (Create, requires ADMIN)                        │ │
+│  │  - PUT  /{code} (Update, requires ADMIN)                 │ │
+│  │  - DELETE /{code} (Delete, requires ADMIN)               │ │
+│  └────────┬──────────────────────────────────────────────────┘ │
+│           │                                                     │
+│  ┌────────▼──────────────────────────────────────────────────┐ │
+│  │           InventoryService (Interface)                   │ │
+│  │  ┌──────────────────────────────────────────────────┐   │ │
+│  │  │  InventoryServiceImpl                            │   │ │
+│  │  │  - validateProduct(dto)                         │   │ │
+│  │  │  - applyBusinessRules(product)                 │   │ │
+│  │  │  - checkStock(productId, qty)                  │   │ │
+│  │  │  - applyDynamicAttributes(product)             │   │ │
+│  │  │  - findAll(), findByCode(), save(), etc.       │   │ │
+│  │  └──────────┬───────────────────────────────────┘   │ │
+│  └─────────────┼───────────────────────────────────────┘ │
+│                │                                         │
+│  ┌─────────────▼───────────────────────────────────────┐ │
+│  │       ProductRepository (MongoRepository)          │ │
+│  │  extends MongoRepository<Product, String>          │ │
+│  │  - findByCode(code)                               │ │
+│  │  - findByCategory(category)                       │ │
+│  │  - deleteByCode(code)                             │ │
+│  └─────────────┬───────────────────────────────────────┘ │
+│                │                                         │
+│  ┌─────────────▼───────────────────────────────────────┐ │
+│  │       Security & Validation Layer                  │ │
+│  │  ┌───────────────────────────────────────────────┐ │ │
+│  │  │ JwtAuthenticationFilter                       │ │ │
+│  │  │ - Intercepts all requests                     │ │ │
+│  │  │ - Validates JWT token                        │ │ │
+│  │  │ - Extracts role (ADMIN, CLIENTE, VENTAS)    │ │ │
+│  │  └───────────────────────────────────────────────┘ │ │
+│  │  ┌───────────────────────────────────────────────┐ │ │
+│  │  │ JwtProvider                                   │ │ │
+│  │  │ - validateToken(token)                       │ │ │
+│  │  │ - extractRole(token)                         │ │ │
+│  │  │ - extractUserId(token)                       │ │ │
+│  │  └───────────────────────────────────────────────┘ │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Validation & Exception Handling                   │ │
+│  │  - @Valid annotations on DTOs                     │ │
+│  │  - @NotBlank, @Min, @Max validators              │ │
+│  │  - GlobalExceptionHandler                        │ │
+│  │  - Custom ProductExceptions                      │ │
+│  └────────────────────────────────────────────────────┘ │
+│                                                          │
+│  ┌────────────────────────────────────────────────────┐ │
+│  │  Configuration                                     │ │
+│  │  - SecurityConfig (JWT setup)                    │ │
+│  │  - MongockConfig (DB migrations)                 │ │
+│  │  - InventoryFactory (Product creation)           │ │
+│  └────────────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────────┘
+                         │
+          ┌──────────────▼──────────────┐
+          │    MongoDB (Port 27017)     │
+          │  Database: inventory_bd     │
+          │  Collections:               │
+          │  - products                 │
+          │  - product_sequences        │
+          └─────────────────────────────┘
+```
+
+---
+
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
 - **Framework**: Spring Boot 4.0.6
@@ -11,21 +92,31 @@ Microservicio responsable de la gestión del inventario de productos. Ofrece end
 - **Documentación**: OpenAPI/Swagger
 - **Herramientas**: Lombok, Mongock, Spring Security
 
-## Dependencias
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-webmvc` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-data-mongodb-test` (test) — pruebas de integración con MongoDB
-- `spring-boot-starter-webmvc-test` (test) — utilidades de prueba para MVC
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
-- `jjwt-jackson` (runtime) — soporte JSON para JWT
+---
+
+## Dependencias Principales (Top 5)
+
+1. **MongoDB** (`spring-boot-starter-data-mongodb`)
+   - Integración con MongoDB usando Spring Data
+   - Acceso a datos con repositorios reactivos
+
+2. **Mongock** (`mongock-springboot-v3`)
+   - Migraciones de base de datos en MongoDB
+   - Versionado y control de cambios en la BD
+
+3. **Lombok** (`lombok`)
+   - Generación automática de getters/setters
+   - Reduce código boilerplate significativamente
+
+4. **JWT** (`jjwt-api`, `jjwt-impl`, `jjwt-jackson`)
+   - Creación y validación de JSON Web Tokens
+   - Autenticación y autorización segura
+
+5. **Spring Validation** (`spring-boot-starter-validation`)
+   - Validación de DTOs y datos de entrada
+   - Anotaciones declarativas para validación
+
+---
 
 ## Principales Patrones de Diseño
 - **Repository Pattern**: Acceso a datos con `MongoRepository`.
@@ -55,10 +146,12 @@ Microservicio responsable de la gestión del inventario de productos. Ofrece end
 - Cantidad cero agrega atributo `estado: sin stock`.
 - Soporta atributos dinámicos adicionales en el producto.
 
-### Seguridad
-- `GET /inventory` y `GET /inventory/code/{code}` son de acceso público.
-- Las operaciones de escritura, edición y borrado (`POST`, `PUT`, `DELETE`) un usuario con rol `ADMIN`
-- Los tokens JWT tienen una validez extendida de 24 horas (`86400000 ms`).
+### Autenticación y Autorización
+- **Endpoint público**: `GET /inventory` y `GET /inventory/code/{code}` (sin token requerido)
+- **Endpoints protegidos**: Las operaciones de escritura, edición y borrado (`POST`, `PUT`, `DELETE`) requieren autenticación
+- **Control de acceso**: Solo usuarios con rol `ADMIN` pueden crear, modificar o eliminar productos
+- **Token JWT**: Validez de 24 horas (`86400000 ms`), incluye información de rol y usuario
+- **Propagación**: El BFF propaga el token `Authorization` en todas las peticiones
 
 ### Manejo de Errores
 - Respuestas adecuadas: 400 para validaciones, 404 para no encontrado, etc.
@@ -105,17 +198,45 @@ mvn test
 - Mongock ejecuta las migraciones de base de datos al iniciar.
 
 ## Arquitectura del Proyecto
+
+### Estructura de Directorios
 ```
 src/main/java/com/grupocordillera/ms_inventory/
-├── config/          # Configuraciones de Spring (Seguridad, Mongock)
-├── controller/      # Controladores REST
-├── dto/             # Data Transfer Objects
-├── exception/       # Excepciones personalizadas
-├── factory/         # Factory para creación y mapeo de objetos
-├── migrations/      # Scripts de migración de BD (Mongock)
-├── model/           # Entidades de dominio
-├── repository/      # Interfaces de repositorio
-├── security/        # Servicios de JWT y filtros de autenticación
-└── service/         # Lógica de negocio
-    └── impl/        # Implementaciones de servicios
+├── config/             # Configuraciones de Spring
+│   ├── SecurityConfig.java
+│   ├── MongockConfig.java
+│   └── WebConfig.java
+├── controller/         # Controladores REST
+│   └── InventoryController.java
+├── dto/                # Data Transfer Objects
+│   ├── ProductRequestDTO.java
+│   └── ProductResponseDTO.java
+├── exception/          # Excepciones personalizadas
+│   ├── InventoryException.java
+│   └── GlobalExceptionHandler.java
+├── factory/            # Factory Pattern
+│   └── InventoryFactory.java
+├── migrations/         # Scripts de migración (Mongock)
+│   ├── ChangeLogs.java
+│   └── InitialData.java
+├── model/              # Entidades de dominio
+│   ├── Product.java
+│   └── Category.java
+├── repository/         # Interfaces MongoRepository
+│   └── ProductRepository.java
+├── security/           # JWT y Autenticación
+│   ├── JwtProvider.java
+│   ├── JwtAuthenticationFilter.java
+│   └── SecurityUtil.java
+├── service/            # Lógica de negocio
+│   ├── InventoryService.java
+│   └── impl/
+│       └── InventoryServiceImpl.java
+└── MsInventoryApplication.java
 ```
+
+### Patrones de Arquitectura
+- **Layered Architecture**: Separación clara entre capas (Controller → Service → Repository)
+- **Hexagonal Architecture**: Independencia de frameworks externos
+- **Domain-Driven Design**: Entidades de dominio bien definidas
+- **SOLID Principles**: Responsabilidad única, abierto/cerrado, inversión de dependencias

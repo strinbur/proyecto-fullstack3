@@ -3,6 +3,16 @@
 ## Descripción
 Este microservicio maneja la autenticación y la gestión de usuarios para la aplicación fullstack. Proporciona endpoints para registro, inicio de sesión, consulta, actualización y eliminación de usuarios, con seguridad basada en JWT y roles.
 
+---
+
+## Diagrama C3 - Componentes de ms-login
+
+---
+
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/Fullstack%203%20diagrama%20c3%20login.drawio.png" />
+
+---
+
 ## Stack Tecnológico
 - **Lenguaje**: Java 25
 - **Framework**: Spring Boot 4.0.6
@@ -11,27 +21,40 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
 - **Documentación**: OpenAPI/Swagger
 - **Herramientas**: Lombok, Mongock, Spring Security
 
-## Dependencias
-- `spring-boot-starter-data-mongodb` — integración con MongoDB usando Spring Data
-- `spring-boot-starter-web` — base para APIs REST con Spring MVC
-- `spring-boot-starter-security` — seguridad y filtros de autenticación
-- `spring-boot-starter-validation` — validación de DTOs y datos de entrada
-- `spring-boot-starter-test` (test) — utilidades de pruebas unitarias e integración
-- `spring-boot-devtools` (runtime/dev) — recarga automática y herramientas de desarrollo
-- `lombok` — generación de getters/setters y código boilerplate
-- `mongock-springboot-v3` — migraciones de base de datos en MongoDB
-- `mongodb-springdata-v4-driver` — driver MongoDB para Spring Data
-- `springdoc-openapi-starter-webmvc-ui` — documentación OpenAPI/Swagger
-- `jjwt-api` — interfaz para creación/validación de JWT
-- `jjwt-impl` (runtime) — implementación de JWT
-- `jjwt-jackson` (runtime) — serialización JSON para JWT
+---
+
+## Dependencias Principales (Top 5)
+
+1. **MongoDB** (`spring-boot-starter-data-mongodb`)
+   - Integración con MongoDB usando Spring Data
+   - Persistencia de usuarios y roles
+
+2. **Mongock** (`mongock-springboot-v3`)
+   - Migraciones de base de datos en MongoDB
+   - Versionado y control de cambios en la BD
+
+3. **Lombok** (`lombok`)
+   - Generación automática de getters/setters
+   - Reduce código boilerplate significativamente
+
+4. **JWT** (`jjwt-api`, `jjwt-impl`, `jjwt-jackson`)
+   - Creación y validación de JSON Web Tokens
+   - Autenticación segura con expiración configurable
+
+5. **Spring Validation** (`spring-boot-starter-validation`)
+   - Validación de DTOs y datos de entrada
+   - Anotaciones declarativas para validación
+
+---
 
 ## Principales Patrones de Diseño
-- **Repository Pattern**: Acceso a datos con `MongoRepository`.
+- **Repository Pattern**: Acceso a datos con `MongoRepository` para abstraer la BD.
 - **Service Layer Pattern**: Lógica de negocio separada de controladores.
 - **DTO Pattern**: Transferencia de datos entre capas con objetos específicos.
 - **Filter Pattern**: `JwtAuthenticationFilter` valida tokens en cada petición.
+- **Factory Pattern**: Creación de usuarios con roles específicos.
 - **Dependency Injection**: Spring gestiona dependencias para reducir acoplamiento.
+- **Strategy Pattern**: Diferentes estrategias de autenticación (JWT, roles).
 
 ## Endpoints Principales
 - `POST /login/auth` — Iniciar sesión (público)
@@ -102,22 +125,61 @@ java -jar target/ms-login-0.0.1-SNAPSHOT.jar
 Una vez levantado, accede a Swagger en:
 `http://localhost:8081/swagger-ui.html`
 
+## Testing
+Ejecuta las pruebas unitarias con:
+```bash
+mvn test
+```
+
 ## Notas
 - Este microservicio forma parte de una solución de microservicios completa.
 - Para levantar el sistema completo, usa `docker-compose up` desde la raíz del proyecto.
 - Mongock ejecuta las migraciones de base de datos automáticamente al iniciar.
 
 ## Arquitectura del Proyecto
+
+### Estructura de Directorios
 ```
 src/main/java/com/grupocordillera/ms_login/
-├── config/          # Configuraciones de Spring (Seguridad, Mongock)
-├── controller/      # Controladores REST
-├── dto/             # Data Transfer Objects
-├── exception/       # Excepciones personalizadas
-├── migrations/      # Scripts de migración de BD (Mongock)
-├── model/           # Entidades de dominio
-├── repository/      # Interfaces de repositorio
-├── security/        # Servicios de JWT y filtros de autenticación
-└── service/         # Lógica de negocio
-    └── impl/        # Implementaciones de servicios
+├── config/             # Configuraciones de Spring
+│   ├── SecurityConfig.java
+│   ├── MongockConfig.java
+│   └── WebConfig.java
+├── controller/         # Controladores REST
+│   └── AuthController.java
+├── dto/                # Data Transfer Objects
+│   ├── LoginRequestDTO.java
+│   ├── RegisterRequestDTO.java
+│   ├── UserResponseDTO.java
+│   └── AuthResponseDTO.java
+├── exception/          # Excepciones personalizadas
+│   ├── AuthException.java
+│   ├── UserNotFoundException.java
+│   └── GlobalExceptionHandler.java
+├── factory/            # Factory Pattern
+│   └── UserFactory.java
+├── migrations/         # Scripts de migración (Mongock)
+│   ├── ChangeLogs.java
+│   └── InitialData.java
+├── model/              # Entidades de dominio
+│   ├── User.java
+│   └── Role.java
+├── repository/         # Interfaces MongoRepository
+│   └── UserRepository.java
+├── security/           # JWT y Autenticación
+│   ├── JwtProvider.java
+│   ├── JwtAuthenticationFilter.java
+│   ├── PasswordEncoder.java
+│   └── SecurityUtil.java
+├── service/            # Lógica de negocio
+│   ├── AuthService.java
+│   └── impl/
+│       └── AuthServiceImpl.java
+└── MsLoginApplication.java
 ```
+
+### Patrones de Arquitectura
+- **Layered Architecture**: Separación clara entre capas (Controller → Service → Repository)
+- **Hexagonal Architecture**: Independencia de frameworks externos
+- **Domain-Driven Design**: Entidades de dominio bien definidas (User, Role)
+- **SOLID Principles**: Responsabilidad única, abierto/cerrado, inversión de dependencias

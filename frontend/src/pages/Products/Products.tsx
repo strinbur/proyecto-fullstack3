@@ -1,6 +1,9 @@
-import { useEffect, useState } from "react";
-import { getAllProducts } from "../../features/inventory/inventoryApi";
+import { useContext, useEffect, useState } from "react";
+import { getAllProducts, updateProduct } from "../../features/inventory/inventoryApi";
+import { CartContext } from "../../features/cart/CartContext";
+import { formatCurrency } from "../../utils/format";
 import "./Products.css";
+import { AuthContext } from "../../features/auth/AuthContext";
 
 interface Product {
   id: string;
@@ -18,6 +21,10 @@ export default function Products() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState<number>(1);
   const [stockError, setStockError] = useState("");
+  const [statusMessage, setStatusMessage] = useState("");
+  const { addToCart, items } = useContext(CartContext);
+  const auth = useContext(AuthContext);
+  const [adminQuantity, setAdminQuantity] = useState<number | null>(null);
 
   useEffect(() => {
 
@@ -71,6 +78,7 @@ export default function Products() {
     setSelectedProduct(product);
     setQuantity(1);
     setStockError("");
+    setAdminQuantity(product.quantity);
 
   };
 
@@ -97,6 +105,71 @@ export default function Products() {
 
   };
 
+  const handleAddToCart = (product: Product, quantityToAdd: number) => {
+    if (quantityToAdd < 1) return;
+
+    const currentCartItem = items.find((item) => item.code === product.code);
+    const currentCartQuantity = currentCartItem?.quantity ?? 0;
+    const allowedQuantity = product.quantity - currentCartQuantity;
+
+    if (allowedQuantity <= 0) {
+      setStockError("No hay unidades disponibles para este producto");
+      setStatusMessage("");
+      return;
+    }
+
+    if (quantityToAdd > allowedQuantity) {
+      setStockError(`Solo hay ${allowedQuantity} unidades disponibles en stock`);
+      setStatusMessage("");
+      return;
+    }
+
+    addToCart(
+      {
+        id: product.id,
+        code: product.code,
+        name: product.name,
+        brand: product.brand,
+        price: product.price,
+        category: product.category,
+        imageUrl: getProductImage(product.name),
+        stock: product.quantity,
+      },
+      quantityToAdd
+    );
+
+    setStatusMessage(`${quantityToAdd} producto${quantityToAdd > 1 ? "s" : ""} agregado${quantityToAdd > 1 ? "n" : ""} al carrito`);
+    setStockError("");
+    setSelectedProduct(null);
+    setQuantity(1);
+  };
+
+  const handleAdminUpdate = async () => {
+    if (!selectedProduct || adminQuantity == null) return;
+
+    try {
+      const payload = {
+        name: selectedProduct.name,
+        brand: selectedProduct.brand,
+        price: selectedProduct.price,
+        quantity: adminQuantity,
+        category: selectedProduct.category,
+        specs: {}
+      };
+
+      await updateProduct(selectedProduct.code, payload);
+
+      setStatusMessage("Stock actualizado correctamente");
+      setSelectedProduct(null);
+      // refresh products
+      const data = await getAllProducts();
+      setProducts(data);
+    } catch (err) {
+      console.error("Error actualizando stock", err);
+      setStatusMessage("Error actualizando stock");
+    }
+  };
+
   return (
 
     <div className="products-page">
@@ -120,6 +193,12 @@ export default function Products() {
           </button>
 
         </div>
+
+        {statusMessage && (
+          <div className="status-alert page-alert">
+            {statusMessage}
+          </div>
+        )}
 
         <div className="products-grid">
 
@@ -167,12 +246,36 @@ export default function Products() {
                 <div className="product-footer">
 
                   <span className="product-price">
-                    ${product.price}
+                    {formatCurrency(product.price)}
                   </span>
 
-                  <button className="buy-btn">
-                    Comprar
-                  </button>
+                  {product.quantity === 0 ? (
+                    <button className="buy-btn" disabled>
+                      Producto agotado
+                    </button>
+                  ) : (
+                    <button
+                      className="buy-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(product, 1);
+                      }}
+                    >
+                      Añadir al carrito
+                    </button>
+                  )}
+
+                  {auth?.user?.role === "ADMIN" && (
+                    <button
+                      className="admin-edit-btn"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openProductDetail(product);
+                      }}
+                    >
+                      Editar stock
+                    </button>
+                  )}
 
                 </div>
 
@@ -225,7 +328,7 @@ export default function Products() {
 
               <p>Stock disponible: {selectedProduct.quantity}</p>
 
-              <h3>${selectedProduct.price}</h3>
+              <h3>{formatCurrency(selectedProduct.price)}</h3>
 
               <div className="quantity-container">
 
@@ -239,6 +342,7 @@ export default function Products() {
                     handleQuantityChange(Number(e.target.value))
                   }
                   className="quantity-input"
+                  disabled={selectedProduct.quantity === 0}
                 />
 
               </div>
@@ -249,9 +353,36 @@ export default function Products() {
                 </div>
               )}
 
-              <button className="modal-buy-btn">
-                Comprar {quantity} producto{quantity > 1 ? "s" : ""}
-              </button>
+              {statusMessage && (
+                <div className="status-alert">
+                  {statusMessage}
+                </div>
+              )}
+
+              {auth?.user?.role === "ADMIN" ? (
+                <div className="admin-update-row">
+                  <label>Stock:</label>
+                  <input
+                    type="number"
+                    value={adminQuantity ?? 0}
+                    min={0}
+                    onChange={(e) => setAdminQuantity(Number(e.target.value))}
+                  />
+                  <button className="admin-update-btn" onClick={handleAdminUpdate}>
+                    Actualizar stock
+                  </button>
+                </div>
+              ) : (
+                <button
+                  className="modal-buy-btn"
+                  onClick={() => handleAddToCart(selectedProduct, quantity)}
+                  disabled={selectedProduct.quantity === 0}
+                >
+                  {selectedProduct.quantity === 0
+                    ? "Producto agotado"
+                    : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
+                </button>
+              )}
 
             </div>
 

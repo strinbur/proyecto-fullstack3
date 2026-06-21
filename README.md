@@ -2,36 +2,28 @@
 
 ## Contexto
 
-En este documento se dara a conocer el diseño arquitectonico para la nueva plataforma de monitoreo de Grupo Cordillera. Esta empresa se centra en la comercialización de productos para el hogar y tecnologia. Actual mente presenta el desafio para la gestion y analisis de informacion de sus sistemas, nosotros proponemos un sistema basado en microservicios, gracias a este enfoque nos permitira consolidar la informacion, asegurar su disponibilidad y facilitar la toma de desiciones generales de la empresa.
-
+Este proyecto es una demostración de una arquitectura de microservicios para una plataforma de e-commerce de Grupo Cordillera. La arquitectura está diseñada para proporcionar escalabilidad, mantenibilidad y separación de responsabilidades, permitiendo que cada componente del sistema funcione de forma independiente.
 
 ---
 
 ## Descripción General
 
-Este repositorio es una demostracion funcional para el Grupo Cordillera. La cual implementa una arquitectura basada en microservicios desacoplados e integrados a traves de un BFF, la cual cuenta con un Frontend que maneja la sesion con AtuhContext y persistencia de datos basicos en localstorage, el BFF centralizar la comunicacion entre el frontend y los microservicios, ambos microservicios usan validacion mediante JWT.
+Este repositorio contiene una solución completa de fullstack con arquitectura de microservicios. Incluye un Frontend en React/TypeScript que consume un BFF (Backend for Frontend), el cual actúa como punto central de comunicación con múltiples microservicios especializados. El sistema implementa autenticación y autorización basada en JWT, persistencia de datos en MongoDB, y está completamente containerizado con Docker para facilitar el despliegue.
 
 ---
 
 ## Componentes Principales
 
-## front
-[Ver README de front](./front/README.md)
+### Frontend
+- [Ver README de frontend](./frontend/README.md)
 
-## ms-bff
-[Ver README de ms-bff](./ms-bff/README.md)
-
-## ms-login
-[Ver README de ms-login](./ms-login/README.md)
-
-## ms-inventory
-[Ver README de ms-inventory](./ms-inventory/README.md)
-
-## ms-cart
-[Ver README de ms-cart](./ms-cart/README.md)
-
-## ms-order
-[Ver README de ms-order](./ms-order/README.md)
+### Backend - Microservicios
+- [Ver README de bff](./backend/bff/README.md)
+- [Ver README de ms-login](./backend/ms-login/README.md)
+- [Ver README de ms-inventory](./backend/ms-inventory/README.md)
+- [Ver README de ms-cart](./backend/ms-cart/README.md)
+- [Ver README de ms-order](./backend/ms-order/README.md)
+- [Ver README de ms-data-aggregation](./backend/ms-data-aggregation/README.md)
 
 ---
 
@@ -60,14 +52,26 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 ## Estructura del Repositorio
 
 ```
-├── front/                  # Aplicación frontend (React + Vite)
-├── ms-bff/                 # Backend for Frontend (Spring Boot)
-├── ms-login/               # Microservicio de Autenticación (Spring Boot)
-├── ms-inventory/           # Microservicio de Inventario (Spring Boot)
-├── ms-cart/                # Microservicio de Carrito (Spring Boot)
-├── ms-order/               # Microservicio de Compra (Spring Boot)
-├── docker-compose.yml      # Orquestación de contenedores
-└── README.md              # Este archivo
+.
+├── frontend/                  # Aplicación frontend (React + TypeScript + Vite)
+│   ├── src/
+│   │   ├── api/               # Configuración de cliente HTTP (Axios)
+│   │   ├── components/        # Componentes reutilizables
+│   │   ├── features/          # Funcionalidades (auth, inventory, cart)
+│   │   ├── pages/             # Páginas de la aplicación
+│   │   └── utils/             # Utilidades y helpers
+│   ├── Dockerfile
+│   └── package.json
+├── backend/                   # Microservicios backend (Java + Spring Boot)
+│   ├── bff/                   # Backend for Frontend (API Gateway)
+│   ├── ms-login/              # Microservicio de Autenticación
+│   ├── ms-inventory/          # Microservicio de Inventario
+│   ├── ms-cart/               # Microservicio de Carrito
+│   ├── ms-order/              # Microservicio de Órdenes
+│   └── README.md
+├── k8s/                       # Configuración de Kubernetes
+├── docker-compose.yml         # Orquestación de servicios con Docker Compose
+└── README.md                  # Este archivo
 ```
 
 ## Requisitos Previos
@@ -124,8 +128,7 @@ El frontend estará disponible en http://localhost:5173
 
 ## Arquitectura del Sistema
 
-
-<img width="1324" height="989" alt="Fullstack 3 diagrama drawio" src="https://github.com/user-attachments/assets/1014b7be-8d6a-4904-9918-37850dfb4f55" />
+<img width="1324" alt="Fullstack 3 arquitectura" src="./docs/Fullstack%203%20arquitectura.drawio.png" />
 
 
 El sistema implementa una arquitectura de microservicios donde:
@@ -152,12 +155,12 @@ Las ramas siempre deben derivar de la rama `develop`:
 ```bash
 git checkout develop
 git pull origin develop
-git checkout -b feature-nombre-tarea-o-colaborador
+git checkout -b feature/nombre/tarea/o/colaborador
 ```
 
-**Nomenclatura de ramas**: `feature-descripcion` o `feature-nombre-colaborador`
+**Nomenclatura de ramas**: `feature/descripcion` o `feature/nombre/colaborador`
 
-Ejemplo: `feature-login-validation` o `feature-juan-perez`
+Ejemplo: `feature/login/validation` o `feature/juan/perez`
 
 ### 3. Realizar Cambios
 
@@ -174,7 +177,7 @@ git commit -m "feat: descripción clara del cambio"
 ### 4. Enviar Pull Request
 
 ```bash
-git push origin feature-nombre-tarea-o-colaborador
+git push origin feature/nombre/tarea/o/colaborador
 ```
 
 Crear un Pull Request hacia `develop` con:
@@ -188,9 +191,3 @@ Crear un Pull Request hacia `develop` con:
 - Una vez aprobado, hacer merge a `develop`
 
 ---
-
-## Gestión del Proyecto
-
-Para ver el estado de tareas y seguimiento del proyecto:
-
-[📋 Tablero de Gestión (Trello) - Grupo Cordillera](https://trello.com/invite/b/67f58f82a158aeba95daa089/ATTI81f05e6842618d1af0297687e8fd257eA1481734/fullstack-3)

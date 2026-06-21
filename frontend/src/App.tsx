@@ -9,16 +9,18 @@ import Register from "./pages/Register/Register";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import Profile from "./pages/Profile/Profile";
 import Products from "./pages/Products/Products";
+import Cart from "./pages/Cart/Cart";
 
 import { AuthProvider } from "./features/auth/AuthProvider";
+import { CartProvider } from "./features/cart/CartContext";
 
 function App() {
 
   return (
 
     <AuthProvider>
-
-      <BrowserRouter>
+      <CartProvider>
+        <BrowserRouter>
 
         <div
           style={{
@@ -40,6 +42,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/cart" element={<Cart />} />
 
             </Routes>
 
@@ -49,8 +52,8 @@ function App() {
 
         </div>
 
-      </BrowserRouter>
-
+        </BrowserRouter>
+      </CartProvider>
     </AuthProvider>
 
   );

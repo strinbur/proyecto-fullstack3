@@ -1,0 +1,35 @@
+server:
+  port: 8087
+
+spring:
+  application:
+    name: ms-reporting
+
+  mongodb:
+    uri: mongodb://mongodb:27017/reporting_bd
+
+analytics:
+  url: http://ms-analytics:8086
+
+jwt:
+  secret:
+    key: f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

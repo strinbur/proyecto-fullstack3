@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-analytics
+  labels:
+    app: ms-analytics
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-analytics
+  template:
+    metadata:
+      labels:
+        app: ms-analytics
+    spec:
+      containers:
+      - name: ms-analytics
+        image: proyecto-fullstack3-ms-analytics:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8086
+
+        env:
+        - name: PYTHONUNBUFFERED
+          value: "1"
+        - name: DATA_AGGREGATION_URL
+          value: "http://ms-data-aggregation:8085"
+        - name: JWT_SECRET_KEY
+          value: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+        - name: JWT_ALGORITHM
+          value: "HS256"
+        - name: CRITICAL_STOCK_THRESHOLD
+          value: "5"
+        - name: MONGODB_URL
+          value: "mongodb://mongodb:27017"
+        - name: MONGODB_DATABASE
+          value: "ms-analytics"
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"

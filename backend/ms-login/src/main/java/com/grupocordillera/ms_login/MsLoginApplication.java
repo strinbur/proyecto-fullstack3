@@ -1,5 +1,6 @@
 package com.grupocordillera.ms_login;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,7 +15,8 @@ public class MsLoginApplication {
     }
 
     @Bean
-    public CommandLineRunner printMappings(RequestMappingHandlerMapping mapping) {
+    public CommandLineRunner printMappings(
+            @Qualifier("requestMappingHandlerMapping") RequestMappingHandlerMapping mapping) {
         return args -> {
             System.out.println("===== ENDPOINTS REGISTRADOS =====");
             mapping.getHandlerMethods().forEach((key, value) -> {

@@ -1,18 +1,26 @@
 .profile-container {
-  height: 100vh;
+  min-height: 100vh;
+  padding: 3rem 1rem;
   display: flex;
   justify-content: center;
-  align-items: center;
   background: #f3f4f6;
 }
 
+.profile-main {
+  width: min(1100px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
 .profile-card {
-  width: 360px;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
   background: white;
   padding: 35px;
-  border-radius: 14px;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
-  text-align: center;
+  border-radius: 18px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
   transition: transform 0.2s ease;
 }
 
@@ -43,14 +51,18 @@
 }
 
 .profile-info {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 2rem;
   text-align: left;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
 }
 
 .profile-info p {
-  margin: 8px 0;
+  margin: 0;
   color: #374151;
-  font-size: 14px;
+  font-size: 15px;
+  line-height: 1.8;
 }
 
 .profile-input {
@@ -71,8 +83,13 @@
 
 .profile-actions {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.profile-actions .profile-button {
+  flex: 1 1 220px;
 }
 
 /* BOTÓN BASE */
@@ -128,4 +145,69 @@
 
 .profile-button:active {
   transform: scale(0.98);
+}
+
+.profile-orders {
+  width: 100%;
+}
+
+.profile-orders h2 {
+  margin-bottom: 1.25rem;
+  color: #1f2937;
+  font-size: 1.6rem;
+}
+
+.no-orders {
+  color: #475569;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+}
+
+.orders-table-wrapper {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 720px;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 1rem 0.9rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.orders-table th {
+  background: #f8fafc;
+  color: #334155;
+  font-weight: 700;
+}
+
+.orders-table tbody tr:hover {
+  background: #f1f5f9;
+}
+
+.order-status {
+  display: inline-flex;
+  padding: 0.35rem 0.75rem;
+  background: #d1fae5;
+  color: #065f46;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.order-products {
+  max-width: 28rem;
+  white-space: normal;
+  line-height: 1.4;
 }
