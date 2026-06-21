@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-data-aggregation
+  labels:
+    app: ms-data-aggregation
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-data-aggregation
+  template:
+    metadata:
+      labels:
+        app: ms-data-aggregation
+    spec:
+      containers:
+      - name: ms-data-aggregation
+        image: proyecto-fullstack3-ms-data-aggregation:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8085
+
+        env:
+        - name: JAVA_OPTS
+          value: "-Xmx256m -Xms128m"
+
+        - name: ORDER_SERVICE_URL
+          value: "http://ms-order:8084"
+
+        - name: INVENTORY_SERVICE_URL
+          value: "http://ms-inventory:8082"
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8085
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          failureThreshold: 5
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8085
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          failureThreshold: 6

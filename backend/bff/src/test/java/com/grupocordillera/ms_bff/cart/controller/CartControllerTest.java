@@ -5,92 +5,112 @@ import com.grupocordillera.ms_bff.cart.dto.CartResponseDTO;
 import com.grupocordillera.ms_bff.cart.dto.UpdateQuantityDTO;
 import com.grupocordillera.ms_bff.cart.service.CartService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CartControllerTest {
 
-    private final CartService service =
-            Mockito.mock(CartService.class);
+    @Mock
+    private CartService service;
 
-    private final CartController controller =
-            new CartController(service);
+    @InjectMocks
+    private CartController controller;
 
     @Test
-    void shouldGetCart() {
+    void getCart_shouldReturnCart() {
 
-        CartResponseDTO dto = new CartResponseDTO();
+        CartResponseDTO response = new CartResponseDTO();
+        response.setUserEmail("user@test.com");
 
-        Mockito.when(service.getCart())
-                .thenReturn(dto);
+        when(service.getCart()).thenReturn(response);
 
-        CartResponseDTO response =
-                controller.getCart();
+        CartResponseDTO result = controller.getCart();
 
-        assertNotNull(response);
+        assertNotNull(result);
+        assertEquals("user@test.com", result.getUserEmail());
+
+        verify(service, times(1)).getCart();
     }
 
     @Test
-    void shouldAddProduct() {
+    void addProduct_shouldReturnUpdatedCart() {
 
         AddProductDTO dto = new AddProductDTO();
-        dto.setProductCode("P001");
-        dto.setQuantity(1);
-
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
-
-        Mockito.when(service.addProduct(dto))
-                .thenReturn(responseDto);
-
-        CartResponseDTO response =
-                controller.addProduct(dto);
-
-        assertNotNull(response);
-    }
-
-    @Test
-    void shouldUpdateQuantity() {
-
-        UpdateQuantityDTO dto =
-                new UpdateQuantityDTO();
-
+        dto.setProductCode("ABC123");
         dto.setQuantity(2);
 
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
+        CartResponseDTO response = new CartResponseDTO();
 
-        Mockito.when(service.updateQuantity("P001", dto))
-                .thenReturn(responseDto);
+        when(service.addProduct(dto)).thenReturn(response);
 
-        CartResponseDTO response =
-                controller.updateQuantity("P001", dto);
+        CartResponseDTO result = controller.addProduct(dto);
 
-        assertNotNull(response);
+        assertNotNull(result);
+
+        verify(service, times(1)).addProduct(dto);
     }
 
     @Test
-    void shouldRemoveProduct() {
+    void updateQuantity_shouldReturnUpdatedCart() {
 
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
+        UpdateQuantityDTO dto = new UpdateQuantityDTO();
+        dto.setQuantity(3);
 
-        Mockito.when(service.removeProduct("P001"))
-                .thenReturn(responseDto);
+        CartResponseDTO response = new CartResponseDTO();
 
-        CartResponseDTO response =
-                controller.removeProduct("P001");
+        when(service.updateQuantity("ABC123", dto))
+                .thenReturn(response);
 
-        assertNotNull(response);
+        CartResponseDTO result =
+                controller.updateQuantity("ABC123", dto);
+
+        assertNotNull(result);
+
+        verify(service, times(1))
+                .updateQuantity("ABC123", dto);
     }
 
     @Test
-    void shouldClearCart() {
+    void removeProduct_shouldReturnUpdatedCart() {
+
+        CartResponseDTO response = new CartResponseDTO();
+
+        when(service.removeProduct("ABC123"))
+                .thenReturn(response);
+
+        CartResponseDTO result =
+                controller.removeProduct("ABC123");
+
+        assertNotNull(result);
+
+        verify(service, times(1))
+                .removeProduct("ABC123");
+    }
+
+    @Test
+    void clearCart_shouldCallService() {
+
+        doNothing().when(service).clearCart();
 
         controller.clearCart();
 
-        Mockito.verify(service)
-                .clearCart();
+        verify(service, times(1)).clearCart();
+    }
+
+    @Test
+    void getCart_shouldCallServiceTwice() {
+
+        when(service.getCart()).thenReturn(new CartResponseDTO());
+
+        controller.getCart();
+        controller.getCart();
+
+        verify(service, times(2)).getCart();
     }
 }

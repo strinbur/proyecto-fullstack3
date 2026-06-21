@@ -3,6 +3,7 @@ package com.grupocordillera.ms_login.service.impl;
 import com.grupocordillera.ms_login.dto.AuthResponseDTO;
 import com.grupocordillera.ms_login.dto.CreateUserDTO;
 import com.grupocordillera.ms_login.dto.LoginResponseDTO;
+import com.grupocordillera.ms_login.dto.LoginUpdateDTO;
 import com.grupocordillera.ms_login.dto.RegisterDTO;
 import com.grupocordillera.ms_login.model.Login;
 import com.grupocordillera.ms_login.model.Rol;
@@ -19,6 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -314,5 +316,157 @@ class LoginServiceImplTest {
         verify(repository).findByEmail(dto.getEmail());
         verify(repository, never()).save(any(Login.class));
     }    
+
+@Test
+void testUpdateUser() {
+
+    String id = "1";
+
+    Login existing = new Login();
+    existing.setId(id);
+    existing.setName("Old");
+    existing.setLastname("User");
+    existing.setEmail("old@test.com");
+    existing.setRole(Rol.CLIENTE);
+
+    LoginUpdateDTO dto = new LoginUpdateDTO();
+    dto.setName("New");
+    dto.setLastname("User");
+    dto.setEmail("new@test.com");
+
+    Login updated = new Login();
+    updated.setId(id);
+    updated.setName(dto.getName());
+    updated.setLastname(dto.getLastname());
+    updated.setEmail(dto.getEmail());
+    updated.setRole(Rol.CLIENTE);
+
+    when(repository.findById(id)).thenReturn(Optional.of(existing));
+    when(repository.findByEmail(dto.getEmail())).thenReturn(Optional.empty());
+    when(repository.save(any(Login.class))).thenReturn(updated);
+
+    LoginResponseDTO result = service.updateUser(id, dto);
+
+    assertNotNull(result);
+    assertEquals("New", result.getName());
+    assertEquals("new@test.com", result.getEmail());
+
+    verify(repository).findById(id);
+    verify(repository).save(any(Login.class));
+}
+
+@Test
+void testUpdateUserNotFound() {
+
+    String id = "999";
+
+    LoginUpdateDTO dto = new LoginUpdateDTO();
+    dto.setName("New");
+    dto.setLastname("User");
+    dto.setEmail("new@test.com");
+
+    when(repository.findById(id)).thenReturn(Optional.empty());
+
+    LoginException ex = assertThrows(
+            LoginException.class,
+            () -> service.updateUser(id, dto)
+    );
+
+    assertEquals("Usuario no encontrado", ex.getMessage());
+
+    verify(repository).findById(id);
+    verify(repository, never()).save(any(Login.class));
+}
+
+@Test
+void testUpdateUserEmptyFields() {
+
+    String id = "1";
+
+    Login existing = new Login();
+    existing.setId(id);
+
+    LoginUpdateDTO dto = new LoginUpdateDTO();
+    dto.setName(" ");
+    dto.setLastname(" ");
+    dto.setEmail(" ");
+
+    when(repository.findById(id)).thenReturn(Optional.of(existing));
+
+    LoginException ex = assertThrows(
+            LoginException.class,
+            () -> service.updateUser(id, dto)
+    );
+
+    assertEquals("Campos obligatorios vacíos", ex.getMessage());
+
+    verify(repository).findById(id);
+}
+
+@Test
+void testUpdateUserEmailAlreadyUsed() {
+
+    String id = "1";
+
+    Login existing = new Login();
+    existing.setId(id);
+
+    Login otherUser = new Login();
+    otherUser.setId("2");
+    otherUser.setEmail("used@test.com");
+
+    LoginUpdateDTO dto = new LoginUpdateDTO();
+    dto.setName("Test");
+    dto.setLastname("User");
+    dto.setEmail("used@test.com");
+
+    when(repository.findById(id)).thenReturn(Optional.of(existing));
+    when(repository.findByEmail(dto.getEmail())).thenReturn(Optional.of(otherUser));
+
+    LoginException ex = assertThrows(
+            LoginException.class,
+            () -> service.updateUser(id, dto)
+    );
+
+    assertEquals("El correo ya esta en uso", ex.getMessage());
+
+    verify(repository).findById(id);
+}
+
+@Test
+void testDeleteUser() {
+
+    String id = "1";
+
+    Login user = new Login();
+    user.setId(id);
+    user.setRole(Rol.CLIENTE);
+
+    when(repository.findById(id)).thenReturn(Optional.of(user));
+
+    service.deleteUser(id);
+
+    verify(repository).findById(id);
+    verify(repository).deleteById(id);
+}
+
+@Test
+void testDeleteUserNotFound() {
+
+    String id = "999";
+
+    when(repository.findById(id)).thenReturn(Optional.empty());
+
+    LoginException ex = assertThrows(
+            LoginException.class,
+            () -> service.deleteUser(id)
+    );
+
+    assertEquals("Usuario no encontrado", ex.getMessage());
+
+    verify(repository).findById(id);
+    verify(repository, never()).deleteById(anyString());
+}
+
 
 }

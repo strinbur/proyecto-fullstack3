@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-reporting
+  labels:
+    app: ms-reporting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-reporting
+  template:
+    metadata:
+      labels:
+        app: ms-reporting
+    spec:
+      containers:
+      - name: ms-reporting
+        image: proyecto-fullstack3-ms-reporting:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 8087
+        env:
+        - name: JAVA_OPTS
+          value: "-Xmx256m -Xms128m"
+
+        - name: ANALYTICS_URL
+          value: "http://ms-analytics:8086"
+
+        - name: JWT_SECRET_KEY
+          value: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8087
+          initialDelaySeconds: 45
+          periodSeconds: 10
+          failureThreshold: 5
+
+        readinessProbe:
+          httpGet:
+            path: /actuator/health/readiness
+            port: 8087
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          failureThreshold: 6

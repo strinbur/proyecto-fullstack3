@@ -23,5 +23,23 @@ spring:
           ms-order:
             url: http://ms-order:8084
 
+          ms-reporting:
+            url: http://ms-reporting:8087
+
 server:
   port: 8080
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

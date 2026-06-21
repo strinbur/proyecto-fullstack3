@@ -1,9 +1,6 @@
 package com.grupocordillera.ms_reporting.report.dto;
 
-
 import lombok.Data;
-
-
 import java.time.LocalDateTime;
 
 
