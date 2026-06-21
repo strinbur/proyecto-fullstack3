@@ -1,8 +1,6 @@
 package com.grupocordillera.ms_reporting.report.dto;
 
-
 import lombok.Data;
-
 
 @Data
 public class SalesSummaryDTO {

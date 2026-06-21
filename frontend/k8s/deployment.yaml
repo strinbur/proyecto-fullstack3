@@ -5,7 +5,7 @@ metadata:
   labels:
     app: frontend
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: frontend
@@ -16,13 +16,13 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: proyecto-fullstack3-frontend:latest
-        imagePullPolicy: IfNotPresent
+        image: proyecto-fullstack3-front:latest
+        imagePullPolicy: Never
         ports:
-        - containerPort: 80
+        - containerPort: 5173
         resources:
           requests:
-            memory: "256Mi"
+            memory: "128Mi"
             cpu: "250m"
           limits:
             memory: "512Mi"

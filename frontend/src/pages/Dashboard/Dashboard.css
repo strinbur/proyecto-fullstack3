@@ -43,10 +43,10 @@
 
 .create-user-card {
   background: white;
-  border-radius: 28px;
+  border-radius: 20px;
   padding: 40px;
   margin-bottom: 30px;
-  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
+  border: 1px solid #eef2f7;
 }
 
 /* inputs/select */
@@ -75,18 +75,17 @@
 .create-user-card button {
   width: 100%;
   padding: 16px;
-  background: linear-gradient(90deg, #2563eb, #1e3a8a);
+  background: #1e3a8a;
   color: white;
   border: none;
   border-radius: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: 0.25s;
+  transition: 0.2s;
 }
 
 .create-user-card button:hover {
-  transform: translateY(-2px);
-  opacity: 0.95;
+  background: #1c3274;
 }
 
 /* =========================
@@ -95,9 +94,9 @@
 
 .dashboard-main-card {
   background: white;
-  border-radius: 28px;
+  border-radius: 20px;
   padding: 30px;
-  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
+  border: 1px solid #eef2f7;
 }
 
 .dashboard-main-card-header {
@@ -117,21 +116,20 @@
 }
 
 .view-sales-btn {
-  background: linear-gradient(90deg, #2563eb, #1e3a8a);
+  background: #1e3a8a;
   color: white;
   border: none;
-  border-radius: 14px;
+  border-radius: 12px;
   padding: 12px 20px;
   font-size: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: transform 0.2s ease, opacity 0.2s ease, background 0.2s ease;
+  transition: background 0.2s ease;
   white-space: nowrap;
 }
 
 .view-sales-btn:hover:not(:disabled) {
-  transform: translateY(-1px);
-  opacity: 0.95;
+  background: #1c3274;
 }
 
 .view-sales-btn:disabled {
@@ -153,30 +151,55 @@
 
 .sales-table th,
 .sales-table td {
-  padding: 14px 15px;
+  padding: 14px 16px;
+}
+
+.sales-table tbody tr:nth-child(even) {
+  background: #f8fafc;
 }
 
 .sales-table tbody tr:hover {
-  background: #f8fafc;
+  background: #eef2ff;
 }
 
 /* tabla */
 .custom-table {
   width: 100%;
   border-collapse: collapse;
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 .custom-table th {
   text-align: left;
-  padding: 15px;
-  color: #64748b;
-  font-size: 14px;
-  border-bottom: 2px solid #f1f5f9;
+  padding: 14px 16px;
+  color: white;
+  background: #1e3a8a;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.custom-table th:first-child {
+  border-top-left-radius: 14px;
+}
+
+.custom-table th:last-child {
+  border-top-right-radius: 14px;
+}
+
+.custom-table tbody tr:nth-child(even) {
+  background: #f8fafc;
+}
+
+.custom-table tbody tr:hover {
+  background: #eef2ff;
 }
 
 .custom-table td {
-  padding: 18px 15px;
-  border-bottom: 1px solid #f8fafc;
+  padding: 16px;
+  border-bottom: 1px solid #f1f5f9;
   color: #334155;
   font-size: 15px;
 }
@@ -186,7 +209,7 @@
 ========================= */
 
 .delete-btn {
-  background: #ef4444;
+  background: #e24b4a;
   color: white;
   border: none;
   padding: 10px 14px;
@@ -197,8 +220,26 @@
 }
 
 .delete-btn:hover {
-  background: #dc2626;
-  transform: scale(1.05);
+  background: #c93f3e;
+}
+
+/* =========================
+   BOTÓN GESTIONAR
+========================= */
+
+.manage-btn {
+  background: #2563eb;
+  color: white;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.manage-btn:hover {
+  background: #1d4fc4;
 }
 
 /* =========================
@@ -222,37 +263,59 @@
 
 .stats-grid-centered {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 18px;
   margin-bottom: 30px;
 }
 
 .stat-card {
   background: white;
   padding: 22px;
-  border-radius: 22px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
-  gap: 18px;
-  box-shadow: 0 15px 35px rgba(30, 58, 138, 0.08);
-  transition: 0.25s ease;
+  gap: 16px;
   border: 1px solid #eef2f7;
+  transition: 0.2s ease;
 }
 
 .stat-card:hover {
-  transform: translateY(-3px);
+  border-color: #dbe3f0;
+  transform: translateY(-2px);
+}
+
+/* STAT-CARD CLICKEABLE (cuando funciona como filtro/tab) */
+.stat-card-clickable {
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  width: 100%;
+}
+
+.stat-card-clickable:hover {
+  border-color: #2563eb;
+}
+
+.stat-card-active {
+  border: 1px solid #1e3a8a;
+  background: #f5f7ff;
+}
+
+.stat-card-active:hover {
+  border-color: #1e3a8a;
 }
 
 /* ICONOS */
 .stat-icon {
-  width: 55px;
-  height: 55px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 22px;
+  font-size: 20px;
   color: white;
+  flex-shrink: 0;
 }
 
 /* COLORES ICONOS */
@@ -261,19 +324,22 @@
 }
 
 .stat-icon.green {
-  background: #22c55e;
+  background: #0f6e56;
 }
 
 .stat-icon.orange {
-  background: #f59e0b;
+  background: #854f0b;
 }
 
 /* TEXTOS */
 .stat-label {
   display: block;
-  font-size: 13px;
+  font-size: 12px;
   color: #64748b;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 2px;
 }
 
 .stat-number {
@@ -281,4 +347,251 @@
   font-size: 22px;
   font-weight: 800;
   color: #1e293b;
+}
+
+/* =========================
+   PAGINACION
+========================= */
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.pagination-btn {
+  background: #f1f5f9;
+  color: #1e3a8a;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+/* =========================
+   MODAL EDICION PRODUCTO
+========================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: white;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 26px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.modal-close-btn {
+  background: #f1f5f9;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.modal-close-btn:hover {
+  background: #e2e8f0;
+}
+
+.modal-body {
+  padding: 22px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.modal-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f8fafc;
+}
+
+.modal-field-label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.modal-field-value {
+  font-size: 14px;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.modal-editable-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.modal-editable-field label {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
+.modal-editable-field input {
+  padding: 12px 14px;
+  border: 1px solid #dbe3f0;
+  border-radius: 12px;
+  font-size: 15px;
+  background: #f9fbff;
+  color: #1e293b;
+  outline: none;
+  transition: 0.2s;
+}
+
+.modal-editable-field input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+  background: white;
+}
+
+.modal-footer {
+  display: flex;
+  gap: 12px;
+  padding: 18px 26px 22px;
+  border-top: 1px solid #f1f5f9;
+}
+
+.modal-cancel-btn {
+  flex: 1;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.modal-cancel-btn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.modal-save-btn {
+  flex: 1;
+  background: #1e3a8a;
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.modal-save-btn:hover:not(:disabled) {
+  background: #1c3274;
+}
+
+.modal-save-btn:disabled,
+.modal-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================
+   REPORTES (TABS)
+========================= */
+
+.reports-card {
+  margin-top: 30px;
+}
+
+.report-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.report-tab-btn {
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.report-tab-btn:hover {
+  background: #e2e8f0;
+}
+
+.report-tab-btn.active {
+  background: #1e3a8a;
+  color: white;
+}
+
+.report-tab-content {
+  min-height: 80px;
+}
+
+.report-summary-grid {
+  margin-bottom: 0;
+}
+
+.report-subtext {
+  color: #64748b;
+  font-size: 14px;
+  margin-bottom: 14px;
 }

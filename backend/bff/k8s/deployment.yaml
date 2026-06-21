@@ -5,7 +5,7 @@ metadata:
   labels:
     app: bff
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: bff
@@ -16,16 +16,28 @@ spec:
     spec:
       containers:
       - name: bff
-        image: proyecto-fullstack3-bff:latest
-        imagePullPolicy: IfNotPresent
+        image: proyecto-fullstack3-ms-bff:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 8080
         env:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
+        - name: MS_REPORTING_URL
+          value: "http://ms-reporting:8087"
+        - name: MS_ANALYTICS_URL
+          value: "http://ms-analytics:8086"
+        - name: MS_INVENTORY_URL
+          value: "http://ms-inventory:8082"
+        - name: MS_ORDER_URL
+          value: "http://ms-order:8084"
+        - name: MS_CART_URL
+          value: "http://ms-cart:8083"
+        - name: MS_LOGIN_URL
+          value: "http://ms-login:8081"
         resources:
           requests:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "250m"
           limits:
             memory: "1Gi"
@@ -38,7 +50,7 @@ spec:
           periodSeconds: 10
         readinessProbe:
           httpGet:
-            path: /actuator/health/ready
+            path: /actuator/health/readiness
             port: 8080
           initialDelaySeconds: 10
           periodSeconds: 5

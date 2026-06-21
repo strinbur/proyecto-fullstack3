@@ -6,7 +6,7 @@ spring:
     name: ms-data-aggregation
 
   mongodb:
-    uri: mongodb://host.docker.internal:27017/dataaggregation
+    uri: mongodb://mongodb:27017/dataaggregation
 
 order:
   url: http://ms-order:8084
@@ -25,3 +25,18 @@ jwt:
   secret:
     key: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
   expiration: 86400000
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

@@ -6,7 +6,7 @@ spring:
     name: ms-order
 
   mongodb:
-    uri: mongodb://host.docker.internal:27017/order_bd
+    uri: mongodb://mongodb:27017/order_bd
 
 cart:
   url: http://ms-cart:8083
@@ -22,3 +22,18 @@ jwt:
 mongock:
   migration-scan-package:
     - com.grupocordillera.ms_order.migrations
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true

@@ -8,3 +8,7 @@ resources:
   - ../backend/ms-inventory/k8s
   - ../backend/ms-login/k8s
   - ../backend/ms-order/k8s
+  - ../backend/ms-reporting/k8s
+  - ../backend/ms-data-aggregation/k8s
+  - ../backend/ms-analytics/k8s
+  - ../mongo/k8s

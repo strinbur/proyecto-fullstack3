@@ -1,93 +1,85 @@
 package com.grupocordillera.ms_bff.cart.service.impl;
 
 import com.grupocordillera.ms_bff.cart.client.CartClient;
-import com.grupocordillera.ms_bff.cart.dto.AddProductDTO;
-import com.grupocordillera.ms_bff.cart.dto.CartResponseDTO;
-import com.grupocordillera.ms_bff.cart.dto.UpdateQuantityDTO;
+import com.grupocordillera.ms_bff.cart.dto.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class CartServiceImplTest {
 
-    private final CartClient client =
-            Mockito.mock(CartClient.class);
+    @Mock
+    private CartClient client;
 
-    private final CartServiceImpl service =
-            new CartServiceImpl(client);
+    private CartServiceImpl service;
 
-    @Test
-    void shouldGetCart() {
-
-        CartResponseDTO dto = new CartResponseDTO();
-
-        Mockito.when(client.getCart())
-                .thenReturn(dto);
-
-        CartResponseDTO response =
-                service.getCart();
-
-        assertNotNull(response);
+    @BeforeEach
+    void setUp() {
+        service = new CartServiceImpl(client);
     }
 
     @Test
-    void shouldAddProduct() {
+    void getCart_delegaAlClient() {
+        CartResponseDTO expected = new CartResponseDTO();
+        expected.setUserEmail("user@test.com");
+        when(client.getCart()).thenReturn(expected);
 
-        AddProductDTO dto =
-                new AddProductDTO();
+        CartResponseDTO result = service.getCart();
 
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
-
-        Mockito.when(client.addProduct(dto))
-                .thenReturn(responseDto);
-
-        CartResponseDTO response =
-                service.addProduct(dto);
-
-        assertNotNull(response);
+        assertEquals(expected, result);
+        verify(client, times(1)).getCart();
     }
 
     @Test
-    void shouldUpdateQuantity() {
+    void addProduct_delegaAlClient() {
+        AddProductDTO dto = new AddProductDTO();
+        dto.setProductCode("ABC123");
+        dto.setQuantity(2);
 
-        UpdateQuantityDTO dto =
-                new UpdateQuantityDTO();
+        CartResponseDTO expected = new CartResponseDTO();
+        when(client.addProduct(dto)).thenReturn(expected);
 
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
+        CartResponseDTO result = service.addProduct(dto);
 
-        Mockito.when(client.updateQuantity("P001", dto))
-                .thenReturn(responseDto);
-
-        CartResponseDTO response =
-                service.updateQuantity("P001", dto);
-
-        assertNotNull(response);
+        assertEquals(expected, result);
+        verify(client).addProduct(dto);
     }
 
     @Test
-    void shouldRemoveProduct() {
+    void updateQuantity_delegaAlClient() {
+        UpdateQuantityDTO dto = new UpdateQuantityDTO();
+        dto.setQuantity(5);
 
-        CartResponseDTO responseDto =
-                new CartResponseDTO();
+        CartResponseDTO expected = new CartResponseDTO();
+        when(client.updateQuantity("ABC123", dto)).thenReturn(expected);
 
-        Mockito.when(client.removeProduct("P001"))
-                .thenReturn(responseDto);
+        CartResponseDTO result = service.updateQuantity("ABC123", dto);
 
-        CartResponseDTO response =
-                service.removeProduct("P001");
-
-        assertNotNull(response);
+        assertEquals(expected, result);
+        verify(client).updateQuantity("ABC123", dto);
     }
 
     @Test
-    void shouldClearCart() {
+    void removeProduct_delegaAlClient() {
+        CartResponseDTO expected = new CartResponseDTO();
+        when(client.removeProduct("ABC123")).thenReturn(expected);
 
+        CartResponseDTO result = service.removeProduct("ABC123");
+
+        assertEquals(expected, result);
+        verify(client).removeProduct("ABC123");
+    }
+
+    @Test
+    void clearCart_delegaAlClient() {
         service.clearCart();
 
-        Mockito.verify(client)
-                .clearCart();
+        verify(client, times(1)).clearCart();
     }
 }

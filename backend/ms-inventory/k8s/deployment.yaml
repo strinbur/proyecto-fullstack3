@@ -5,7 +5,7 @@ metadata:
   labels:
     app: ms-inventory
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: ms-inventory
@@ -17,15 +17,15 @@ spec:
       containers:
       - name: ms-inventory
         image: proyecto-fullstack3-ms-inventory:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Never
         ports:
-        - containerPort: 8080
+        - containerPort: 8082
         env:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
         resources:
           requests:
-            memory: "512Mi"
+            memory: "256Mi"
             cpu: "250m"
           limits:
             memory: "1Gi"
@@ -33,12 +33,14 @@ spec:
         livenessProbe:
           httpGet:
             path: /actuator/health
-            port: 8080
-          initialDelaySeconds: 30
+            port: 8082
+          initialDelaySeconds: 45
           periodSeconds: 10
+          failureThreshold: 5
         readinessProbe:
           httpGet:
-            path: /actuator/health/ready
-            port: 8080
-          initialDelaySeconds: 10
+            path: /actuator/health/readiness
+            port: 8082
+          initialDelaySeconds: 20
           periodSeconds: 5
+          failureThreshold: 6

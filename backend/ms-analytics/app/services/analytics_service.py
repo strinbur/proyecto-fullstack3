@@ -1,5 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timezone
+from app.core.config import settings
 
 from app.core.config import settings
 from app.schemas.analytics import (
