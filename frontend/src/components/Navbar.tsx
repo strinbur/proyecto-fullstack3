@@ -61,7 +61,7 @@ function Navbar() {
           </Link>
 
           <Link to="/cart" className="navbar-link">
-            Carrito
+            🛒
             {totalCartItems > 0 && (
               <span className="cart-badge">{totalCartItems}</span>
             )}
