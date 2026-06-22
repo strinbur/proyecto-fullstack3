@@ -130,7 +130,7 @@ El frontend estará disponible en http://localhost:5173
 
 ## Arquitectura del Sistema
 
-
+<img width="1324" alt="Fullstack 3 arquitectura" src="./docs/diagrams/Fullstack%203%20arquitectura.drawio.png" />
 
 El sistema implementa una arquitectura de microservicios donde:
 - El **Frontend** se comunica únicamente con el **BFF**
