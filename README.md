@@ -24,6 +24,8 @@ Este repositorio contiene una solución completa de fullstack con arquitectura d
 - [Ver README de ms-cart](./backend/ms-cart/README.md)
 - [Ver README de ms-order](./backend/ms-order/README.md)
 - [Ver README de ms-data-aggregation](./backend/ms-data-aggregation/README.md)
+- [Ver README de ms-reporting](./backend/ms-reporting/README.md)
+- [Ver README de ms-analytics](./backend/ms-analytics/README.md)
 
 ---
 
@@ -128,7 +130,7 @@ El frontend estará disponible en http://localhost:5173
 
 ## Arquitectura del Sistema
 
-<img width="1324" alt="Fullstack 3 arquitectura" src="./docs/Fullstack%203%20arquitectura.drawio.png" />
+<img width="1324" alt="Fullstack 3 arquitectura" src="./docs/diagrams/Fullstack%203%20arquitectura.drawio.png" />
 
 
 El sistema implementa una arquitectura de microservicios donde:
