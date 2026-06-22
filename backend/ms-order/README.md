@@ -7,6 +7,7 @@ Microservicio responsable de la gestión de órdenes de compra. Permite crear, c
 
 ## Diagrama C3 - Componentes de ms-order
 
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/diagrams//Fullstack%203%20diagrama%20c3%20order.drawio.png" />
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25

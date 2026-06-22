@@ -9,7 +9,7 @@ Este microservicio maneja la autenticación y la gestión de usuarios para la ap
 
 ---
 
-<img width="1324" alt="Diagrama C3 Login" src="../../docs/Fullstack%203%20diagrama%20c3%20login.drawio.png" />
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/diagrams//Fullstack%203%20diagrama%20c3%20login.drawio.png" />
 
 ---
 
