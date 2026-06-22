@@ -7,7 +7,7 @@ Microservicio responsable de la gestión del carrito de compras. Permite a los u
 
 ## Diagrama C3 - Componentes de ms-cart
 
-<img width="1324" alt="Diagrama C3 Cart" src="../../docs/Fullstack%203%20diagrama%20c3%20cart.drawio.png" />
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/diagrams//Fullstack%203%20diagrama%20c3%20cart.drawio.png" />
 
 ## Stack Tecnológico
 - **Lenguaje**: Java 25

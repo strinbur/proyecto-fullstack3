@@ -2,16 +2,10 @@
 
 Microservicio de KPIs y análisis de negocio, desarrollado en **Python + FastAPI**.
 
-## Rol en la arquitectura
+# Diagrama C3 - Componentes de analytics
 
-```
-ms-login  →  JWT
-ms-order  \
-             →  ms-data-aggregation  →  ms-analytics  →  ms-reporting  →  BFF  →  Frontend
-ms-inventory /
-```
+<img width="1324" alt="Diagrama C3 Login" src="../../docs/diagrams//Fullstack%203%20diagrama%20c3%20analytics.drawio.png" />
 
-ms-analytics recibe el dataset consolidado desde `ms-data-aggregation` y calcula métricas de negocio. No tiene base de datos propia; todo el cálculo es en memoria sobre los datos recibidos.
 
 ## Endpoints
 
@@ -26,15 +20,6 @@ ms-analytics recibe el dataset consolidado desde `ms-data-aggregation` y calcula
 | GET | `/health` | Health check |
 
 Todos los endpoints requieren `Authorization: Bearer <JWT>` emitido por ms-login.
-
-## Variables de entorno
-
-| Variable | Default | Descripción |
-|----------|---------|-------------|
-| `DATA_AGGREGATION_URL` | `http://localhost:8085` | URL base de ms-data-aggregation |
-| `JWT_SECRET_KEY` | — | Clave secreta compartida con ms-login |
-| `JWT_ALGORITHM` | `HS256` | Algoritmo JWT |
-| `CRITICAL_STOCK_THRESHOLD` | `5` | Stock mínimo antes de considerarse crítico |
 
 ## Levantar localmente
 
