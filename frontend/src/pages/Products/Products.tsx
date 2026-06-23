@@ -25,6 +25,9 @@ export default function Products() {
   const { addToCart, items } = useContext(CartContext);
   const auth = useContext(AuthContext);
   const [adminQuantity, setAdminQuantity] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [expandedProductCode, setExpandedProductCode] = useState<string | null>(null);
+  const categoryFilters = ["tecnologia", "television", "celulares", "audio"];
 
   useEffect(() => {
 
@@ -47,35 +50,67 @@ export default function Products() {
 
   }, []);
 
-  const getProductImage = (name: string) => {
+  const productImageLinks: Record<string, string> = {
+    "lenovo ideapad": "https://p1-ofp.static.pub//fes/cms/2025/01/31/42vzg5361kb0ao7n2m8c86tgsd822y027827.jpg",
+    "smart tv samsung 55": "https://media.falabella.com/falabellaCL/80144424_1/w=1200,h=1200,fit=pad",
+    "tv lg 50": "https://www.lg.com/content/dam/channel/wcms/cl/ms-2026/npi-2026/QNED/QNED70BSA/50qned70bsa-awh/GALLERY/2010X1334/50QNED70_1.jpg/jcr:content/renditions/thum-1600x1062.jpeg?w=800",
+    "televisor lg 50": "https://www.lg.com/cl/televisores",
+    "dell inspiron 14": "https://media.falabella.com/falabellaCL/145245395_01/w=1500,h=1500,fit=cover",
+    "lenovo legion 5": "https://lckmqxkcmqtobflmrcqc.supabase.co/storage/v1/object/public/product-files/products/4a2565d3-dc87-41dc-98a6-faaa6baafd5e/main-1780674603363.avif",
+    "macbook air m2": "https://res.cloudinary.com/djx6viedj/image/upload/t_trimmed_square_2048/5j1aadrsi49x1hxrcs756l2qs6t8?_a=BACCd2Ev",
+    "iphone 15": "https://media.falabella.com/falabellaCL/16907118_1/w=1500,h=1500,fit=cover",
+    "samsung galaxy s24": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcSNFioJKt4FW4wt4kEPV-VpmTueMkLmZVzpy-pnGBOB0pQ66xy6HZxl9RrixOr61pXUur_kbWJOUAAux_9lKYEYaa5SjdQtIAb5jUa81VD-s8Qm_aANGqIP0g",
+    "xiaomi 13 pro": "https://http2.mlstatic.com/D_Q_NP_600660-MLU78185430205_082024-F.webp",
+    "google pixel 8": "https://media.solotodo.com/media/products/1854074_picture_1702613624.jpg",
+    "sony wh-1000xm5": "https://http2.mlstatic.com/D_Q_NP_867545-CBT110551065071_042026-F.webp",
+    "bose quietcomfort ultra": "https://media.falabella.com/falabellaCL/138928337_01/w=1500,h=1500,fit=cover",
+    "apple airpods max": "https://d1aqw5mz0wngqe.cloudfront.net/images/spree/images/2471707/attachments/large/Apple_AirPods_Max_2024_Basalt_Black_01.jpg?1727278622",
+  };
 
+  const getProductImage = (name: string) => {
     const productName = name.toLowerCase();
 
-    if (productName.includes("lenovo")) {
-
-      return "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?q=80&w=1200&auto=format&fit=crop";
-
-    }
-
-    if (productName.includes("samsung")) {
-
-      return "https://images.unsplash.com/photo-1593784991095-a205069470b6?q=80&w=1200&auto=format&fit=crop";
-
-    }
-
-    if (productName.includes("lg")) {
-
-      return "https://images.unsplash.com/photo-1461151304267-38535e780c79?q=80&w=1200&auto=format&fit=crop";
-
+    for (const keyword of Object.keys(productImageLinks)) {
+      if (productName.includes(keyword)) {
+        return productImageLinks[keyword];
+      }
     }
 
     return "https://placehold.co/600x400";
-
   };
+
+  const getCategoryLabel = (category: string, name: string) => {
+    const normalized = category.toLowerCase();
+
+    if (normalized === "tecnologia") {
+      return "Notebook";
+    }
+
+    if (normalized === "television") {
+      return "Televisión";
+    }
+
+    if (normalized === "celulares") {
+      return "Celulares";
+    }
+
+    if (normalized === "audio") {
+      return "Audio";
+    }
+
+    return category.charAt(0).toUpperCase() + category.slice(1);
+  };
+
+  const filteredProducts = selectedCategory
+    ? products.filter(
+        (product) => product.category.toLowerCase() === selectedCategory
+      )
+    : products;
 
   const openProductDetail = (product: Product) => {
 
     setSelectedProduct(product);
+    setExpandedProductCode(product.code);
     setQuantity(1);
     setStockError("");
     setAdminQuantity(product.quantity);
@@ -188,10 +223,32 @@ export default function Products() {
 
           </div>
 
-          <button className="products-btn">
-            Ver ofertas
-          </button>
+        </div>
 
+        <div className="category-filter-bar">
+          <span className="category-filter-label">Categoría:</span>
+          <button
+            key="all"
+            className={`category-filter-btn ${selectedCategory === null ? "active" : ""}`}
+            onClick={() => setSelectedCategory(null)}
+          >
+            Todos los productos
+          </button>
+          {categoryFilters.map((category) => (
+            <button
+              key={category}
+              className={`category-filter-btn ${
+                selectedCategory === category ? "active" : ""
+              }`}
+              onClick={() =>
+                setSelectedCategory(
+                  selectedCategory === category ? null : category
+                )
+              }
+            >
+              {getCategoryLabel(category, "")}
+            </button>
+          ))}
         </div>
 
         {statusMessage && (
@@ -202,11 +259,13 @@ export default function Products() {
 
         <div className="products-grid">
 
-          {products.map((product) => (
+          {filteredProducts.map((product) => (
 
             <div
               key={product.id}
-              className="product-card"
+              className={`product-card ${
+                expandedProductCode === product.code ? "expanded" : ""
+              }`}
               onClick={() => openProductDetail(product)}
             >
 
@@ -218,7 +277,7 @@ export default function Products() {
                 />
 
                 <span className="product-category">
-                  {product.category}
+                  {getCategoryLabel(product.category, product.name)}
                 </span>
 
               </div>
@@ -265,18 +324,6 @@ export default function Products() {
                     </button>
                   )}
 
-                  {auth?.user?.role === "ADMIN" && (
-                    <button
-                      className="admin-edit-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        openProductDetail(product);
-                      }}
-                    >
-                      Editar stock
-                    </button>
-                  )}
-
                 </div>
 
               </div>
@@ -317,7 +364,7 @@ export default function Products() {
             <div className="modal-info">
 
               <span className="modal-category">
-                {selectedProduct.category}
+                {getCategoryLabel(selectedProduct.category, selectedProduct.name)}
               </span>
 
               <h2>{selectedProduct.name}</h2>
@@ -359,30 +406,16 @@ export default function Products() {
                 </div>
               )}
 
-              {auth?.user?.role === "ADMIN" ? (
-                <div className="admin-update-row">
-                  <label>Stock:</label>
-                  <input
-                    type="number"
-                    value={adminQuantity ?? 0}
-                    min={0}
-                    onChange={(e) => setAdminQuantity(Number(e.target.value))}
-                  />
-                  <button className="admin-update-btn" onClick={handleAdminUpdate}>
-                    Actualizar stock
-                  </button>
-                </div>
-              ) : (
-                <button
-                  className="modal-buy-btn"
-                  onClick={() => handleAddToCart(selectedProduct, quantity)}
-                  disabled={selectedProduct.quantity === 0}
-                >
-                  {selectedProduct.quantity === 0
-                    ? "Producto agotado"
-                    : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
-                </button>
-              )}
+              {/* Keep buy button available for all users (including ADMIN) */}
+              <button
+                className="modal-buy-btn"
+                onClick={() => handleAddToCart(selectedProduct, quantity)}
+                disabled={selectedProduct.quantity === 0}
+              >
+                {selectedProduct.quantity === 0
+                  ? "Producto agotado"
+                  : `Añadir ${quantity} producto${quantity > 1 ? "s" : ""} al carrito`}
+              </button>
 
             </div>
 
