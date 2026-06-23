@@ -13,6 +13,7 @@ import {
   XCircle,
   X,
 } from "lucide-react";
+import * as XLSX from "xlsx";
 import {
   getAllProducts,
   updateProduct,
@@ -397,6 +398,70 @@ export default function Dashboard() {
     users: "Gestión de usuarios",
   };
 
+  const formatSalesItemSummary = (items: OrderItemDetail[]) => {
+    return items
+      .map((item) => `${item.name} (${item.quantity})`)
+      .join("; ");
+  };
+
+  const exportToExcel = (data: object[], sheetName: string, fileName: string) => {
+    const workbook = XLSX.utils.book_new();
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const exportCurrentView = () => {
+    if (activeView === "products") {
+      const rows = products.map((product) => ({
+        Código: product.code,
+        Nombre: product.name,
+        Categoría: product.category,
+        Precio: product.price,
+        Stock: product.quantity,
+      }));
+      exportToExcel(rows, "Productos", "productos.xlsx");
+      return;
+    }
+
+    if (activeView === "sales") {
+      const rows = orders.map((order) => ({
+        "ID Pedido": order.id,
+        Cliente: order.userName,
+        "Correo cliente": order.userEmail,
+        Estado: order.status,
+        Total: order.total,
+        Productos: formatSalesItemSummary(order.items),
+        Fecha: new Date(order.createdAt).toLocaleString("es-ES", {
+          dateStyle: "short",
+          timeStyle: "short",
+        }),
+      }));
+      exportToExcel(rows, "Ventas", "ventas.xlsx");
+      return;
+    }
+
+    if (activeView === "users") {
+      const rows = users.map((user) => ({
+        Nombre: `${user.name} ${user.lastname}`,
+        Correo: user.email,
+        Rol: user.role,
+        Comprado: user.comprado ?? 0,
+      }));
+      exportToExcel(rows, "Usuarios", "usuarios.xlsx");
+      return;
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-container">
@@ -476,7 +541,12 @@ export default function Dashboard() {
         <div className="dashboard-main-card">
 
           <div className="dashboard-main-card-header">
-            <h3>{viewTitles[activeView]}</h3>
+            <div>
+              <h3>{viewTitles[activeView]}</h3>
+            </div>
+            <button className="view-sales-btn" onClick={exportCurrentView}>
+              Descargar lista actual
+            </button>
           </div>
 
           {activeView === "products" && (

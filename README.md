@@ -63,16 +63,22 @@ Los siguientes puntos representan el alcance funcional esperado de la plataforma
 │   │   ├── pages/             # Páginas de la aplicación
 │   │   └── utils/             # Utilidades y helpers
 │   ├── Dockerfile
-│   └── package.json
+│   ├── package.json
+│   └── README.md
 ├── backend/                   # Microservicios backend (Java + Spring Boot)
 │   ├── bff/                   # Backend for Frontend (API Gateway)
-│   ├── ms-login/              # Microservicio de Autenticación
-│   ├── ms-inventory/          # Microservicio de Inventario
+│   ├── ms-analytics/          # Microservicio de Analiticas
 │   ├── ms-cart/               # Microservicio de Carrito
+│   ├── ms-data-aggregation/   # Microservicio de Centralizacion de datos
+│   ├── ms-inventory/          # Microservicio de Inventario
+│   ├── ms-login/              # Microservicio de Autenticación
 │   ├── ms-order/              # Microservicio de Órdenes
-│   └── README.md
+│   ├── ms-reporting/          # Microservicio de Reportes
+├── docs/                      # Documentación y diagramas del proyecto
 ├── k8s/                       # Configuración de Kubernetes
+├── mongo/                     # Configuración de MongoDB en Kubernetes
 ├── docker-compose.yml         # Orquestación de servicios con Docker Compose
+├── package-lock.json          # Lockfile de npm para dependencias de frontend
 └── README.md                  # Este archivo
 ```
 
@@ -101,7 +107,10 @@ docker-compose up --build
 - ms-login: http://localhost:8081
 - ms-inventory: http://localhost:8082
 - ms-cart: http://localhost:8083
-- ms-order http://localhost:8084
+- ms-order: http://localhost:8084
+- ms-data-aggregation: http://localhost:8085
+- ms-analytics: http://localhost:8086
+- ms-reporting: http://localhost:8087
 - MongoDB: localhost:27017
 
 3. **Detener los servicios**:
