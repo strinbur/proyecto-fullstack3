@@ -16,6 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+/**
+ * Implementación del servicio de carrito que gestiona la lógica de negocio
+ * para el carrito de compras del usuario autenticado.
+ */
 @Service
 public class CartServiceImpl implements CartService {
 

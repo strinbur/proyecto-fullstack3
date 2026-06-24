@@ -5,8 +5,18 @@ import com.grupocordillera.ms_cart.model.Cart;
 
 import java.util.ArrayList;
 
+/**
+ * Fábrica de objetos de carrito que centraliza la creación y transformación
+ * de entidades relacionadas con el carrito de compras.
+ */
 public class CartFactory {
 
+    /**
+     * Crea un nuevo carrito vacío para un usuario.
+     *
+     * @param email correo electrónico del usuario al que pertenece el carrito
+     * @return carrito inicializado sin items y total en cero
+     */
     public static Cart createCart(String email) {
 
         Cart cart = new Cart();
@@ -18,6 +28,12 @@ public class CartFactory {
         return cart;
     }
 
+    /**
+     * Convierte un carrito en su DTO de respuesta.
+     *
+     * @param cart carrito a transformar
+     * @return DTO con el estado actual del carrito
+     */
     public static CartResponseDTO toResponse(Cart cart) {
 
         CartResponseDTO dto =
