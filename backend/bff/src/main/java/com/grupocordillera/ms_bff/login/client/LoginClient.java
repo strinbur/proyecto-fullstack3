@@ -9,7 +9,7 @@ import java.util.List;
 @FeignClient(
     name = "ms-login",
     path = "/login",
-    configuration = com.grupocordillera.ms_bff.common.config.FeignConfig.class
+    configuration = com.grupocordillera.ms_bff.config.FeignConfig.class
 )
 public interface LoginClient {
 

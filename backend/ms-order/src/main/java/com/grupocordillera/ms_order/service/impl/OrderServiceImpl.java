@@ -1,20 +1,23 @@
 package com.grupocordillera.ms_order.service.impl;
 
 import com.grupocordillera.ms_order.cart.client.CartClient;
-import com.grupocordillera.ms_order.cart.client.CartResponseDTO;
+import com.grupocordillera.ms_order.dto.CartResponseDTO;
+import com.grupocordillera.ms_order.dto.InventoryResponseDTO;
+import com.grupocordillera.ms_order.dto.InventoryUpdateDTO;
 import com.grupocordillera.ms_order.dto.OrderResponseDTO;
-import com.grupocordillera.ms_order.common.exception.OrderException;
+import com.grupocordillera.ms_order.exception.OrderException;
 import com.grupocordillera.ms_order.factory.OrderFactory;
+import com.grupocordillera.ms_order.inventory.client.InventoryClient;
 import com.grupocordillera.ms_order.model.Order;
 import com.grupocordillera.ms_order.model.OrderStatus;
 import com.grupocordillera.ms_order.repository.OrderRepository;
 import com.grupocordillera.ms_order.service.OrderService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import com.grupocordillera.ms_order.inventory.client.InventoryClient;
-import com.grupocordillera.ms_order.inventory.client.InventoryResponseDTO;
-import com.grupocordillera.ms_order.inventory.client.InventoryUpdateDTO;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -29,8 +32,21 @@ public class OrderServiceImpl implements OrderService {
         this.inventoryClient = inventoryClient;
     }
 
+    // Método privado reutilizable para extraer datos del token
+    private Map<String, String> getAuthenticatedUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || auth.getPrincipal() == null) {
+            throw new OrderException("Usuario no autenticado");
+        }
+        return (Map<String, String>) auth.getPrincipal();
+    }
+
     @Override
-    public OrderResponseDTO createOrder(String userEmail, String userName) {
+    public OrderResponseDTO createOrder() {
+        Map<String, String> user = getAuthenticatedUser();
+        String userEmail = user.get("email");
+        String userName  = user.get("userName");
+
         CartResponseDTO cart = cartClient.getCart();
 
         if (cart == null || cart.getItems().isEmpty()) {
@@ -49,7 +65,7 @@ public class OrderServiceImpl implements OrderService {
             update.setPrice(product.getPrice());
             update.setQuantity(product.getQuantity() - item.getQuantity());
             update.setCategory(product.getCategory());
-            update.setBrand(product.getBrand()); 
+            update.setBrand(product.getBrand());
 
             inventoryClient.update(item.getProductCode(), update);
         }
@@ -91,8 +107,7 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderException("Estado inválido: " + status);
         }
 
-        return orderRepository.findByStatus(orderStatus)
-                .stream()
+        return orderRepository.findByStatus(orderStatus).stream()
                 .map(OrderFactory::toResponse)
                 .toList();
     }
@@ -140,5 +155,4 @@ public class OrderServiceImpl implements OrderService {
         Order saved = orderRepository.save(order);
         return OrderFactory.toResponse(saved);
     }
-
 }

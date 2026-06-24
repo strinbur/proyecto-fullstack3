@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.grupocordillera.ms_order.dto.InventoryResponseDTO;
+import com.grupocordillera.ms_order.dto.InventoryUpdateDTO;
+
 
 @FeignClient(name = "ms-inventory", url = "${inventory.url}", path = "/inventory")
 public interface InventoryClient {

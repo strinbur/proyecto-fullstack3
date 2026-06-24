@@ -22,38 +22,32 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderResponseDTO createOrder(@RequestHeader String userEmail) {
-        log.info("CREATE ORDER - email: {}", userEmail);
-        return service.createOrder(userEmail, userEmail);
+    public OrderResponseDTO createOrder() {
+        return service.createOrder();
     }
 
     @GetMapping
     public List<OrderResponseDTO> getAllOrders() {
-        log.info("GET ALL ORDERS");
         return service.getAllOrders();
     }
 
     @GetMapping("/user/{email}")
     public List<OrderResponseDTO> getOrdersByUser(@PathVariable String email) {
-        log.info("GET ORDERS BY USER - email: {}", email);
         return service.getOrdersByUser(email);
     }
 
     @GetMapping("/{id}")
     public OrderResponseDTO getOrderById(@PathVariable String id) {
-        log.info("GET ORDER BY ID - id: {}", id);
         return service.getOrderById(id);
     }
 
     @GetMapping("/status/{status}")
     public List<OrderResponseDTO> getOrdersByStatus(@PathVariable String status) {
-        log.info("GET ORDERS BY STATUS - {}", status);
         return service.getOrdersByStatus(status);
     }
 
     @PutMapping("/{id}/status/{status}")
     public OrderResponseDTO updateOrderStatus(@PathVariable String id, @PathVariable String status) {
-        log.info("UPDATE ORDER STATUS - id: {} status: {}", id, status);
         return service.updateOrderStatus(id, status);
     }
 

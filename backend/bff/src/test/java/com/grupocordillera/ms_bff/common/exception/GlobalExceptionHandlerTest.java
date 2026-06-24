@@ -9,6 +9,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+
+import com.grupocordillera.ms_bff.exception.GlobalExceptionHandler;
+
 import org.springframework.core.MethodParameter;
 
 import java.lang.reflect.Method;

@@ -1,7 +1,7 @@
 package com.grupocordillera.ms_reporting.report.client;
 
 
-import com.grupocordillera.ms_reporting.common.config.FeignConfig;
+import com.grupocordillera.ms_reporting.config.FeignConfig;
 import com.grupocordillera.ms_reporting.report.dto.CriticalStockDTO;
 import com.grupocordillera.ms_reporting.report.dto.FullAnalyticsReportDTO;
 import com.grupocordillera.ms_reporting.report.dto.RevenueByCategoryDTO;
