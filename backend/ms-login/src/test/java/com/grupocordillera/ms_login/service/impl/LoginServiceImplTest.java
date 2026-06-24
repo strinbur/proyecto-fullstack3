@@ -1,15 +1,16 @@
 package com.grupocordillera.ms_login.service.impl;
 
+import com.grupocordillera.ms_login.config.security.JwtService;
 import com.grupocordillera.ms_login.dto.AuthResponseDTO;
 import com.grupocordillera.ms_login.dto.CreateUserDTO;
 import com.grupocordillera.ms_login.dto.LoginResponseDTO;
 import com.grupocordillera.ms_login.dto.LoginUpdateDTO;
 import com.grupocordillera.ms_login.dto.RegisterDTO;
+import com.grupocordillera.ms_login.exception.LoginException;
 import com.grupocordillera.ms_login.model.Login;
 import com.grupocordillera.ms_login.model.Rol;
 import com.grupocordillera.ms_login.repository.LoginRepository;
-import com.grupocordillera.ms_login.security.JwtService;
-import com.grupocordillera.ms_login.common.exception.LoginException;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

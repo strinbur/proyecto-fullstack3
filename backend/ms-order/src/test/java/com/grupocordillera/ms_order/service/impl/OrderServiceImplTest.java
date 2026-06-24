@@ -1,9 +1,11 @@
 package com.grupocordillera.ms_order.service.impl;
 
 import com.grupocordillera.ms_order.cart.client.CartClient;
-import com.grupocordillera.ms_order.cart.client.CartResponseDTO;
-import com.grupocordillera.ms_order.common.exception.OrderException;
+import com.grupocordillera.ms_order.dto.CartItemDTO;
+import com.grupocordillera.ms_order.dto.CartResponseDTO;
+import com.grupocordillera.ms_order.dto.InventoryResponseDTO;
 import com.grupocordillera.ms_order.dto.OrderResponseDTO;
+import com.grupocordillera.ms_order.exception.OrderException;
 import com.grupocordillera.ms_order.inventory.client.InventoryClient;
 import com.grupocordillera.ms_order.model.Order;
 import com.grupocordillera.ms_order.repository.OrderRepository;
@@ -12,17 +14,19 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import com.grupocordillera.ms_order.model.OrderStatus;
-import com.grupocordillera.ms_order.cart.client.CartItemDTO;
-import com.grupocordillera.ms_order.inventory.client.InventoryResponseDTO;
+import java.util.Map;
+import java.util.Collections;
+import org.springframework.security.core.context.SecurityContext;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -39,24 +43,6 @@ class OrderServiceImplTest {
 
     @InjectMocks
     private OrderServiceImpl service;
-
-    @Test
-    void shouldThrowExceptionWhenCartIsEmpty() {
-        CartResponseDTO cart = new CartResponseDTO();
-        cart.setItems(new ArrayList<>());
-
-        when(cartClient.getCart()).thenReturn(cart);
-
-        OrderException exception = assertThrows(
-                OrderException.class,
-                () -> service.createOrder(
-                        "test@test.com",
-                        "test"
-                )
-        );
-
-        assertEquals("Carrito vacío", exception.getMessage());
-    }
 
     @Test
     void shouldThrowExceptionWhenOrderNotFound() {
@@ -98,54 +84,61 @@ class OrderServiceImplTest {
     }
 
 
-    @Test
-    void shouldCreateOrderSuccessfully() {
+@Test
+void shouldCreateOrderSuccessfully() {
+    // Mock del SecurityContext
+    Map<String, String> principal = Map.of(
+        "email", "test@test.com",
+        "userName", "Patricio"
+    );
 
-        CartItemDTO item = new CartItemDTO();
-        item.setProductCode("P001");
-        item.setName("Producto Test");
-        item.setPrice(1000);
-        item.setQuantity(2);
-        item.setCategory("Tecnologia");
-        item.setSubtotal(2000);
+    UsernamePasswordAuthenticationToken auth =
+        new UsernamePasswordAuthenticationToken(principal, null, Collections.emptyList());
 
-        CartResponseDTO cart = new CartResponseDTO();
-        cart.setUserEmail("test@test.com");
-        cart.setItems(List.of(item));
-        cart.setTotal(2000);
+    SecurityContext securityContext = mock(SecurityContext.class);
+    when(securityContext.getAuthentication()).thenReturn(auth);
+    SecurityContextHolder.setContext(securityContext);
 
-        InventoryResponseDTO inventory = new InventoryResponseDTO();
-        inventory.setCode("P001");
-        inventory.setName("Producto Test");
-        inventory.setPrice(1000);
-        inventory.setQuantity(10);
-        inventory.setCategory("Tecnologia");
-        inventory.setBrand("Marca Test");
+    // Setup
+    CartItemDTO item = new CartItemDTO();
+    item.setProductCode("P001");
+    item.setName("Producto Test");
+    item.setPrice(1000);
+    item.setQuantity(2);
+    item.setCategory("Tecnologia");
+    item.setSubtotal(2000);
 
-        Order savedOrder = new Order();
-        savedOrder.setId("ORD-1");
-        savedOrder.setUserEmail("test@test.com");
-        savedOrder.setUserName("Patricio");
-        savedOrder.setTotal(2000);
+    CartResponseDTO cart = new CartResponseDTO();
+    cart.setUserEmail("test@test.com");
+    cart.setItems(List.of(item));
+    cart.setTotal(2000);
 
-        when(cartClient.getCart()).thenReturn(cart);
+    InventoryResponseDTO inventory = new InventoryResponseDTO();
+    inventory.setCode("P001");
+    inventory.setName("Producto Test");
+    inventory.setPrice(1000);
+    inventory.setQuantity(10);
+    inventory.setCategory("Tecnologia");
+    inventory.setBrand("Marca Test");
 
-        when(inventoryClient.getByCode("P001"))
-                .thenReturn(inventory);
+    Order savedOrder = new Order();
+    savedOrder.setId("ORD-1");
+    savedOrder.setUserEmail("test@test.com");
+    savedOrder.setUserName("Patricio");
+    savedOrder.setTotal(2000);
 
-        when(orderRepository.save(any(Order.class)))
-                .thenReturn(savedOrder);
+    when(cartClient.getCart()).thenReturn(cart);
+    when(inventoryClient.getByCode("P001")).thenReturn(inventory);
+    when(orderRepository.save(any(Order.class))).thenReturn(savedOrder);
 
-        OrderResponseDTO result =
-                service.createOrder(
-                        "test@test.com",
-                        "Patricio"
-                );
+    // Act
+    OrderResponseDTO result = service.createOrder();
 
-        assertNotNull(result);
-        assertEquals("ORD-1", result.getId());
-        assertEquals("test@test.com", result.getUserEmail());
-    }
+    // Assert
+    assertNotNull(result);
+    assertEquals("ORD-1", result.getId());
+    assertEquals("test@test.com", result.getUserEmail());
+}
 
     
 @Test

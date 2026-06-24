@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
         name = "ms-cart",
         url = "${spring.cloud.openfeign.client.config.ms-cart.url}",
         path = "/cart",
-        configuration = com.grupocordillera.ms_bff.common.config.FeignConfig.class
+        configuration = com.grupocordillera.ms_bff.config.FeignConfig.class
 )
 public interface CartClient {
 

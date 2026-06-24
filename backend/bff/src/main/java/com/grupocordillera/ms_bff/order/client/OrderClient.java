@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import com.grupocordillera.ms_bff.order.dto.OrderResponseDTO;
 
-@FeignClient(name = "ms-order", path = "/orders", configuration = com.grupocordillera.ms_bff.common.config.FeignConfig.class)
+@FeignClient(name = "ms-order", path = "/orders", configuration = com.grupocordillera.ms_bff.config.FeignConfig.class)
 public interface OrderClient {
 
     @PostMapping
