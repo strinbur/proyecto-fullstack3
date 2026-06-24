@@ -1,7 +1,7 @@
 package com.grupocordillera.ms_order.factory;
 
-import com.grupocordillera.ms_order.cart.client.CartItemDTO;
-import com.grupocordillera.ms_order.cart.client.CartResponseDTO;
+import com.grupocordillera.ms_order.dto.CartItemDTO;
+import com.grupocordillera.ms_order.dto.CartResponseDTO;
 import com.grupocordillera.ms_order.dto.OrderResponseDTO;
 import com.grupocordillera.ms_order.model.Order;
 import com.grupocordillera.ms_order.model.OrderItem;

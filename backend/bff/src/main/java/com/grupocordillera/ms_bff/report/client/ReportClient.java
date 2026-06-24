@@ -10,7 +10,7 @@ import java.util.List;
     name = "ms-reporting",
     url = "${ms.reporting.url}",
     path = "/reports",
-    configuration = com.grupocordillera.ms_bff.common.config.FeignConfig.class
+    configuration = com.grupocordillera.ms_bff.config.FeignConfig.class
 )
 public interface ReportClient {
 

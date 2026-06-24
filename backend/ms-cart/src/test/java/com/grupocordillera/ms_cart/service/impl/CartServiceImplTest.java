@@ -2,7 +2,6 @@ package com.grupocordillera.ms_cart.service.impl;
 
 import com.grupocordillera.ms_cart.dto.*;
 import com.grupocordillera.ms_cart.inventory.client.InventoryClient;
-import com.grupocordillera.ms_cart.inventory.client.InventoryResponseDTO;
 import com.grupocordillera.ms_cart.model.Cart;
 import com.grupocordillera.ms_cart.model.CartItem;
 import com.grupocordillera.ms_cart.repository.CartRepository;

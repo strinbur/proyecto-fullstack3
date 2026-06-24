@@ -27,25 +27,23 @@ class OrderControllerTest {
 
     @Test
     void shouldCreateOrderSuccessfully() {
-        String email = "test@gmail.com";
-
         OrderResponseDTO response = new OrderResponseDTO();
         response.setId("1");
-        response.setUserEmail(email);
+        response.setUserEmail("test@gmail.com");
         response.setUserName("test user");
         response.setTotal(1000);
         response.setStatus(OrderStatus.PENDIENTE);
         response.setCreatedAt(LocalDateTime.now());
 
-        when(orderService.createOrder(email, email)).thenReturn(response);
+        when(orderService.createOrder()).thenReturn(response);
 
-        OrderResponseDTO result = orderController.createOrder(email);
+        OrderResponseDTO result = orderController.createOrder();
 
         assertNotNull(result);
         assertEquals("1", result.getId());
-        assertEquals(email, result.getUserEmail());
+        assertEquals("test@gmail.com", result.getUserEmail());
 
-        verify(orderService, times(1)).createOrder(email, email);
+        verify(orderService, times(1)).createOrder();
     }
 
     @Test
