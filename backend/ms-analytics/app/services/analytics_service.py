@@ -1,6 +1,8 @@
-from collections import defaultdict
 from datetime import datetime, timezone
-from app.core.config import settings
+from collections import defaultdict
+
+import numpy as np
+import pandas as pd
 
 from app.core.config import settings
 from app.schemas.analytics import (
@@ -18,132 +20,207 @@ from app.schemas.analytics import (
 )
 
 
+def _orders_to_df(dataset: CombinedDataset) -> pd.DataFrame:
+    """
+    Aplana orders + items en un DataFrame fila por line-item.
+    Columnas: order_id, userEmail, userName, status, order_total,
+              productCode, name, category, quantity, subtotal
+    """
+    rows = []
+    for order in dataset.orders:
+        for item in order.items:
+            rows.append({
+                "order_id":    order.id,
+                "userEmail":   order.userEmail,
+                "userName":    order.userName,
+                "status":      order.status.lower(),
+                "order_total": order.total,
+                "productCode": item.productCode,
+                "name":        item.name,
+                "category":    item.category,
+                "quantity":    item.quantity,
+                "subtotal":    item.subtotal,
+            })
+    return pd.DataFrame(rows)
+
+
+def _inventory_to_df(dataset: CombinedDataset) -> pd.DataFrame:
+    return pd.DataFrame([item.model_dump() for item in dataset.inventory])
+
+
+# ── KPIs ─────────────────────────────────────────────────────────────────────
+
 def calc_sales_summary(dataset: CombinedDataset) -> SalesSummaryKPI:
     orders = dataset.orders
-    total = len(orders)
+    if not orders:
+        return SalesSummaryKPI(
+            totalOrders=0,
+            completedOrders=0,
+            pendingOrders=0,
+            cancelledOrders=0,
+            totalRevenue=0.0,
+            averageOrderValue=0.0,
+        )
 
-    status_map = defaultdict(int)
-    total_revenue = 0.0
+    df = pd.DataFrame([
+        {"status": o.status.lower(), "total": o.total}
+        for o in orders
+    ])
 
-    for order in orders:
-        status_map[order.status.lower()] += 1
-        total_revenue += order.total
+    totals    = np.array(df["total"].values, dtype=np.float64)
+    total_rev = float(np.sum(totals))
+    avg_order = float(np.mean(totals))
 
-    avg = total_revenue / total if total > 0 else 0.0
+    status_counts = df["status"].value_counts()
 
     return SalesSummaryKPI(
-        totalOrders=total,
-        completedOrders=status_map.get("completed", 0),
-        pendingOrders=status_map.get("pending", 0),
-        cancelledOrders=status_map.get("cancelled", 0),
-        totalRevenue=round(total_revenue, 2),
-        averageOrderValue=round(avg, 2),
+        totalOrders=len(df),
+        completedOrders=int(status_counts.get("completado", 0)),
+        pendingOrders=int(status_counts.get("pendiente", 0)),
+        cancelledOrders=int(status_counts.get("cancelado", 0)),
+        totalRevenue=round(total_rev, 2),
+        averageOrderValue=round(avg_order, 2),
     )
 
 
 def calc_top_products(dataset: CombinedDataset, top_n: int = 5) -> TopProductsKPI:
-    # Acumular ventas por código de producto
-    product_qty: dict[str, int] = defaultdict(int)
-    product_revenue: dict[str, float] = defaultdict(float)
-    product_meta: dict[str, tuple[str, str]] = {}  # code → (name, category)
+    df = _orders_to_df(dataset)
+    if df.empty:
+        return TopProductsKPI(topN=top_n, products=[])
 
-    for order in dataset.orders:
-        for item in order.items:
-            product_qty[item.productCode] += item.quantity
-            product_revenue[item.productCode] += item.subtotal
-            product_meta[item.productCode] = (item.name, item.category)
-
-    sorted_products = sorted(product_qty.keys(), key=lambda c: product_qty[c], reverse=True)
-
-    result = []
-    for code in sorted_products[:top_n]:
-        name, category = product_meta[code]
-        result.append(
-            TopProductItem(
-                productCode=code,
-                name=name,
-                category=category,
-                totalQuantitySold=product_qty[code],
-                totalRevenue=round(product_revenue[code], 2),
-            )
+    # Agrupar por producto con pandas
+    grouped = (
+        df.groupby("productCode")
+        .agg(
+            name=("name", "first"),
+            category=("category", "first"),
+            totalQuantitySold=("quantity", "sum"),
+            totalRevenue=("subtotal", "sum"),
         )
+        .reset_index()
+    )
 
-    return TopProductsKPI(topN=top_n, products=result)
+    # Ordenar por cantidad vendida con numpy argsort
+    qty_arr = grouped["totalQuantitySold"].values.astype(np.int64)
+    top_idx = np.argsort(qty_arr)[::-1][:top_n]
+    top_df  = grouped.iloc[top_idx]
+
+    products = [
+        TopProductItem(
+            productCode=row.productCode,
+            name=row.name,
+            category=row.category,
+            totalQuantitySold=int(row.totalQuantitySold),
+            totalRevenue=round(float(row.totalRevenue), 2),
+        )
+        for row in top_df.itertuples()
+    ]
+
+    return TopProductsKPI(topN=top_n, products=products)
 
 
 def calc_critical_stock(dataset: CombinedDataset) -> CriticalStockKPI:
-    threshold = settings.critical_stock_threshold
-    critical = [
-        CriticalStockItem(
-            code=item.code,
-            name=item.name,
-            category=item.category,
-            currentQuantity=item.quantity,
-            price=item.price,
-        )
-        for item in dataset.inventory
-        if item.quantity < threshold
-    ]
+    df = _inventory_to_df(dataset)
+    if df.empty:
+        return CriticalStockKPI(threshold=settings.critical_stock_threshold, totalCriticalItems=0, items=[])
 
-    critical.sort(key=lambda x: x.currentQuantity)
+    threshold = settings.critical_stock_threshold
+
+    # Filtro vectorizado con numpy
+    qty_arr  = df["quantity"].values.astype(np.int64)
+    mask     = qty_arr < threshold
+    critical_df = df[mask].copy()
+
+    # Ordenar por quantity ascendente
+    critical_df = critical_df.sort_values("quantity")
+
+    items = [
+        CriticalStockItem(
+            code=row.code,
+            name=row.name,
+            category=row.category,
+            currentQuantity=int(row.quantity),
+            price=float(row.price),
+        )
+        for row in critical_df.itertuples()
+    ]
 
     return CriticalStockKPI(
         threshold=threshold,
-        totalCriticalItems=len(critical),
-        items=critical,
+        totalCriticalItems=len(items),
+        items=items,
     )
 
 
 def calc_revenue_by_category(dataset: CombinedDataset) -> RevenueByCategoryKPI:
-    category_revenue: dict[str, float] = defaultdict(float)
-    category_units: dict[str, int] = defaultdict(int)
+    df = _orders_to_df(dataset)
+    if df.empty:
+        return RevenueByCategoryKPI(categories=[])
 
-    for order in dataset.orders:
-        for item in order.items:
-            category_revenue[item.category] += item.subtotal
-            category_units[item.category] += item.quantity
-
-    total_revenue = sum(category_revenue.values())
-
-    categories = []
-    for cat, revenue in sorted(category_revenue.items(), key=lambda x: x[1], reverse=True):
-        pct = (revenue / total_revenue * 100) if total_revenue > 0 else 0.0
-        categories.append(
-            RevenueByCategory(
-                category=cat,
-                totalRevenue=round(revenue, 2),
-                totalUnitsSold=category_units[cat],
-                percentageOfRevenue=round(pct, 2),
-            )
+    grouped = (
+        df.groupby("category")
+        .agg(
+            totalRevenue=("subtotal", "sum"),
+            totalUnitsSold=("quantity", "sum"),
         )
+        .reset_index()
+    )
+
+    # Porcentaje con numpy
+    rev_arr   = grouped["totalRevenue"].values.astype(np.float64)
+    total_rev = np.sum(rev_arr)
+    pct_arr   = np.where(total_rev > 0, rev_arr / total_rev * 100, 0.0)
+
+    # Ordenar descendente por revenue
+    order_idx = np.argsort(rev_arr)[::-1]
+
+    categories = [
+        RevenueByCategory(
+            category=grouped.iloc[i]["category"],
+            totalRevenue=round(float(rev_arr[i]), 2),
+            totalUnitsSold=int(grouped.iloc[i]["totalUnitsSold"]),
+            percentageOfRevenue=round(float(pct_arr[i]), 2),
+        )
+        for i in order_idx
+    ]
 
     return RevenueByCategoryKPI(categories=categories)
 
 
 def calc_top_customers(dataset: CombinedDataset, top_n: int = 5) -> TopCustomersKPI:
-    customer_orders: dict[str, int] = defaultdict(int)
-    customer_spent: dict[str, float] = defaultdict(float)
-    customer_name: dict[str, str] = {}
+    df = _orders_to_df(dataset)
+    if df.empty:
+        return TopCustomersKPI(topN=top_n, customers=[])
 
-    for order in dataset.orders:
-        email = order.userEmail
-        customer_orders[email] += 1
-        customer_spent[email] += order.total
-        customer_name[email] = order.userName
+    # Una fila por orden para no duplicar el total por cada line-item
+    orders_df = df[["order_id", "userEmail", "userName", "order_total"]].drop_duplicates("order_id")
 
-    sorted_customers = sorted(customer_spent.keys(), key=lambda e: customer_spent[e], reverse=True)
-
-    result = [
-        TopCustomer(
-            userEmail=email,
-            userName=customer_name[email],
-            totalOrders=customer_orders[email],
-            totalSpent=round(customer_spent[email], 2),
+    grouped = (
+        orders_df.groupby("userEmail")
+        .agg(
+            userName=("userName", "first"),
+            totalOrders=("order_id", "count"),
+            totalSpent=("order_total", "sum"),
         )
-        for email in sorted_customers[:top_n]
+        .reset_index()
+    )
+
+    # Top N por gasto con numpy
+    spent_arr = grouped["totalSpent"].values.astype(np.float64)
+    top_idx   = np.argsort(spent_arr)[::-1][:top_n]
+    top_df    = grouped.iloc[top_idx]
+
+    customers = [
+        TopCustomer(
+            userEmail=row.userEmail,
+            userName=row.userName,
+            totalOrders=int(row.totalOrders),
+            totalSpent=round(float(row.totalSpent), 2),
+        )
+        for row in top_df.itertuples()
     ]
 
-    return TopCustomersKPI(topN=top_n, customers=result)
+    return TopCustomersKPI(topN=top_n, customers=customers)
 
 
 def build_full_report(dataset: CombinedDataset) -> FullAnalyticsReport:
