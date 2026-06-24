@@ -32,7 +32,11 @@ public class OrderServiceImpl implements OrderService {
         this.inventoryClient = inventoryClient;
     }
 
-    // Método privado reutilizable para extraer datos del token
+    /**
+     * Obtiene los datos del usuario autenticado desde el contexto de seguridad.
+     *
+     * @return mapa con información del usuario autenticado
+     */
     private Map<String, String> getAuthenticatedUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth == null || auth.getPrincipal() == null) {
@@ -41,6 +45,11 @@ public class OrderServiceImpl implements OrderService {
         return (Map<String, String>) auth.getPrincipal();
     }
 
+    /**
+     * Crea una nueva orden a partir del carrito del usuario autenticado.
+     *
+     * @return orden creada
+     */
     @Override
     public OrderResponseDTO createOrder() {
         Map<String, String> user = getAuthenticatedUser();
@@ -76,6 +85,12 @@ public class OrderServiceImpl implements OrderService {
         return OrderFactory.toResponse(saved);
     }
 
+    /**
+     * Recupera las órdenes asociadas a un correo de usuario.
+     *
+     * @param userEmail correo electrónico del usuario
+     * @return lista de órdenes del usuario
+     */
     @Override
     public List<OrderResponseDTO> getOrdersByUser(String userEmail) {
         return orderRepository.findByUserEmail(userEmail).stream()
@@ -83,6 +98,11 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    /**
+     * Recupera todas las órdenes almacenadas.
+     *
+     * @return lista de todas las órdenes
+     */
     @Override
     public List<OrderResponseDTO> getAllOrders() {
         return orderRepository.findAll().stream()
@@ -90,6 +110,12 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    /**
+     * Recupera una orden por su identificador.
+     *
+     * @param id identificador de la orden
+     * @return orden encontrada
+     */
     @Override
     public OrderResponseDTO getOrderById(String id) {
         Order order = orderRepository.findById(id)
@@ -98,6 +124,12 @@ public class OrderServiceImpl implements OrderService {
         return OrderFactory.toResponse(order);
     }
 
+    /**
+     * Recupera las órdenes que coinciden con un estado específico.
+     *
+     * @param status estado de la orden
+     * @return lista de órdenes en ese estado
+     */
     @Override
     public List<OrderResponseDTO> getOrdersByStatus(String status) {
         OrderStatus orderStatus;
@@ -112,6 +144,14 @@ public class OrderServiceImpl implements OrderService {
                 .toList();
     }
 
+    /**
+     * Actualiza el estado de una orden y, si se cancela una orden pendiente,
+     * repone el inventario correspondiente.
+     *
+     * @param id     identificador de la orden
+     * @param status nuevo estado de la orden
+     * @return orden actualizada
+     */
     @Override
     public OrderResponseDTO updateOrderStatus(String id, String status) {
         Order order = orderRepository.findById(id)

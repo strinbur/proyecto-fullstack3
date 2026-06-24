@@ -5,6 +5,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+/**
+ * DTO para el registro de un nuevo usuario con rol predeterminado {@code CLIENTE}.
+ */
 @Data
 public class RegisterDTO {
 

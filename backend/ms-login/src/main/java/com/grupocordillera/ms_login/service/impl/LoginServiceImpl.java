@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Implementación del servicio de login que maneja autenticación y administración de usuarios.
+ */
 @Service
 public class LoginServiceImpl implements LoginService {
 
@@ -27,7 +30,12 @@ public class LoginServiceImpl implements LoginService {
         this.jwtService = jwtService;
     }
 
-//Mapeo de entidad a DTO
+    /**
+     * Convierte una entidad {@link Login} en un {@link LoginResponseDTO}.
+     *
+     * @param login entidad de usuario
+     * @return DTO con los datos del usuario
+     */
     private LoginResponseDTO toDTO(Login login) {
 
         LoginResponseDTO dto =
@@ -42,7 +50,12 @@ public class LoginServiceImpl implements LoginService {
         return dto;
     }
 
-//Crea un nuevo usuario, pero no se puede crear un ADMIN
+    /**
+     * Registra un cliente nuevo con rol {@link Rol#CLIENTE}.
+     *
+     * @param dto información de registro del cliente
+     * @return datos del cliente creado
+     */
     @Override
     public LoginResponseDTO createClient(
             RegisterDTO dto
@@ -71,7 +84,13 @@ public class LoginServiceImpl implements LoginService {
         );
     }
 
-//Login de usuario, genera un token JWT si las credenciales son correctas
+/**
+     * Autentica a un usuario y genera un token JWT.
+     *
+     * @param email    correo electrónico del usuario
+     * @param password contraseña del usuario
+     * @return respuesta de autenticación con token y datos del usuario
+     */
     @Override
     public AuthResponseDTO login(
             String email,
@@ -108,7 +127,11 @@ public class LoginServiceImpl implements LoginService {
         return response;
     }
 
-//Get todos los usuarios
+/**
+     * Recupera todos los usuarios registrados.
+     *
+     * @return lista de usuarios
+     */
     @Override
     public List<LoginResponseDTO> getAllUsers() {
 
@@ -118,7 +141,12 @@ public class LoginServiceImpl implements LoginService {
                 .collect(Collectors.toList());
     }
 
-//Get un usuario por su ID
+    /**
+     * Recupera un usuario por su identificador.
+     *
+     * @param id identificador del usuario
+     * @return usuario encontrado
+     */
     @Override
     public LoginResponseDTO getUserById(
             String id
@@ -133,7 +161,12 @@ public class LoginServiceImpl implements LoginService {
                 );
     }
 
-//Crea un nuevo usuario con rol de CLIENTE
+/**
+     * Crea un usuario con el rol especificado en el DTO.
+     *
+     * @param dto información de creación del usuario
+     * @return usuario creado
+     */
     @Override
     public LoginResponseDTO createUser(
             CreateUserDTO dto
@@ -162,7 +195,13 @@ public class LoginServiceImpl implements LoginService {
         );
     }
 
-//Actualiza un usuario por su ID
+/**
+     * Actualiza los datos de un usuario existente sin cambiar su rol.
+     *
+     * @param id  identificador del usuario
+     * @param dto datos nuevos del usuario
+     * @return usuario actualizado
+     */
     @Override
     public LoginResponseDTO updateUser(
             String id,
@@ -212,7 +251,11 @@ public class LoginServiceImpl implements LoginService {
         );
     }
 
-//Elimina un usuario por su ID, pero no se puede eliminar un ADMIN
+/**
+     * Elimina un usuario por su identificador, excepto si es administrador.
+     *
+     * @param id identificador del usuario
+     */
     @Override
     public void deleteUser(
             String id

@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controlador REST para manejar las operaciones de inicio de sesión y gestión de usuarios.
+ * <p>
+ * Expone los endpoints de registro, autenticación, consulta, actualización y eliminación de usuarios.
+ * </p>
+ */
 @RestController
 @RequestMapping("/login")
 @CrossOrigin
@@ -16,11 +22,21 @@ public class LoginController {
 
     private final LoginService service;
 
+    /**
+     * Construye una instancia de {@link LoginController} con el servicio de login inyectado.
+     *
+     * @param service servicio encargado de la lógica de autenticación y gestión de usuarios
+     */
     public LoginController(LoginService service) {
         this.service = service;
     }
 
-    // Registro publico crea un usuario con rol CLIENTE
+    /**
+     * Registra un nuevo usuario con el rol {@code CLIENTE}.
+     *
+     * @param dto datos de registro del usuario
+     * @return respuesta con los datos del usuario creado y estado HTTP 201
+     */
     @PostMapping("/register")
     public ResponseEntity<LoginResponseDTO> createClient(
             @Valid @RequestBody RegisterDTO dto
@@ -32,7 +48,12 @@ public class LoginController {
         );
     }
 
-    // Login
+    /**
+     * Autentica un usuario y devuelve el token o la información de sesión.
+     *
+     * @param request datos de autenticación del usuario
+     * @return respuesta con el token de autenticación y estado HTTP 200
+     */
     @PostMapping("/auth")
     public ResponseEntity<AuthResponseDTO> login(
             @Valid @RequestBody LoginRequestDTO request
@@ -46,7 +67,14 @@ public class LoginController {
         );
     }
 
-    // Solo ADMIN y VENTAS: Listar todos los usuarios
+    /**
+     * Obtiene todos los usuarios registrados.
+     * <p>
+     * Este endpoint está pensado para roles administrativos y de ventas.
+     * </p>
+     *
+     * @return lista de usuarios con estado HTTP 200
+     */
     //@PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping
     public ResponseEntity<List<LoginResponseDTO>> getAllUsers() {
@@ -56,7 +84,12 @@ public class LoginController {
         );
     }
 
-    // Solo ADMIN y VENTAS: Obtener usuario por ID
+    /**
+     * Obtiene un usuario por su identificador.
+     *
+     * @param id identificador del usuario
+     * @return datos del usuario con estado HTTP 200
+     */
     //@PreAuthorize("hasAnyRole('ADMIN','VENTAS')")
     @GetMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> getUserById(
@@ -68,7 +101,13 @@ public class LoginController {
         );
     }
 
-    // Usuario propio, ADMIN y VENTAS: Actualizar usuario sin cambiar rol
+    /**
+     * Actualiza los datos de un usuario específico sin modificar su rol.
+     *
+     * @param id identificador del usuario a actualizar
+     * @param dto datos de actualización del usuario
+     * @return datos del usuario actualizado con estado HTTP 200
+     */
     //@PreAuthorize("hasAnyRole('ADMIN','VENTAS','CLIENTE')")
     @PutMapping("/{id}")
     public ResponseEntity<LoginResponseDTO> updateUser(
@@ -81,7 +120,12 @@ public class LoginController {
         );
     }
 
-    // Solo ADMIN: Eliminar usuario por ID
+    /**
+     * Elimina un usuario por su identificador.
+     *
+     * @param id identificador del usuario a eliminar
+     * @return respuesta sin contenido con estado HTTP 204
+     */
     //@PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(
@@ -93,7 +137,12 @@ public class LoginController {
         return ResponseEntity.noContent().build();
     }
 
-    // Solo ADMIN puede crear un usuario con rol especifico
+    /**
+     * Crea un nuevo usuario con un rol específico.
+     *
+     * @param dto datos de creación del usuario, incluyendo el rol asignado
+     * @return respuesta con los datos del usuario creado y estado HTTP 201
+     */
     //@PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/create")
     public ResponseEntity<LoginResponseDTO> createUser(

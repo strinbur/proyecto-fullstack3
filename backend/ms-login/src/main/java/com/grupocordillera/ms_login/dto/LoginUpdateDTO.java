@@ -4,6 +4,9 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
+/**
+ * DTO para la actualización de datos personales del usuario.
+ */
 @Data
 public class LoginUpdateDTO {
 
@@ -16,4 +19,4 @@ public class LoginUpdateDTO {
     @NotBlank(message = "El correo es obligatorio")
     @Email(message = "El correo no es valido")
     private String email;
-}
+} 
