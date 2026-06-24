@@ -19,6 +19,7 @@ public class LoginServiceImpl implements LoginService {
     // Login
     @Override
     public AuthResponseDTO login(LoginRequestDTO request) {
+        // Delegates the authentication call to the ms-login service
         return loginClient.login(request);
     }
 

@@ -11,6 +11,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/bff/reports")
 @CrossOrigin
+/**
+ * BFF controller para exponer endpoints de reporte al frontend. Actúa como
+ * gateway hacia `ms-reporting` y delega al `ReportService`.
+ */
 public class ReportController {
 
     private static final Logger log =
@@ -27,12 +31,15 @@ public class ReportController {
             @RequestHeader String Authorization
     ) {
         log.info("BFF GET FULL REPORT");
+
+        // Pasa el token de autorización al servicio que llama al microservicio
         return service.getFullReport(Authorization);
     }
 
     @GetMapping("/history")
     public List<?> getHistory(@RequestHeader String Authorization) {
         log.info("BFF GET REPORT HISTORY");
+
         return service.getHistory(Authorization);
     }
 

@@ -14,6 +14,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * BFF controller para operaciones de inventario. Expone endpoints que
+ * el frontend consume y delega en `InventoryService`.
+ */
 @RestController
 @RequestMapping("/bff/inventory")
 @CrossOrigin
@@ -33,9 +37,9 @@ public class InventoryController {
     public List<InventoryResponseDTO> getAll(
             @RequestParam(required = false) String category
     ) {
-
         log.info("BFF GET ALL INVENTORY - category: {}", category);
 
+        // Recupera todos los productos, opcionalmente filtrados por categoría
         return service.getAll(category);
     }
 
@@ -44,9 +48,9 @@ public class InventoryController {
     public InventoryResponseDTO save(
             @Valid @RequestBody InventoryCreateDTO dto
     ) {
-
         log.info("BFF SAVE PRODUCT - code: {}", dto.getCode());
 
+        // Crea un nuevo producto en el inventario
         return service.save(dto);
     }
 
@@ -55,7 +59,6 @@ public class InventoryController {
     public InventoryResponseDTO getByCode(
             @PathVariable String code
     ) {
-
         log.info("BFF GET PRODUCT BY CODE: {}", code);
 
         return service.getByCode(code);
@@ -67,7 +70,6 @@ public class InventoryController {
             @PathVariable String code,
             @Valid @RequestBody InventoryUpdateDTO dto
     ) {
-
         log.info("BFF UPDATE PRODUCT BY CODE: {}", code);
 
         return service.update(code, dto);
@@ -78,7 +80,6 @@ public class InventoryController {
     public void deleteByCode(
             @PathVariable String code
     ) {
-
         log.info("BFF DELETE PRODUCT BY CODE: {}", code);
 
         service.deleteByCode(code);

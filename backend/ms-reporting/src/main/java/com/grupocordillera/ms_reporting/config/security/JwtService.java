@@ -28,6 +28,11 @@ public class JwtService {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSigningKey())
+    
+                /**
+                 * Servicio de utilidad para operaciones con JWT: extracción de claims,
+                 * validación y lectura de campos como email y role.
+                 */
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
@@ -36,6 +41,12 @@ public class JwtService {
 
     public String extractEmail(String token) {
         return extractClaims(token).getSubject();
+                /**
+                 * Parsea y devuelve los claims contenidos en el token JWT.
+                 *
+                 * @param token token JWT
+                 * @return claims del token
+                 */
     }
 
 
@@ -45,12 +56,30 @@ public class JwtService {
 
 
     public boolean isTokenValid(String token) {
+                /**
+                 * Extrae el subject (email) del token.
+                 *
+                 * @param token token JWT
+                 * @return email contenido en el subject
+                 */
         try {
             extractClaims(token);
             return true;
         } catch (Exception e) {
+                /**
+                 * Extrae el rol contenido en los claims del token.
+                 *
+                 * @param token token JWT
+                 * @return rol como cadena
+                 */
             e.printStackTrace();
             return false;
         }
     }
+                /**
+                 * Valida que el token sea parseable y esté firmado con la clave correcta.
+                 *
+                 * @param token token JWT
+                 * @return {@code true} si el token es válido, {@code false} en caso contrario
+                 */
 }

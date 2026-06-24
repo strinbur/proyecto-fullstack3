@@ -19,6 +19,10 @@ public class InventoryServiceImpl implements InventoryService {
         this.client = client;
     }
 
+    /**
+     * Delegates operations to the `ms-inventory` service via Feign client.
+     */
+
     @Override
     public List<InventoryResponseDTO> getAll(String category) {
         return client.getAll(category);

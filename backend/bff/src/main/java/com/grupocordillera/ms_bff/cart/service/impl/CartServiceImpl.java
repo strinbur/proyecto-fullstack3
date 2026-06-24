@@ -7,6 +7,11 @@ import com.grupocordillera.ms_bff.cart.service.CartService;
 import org.springframework.stereotype.Service;
 
 @Service
+/**
+ * Implementación del `CartService` en el BFF que delega llamadas al
+ * microservicio de carrito (`ms-cart`) mediante un cliente Feign.
+ */
+@Service
 public class CartServiceImpl implements CartService {
 
     private final CartClient client;

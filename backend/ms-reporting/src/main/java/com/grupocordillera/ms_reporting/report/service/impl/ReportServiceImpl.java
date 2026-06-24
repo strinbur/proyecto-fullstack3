@@ -19,6 +19,10 @@ import java.util.List;
 
 
 @Service
+/**
+ * Implementación de {@link ReportService} que delega en el cliente de analytics
+ * y persiste un registro en el historial de reportes.
+ */
 public class ReportServiceImpl implements ReportService {
 
 
@@ -38,6 +42,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public FullAnalyticsReportDTO getFullReport(String requestedBy) {
 
+        // Genera el reporte completo consultando el cliente de analytics
         FullAnalyticsReportDTO report = analyticsClient.getFullReport();
 
         ReportLog log = new ReportLog();

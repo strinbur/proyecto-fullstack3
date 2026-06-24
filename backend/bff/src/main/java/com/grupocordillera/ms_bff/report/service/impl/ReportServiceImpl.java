@@ -18,6 +18,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public FullAnalyticsReportDTO getFullReport(String token) {
+        // Reenvía la solicitud al cliente Feign incluyendo el token de autorización
         return client.getFullReport(token);
     }
 

@@ -8,8 +8,13 @@ import java.util.List;
 public class CriticalStockDTO {
 
 
+    /** Umbral para considerar stock crítico. */
     private int threshold;
+
+    /** Total de ítems en estado crítico. */
     private int totalCriticalItems;
+
+    /** Ítems cuyo stock está por debajo del umbral. */
     private List<CriticalStockItemDTO> items;
 
 

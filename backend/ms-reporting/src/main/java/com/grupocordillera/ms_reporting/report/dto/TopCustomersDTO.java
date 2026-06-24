@@ -8,8 +8,14 @@ import java.util.List;
 @Data
 public class TopCustomersDTO {
 
-
+    /**
+     * Número de clientes top incluidos.
+     */
     private int topN;
+
+    /**
+     * Lista de clientes con métricas de gasto.
+     */
     private List<TopCustomerItemDTO> customers;
 
 

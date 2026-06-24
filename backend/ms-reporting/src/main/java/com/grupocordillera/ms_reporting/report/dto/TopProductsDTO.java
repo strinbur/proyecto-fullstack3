@@ -7,8 +7,14 @@ import java.util.List;
 @Data
 public class TopProductsDTO {
 
-
+    /**
+     * Número de elementos top incluidos.
+     */
     private int topN;
+
+    /**
+     * Lista de productos con métricas de venta.
+     */
     private List<TopProductItemDTO> products;
 
 

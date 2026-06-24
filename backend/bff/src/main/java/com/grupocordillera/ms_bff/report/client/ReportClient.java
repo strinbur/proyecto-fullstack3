@@ -12,6 +12,10 @@ import java.util.List;
     path = "/reports",
     configuration = com.grupocordillera.ms_bff.config.FeignConfig.class
 )
+/**
+ * Cliente Feign para consumir `ms-reporting` desde el BFF. Encapsula las
+ * rutas remotas necesarias para construir vistas enriquecidas en el frontend.
+ */
 public interface ReportClient {
 
     @GetMapping

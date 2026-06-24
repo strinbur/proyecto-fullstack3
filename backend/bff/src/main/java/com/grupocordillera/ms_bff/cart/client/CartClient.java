@@ -7,6 +7,10 @@ import com.grupocordillera.ms_bff.cart.dto.UpdateQuantityDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Cliente Feign que proxya las llamadas al microservicio `ms-cart`.
+ * El BFF utiliza este cliente para delegar operaciones de carrito.
+ */
 @FeignClient(
         name = "ms-cart",
         url = "${spring.cloud.openfeign.client.config.ms-cart.url}",

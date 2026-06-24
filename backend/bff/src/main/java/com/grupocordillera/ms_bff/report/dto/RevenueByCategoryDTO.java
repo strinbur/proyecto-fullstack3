@@ -8,6 +8,7 @@ import java.util.List;
 public class RevenueByCategoryDTO {
 
 
+    /** Lista de categorías con su ingreso agregado. */
     private List<CategoryRevenueDTO> categories;
 
 

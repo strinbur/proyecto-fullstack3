@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Cliente Feign para proxear llamadas al microservicio `ms-inventory`.
+ */
 @FeignClient(name = "ms-inventory", path = "/inventory")
 public interface InventoryClient {
 

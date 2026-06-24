@@ -5,11 +5,33 @@ import lombok.Data;
 @Data
 public class SalesSummaryDTO {
 
-
+    /**
+     * Cantidad total de órdenes.
+     */
     private int totalOrders;
+
+    /**
+     * Órdenes completadas.
+     */
     private int completedOrders;
+
+    /**
+     * Órdenes pendientes.
+     */
     private int pendingOrders;
+
+    /**
+     * Órdenes canceladas.
+     */
     private int cancelledOrders;
+
+    /**
+     * Ingreso total generado.
+     */
     private double totalRevenue;
+
+    /**
+     * Valor promedio por orden.
+     */
     private double averageOrderValue;
 }

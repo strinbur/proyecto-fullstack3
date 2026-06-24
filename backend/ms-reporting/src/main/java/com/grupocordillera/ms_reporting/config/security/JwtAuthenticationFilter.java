@@ -14,6 +14,14 @@ import java.io.IOException;
 import java.util.List;
 
 
+/**
+ * Filtro de seguridad que valida el token JWT en las peticiones entrantes.
+ * <p>
+ * Extrae la cabecera `Authorization`, valida el token mediante {@link JwtService}
+ * y, si es válido, carga la autenticación en el contexto de Spring Security.
+ * Devuelve respuestas 401 en caso de token inválido o errores de parsing.
+ * </p>
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -32,6 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             HttpServletResponse response,
             FilterChain filterChain
     ) throws ServletException, IOException {
+
+        // El método procesa la cabecera Authorization, valida el JWT y
+        // si es correcto establece la autenticación en el contexto.
 
 
         final String authHeader = request.getHeader("Authorization");

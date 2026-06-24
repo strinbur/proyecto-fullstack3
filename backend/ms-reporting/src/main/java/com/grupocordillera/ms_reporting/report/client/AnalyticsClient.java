@@ -19,6 +19,9 @@ import org.springframework.web.bind.annotation.RequestParam;
     path = "/analytics",
     configuration = FeignConfig.class
 )
+/**
+ * Cliente Feign para consumir los endpoints de analytics (ms-analytics).
+ */
 public interface AnalyticsClient {
 
 

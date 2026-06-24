@@ -6,6 +6,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Cliente Feign que expone las rutas del microservicio `ms-login`.
+ * El BFF lo utiliza para delegar operaciones de autenticación y gestión
+ * de usuarios.
+ */
 @FeignClient(
     name = "ms-login",
     path = "/login",

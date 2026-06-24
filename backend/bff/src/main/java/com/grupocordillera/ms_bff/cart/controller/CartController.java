@@ -10,6 +10,11 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * BFF controller encargado de manejar las operaciones del carrito a nivel
+ * de gateway. Este controlador delega la lógica al `CartService` y expone
+ * endpoints amigables para el frontend.
+ */
 @RestController
 @RequestMapping("/bff/cart")
 @CrossOrigin
@@ -29,6 +34,7 @@ public class CartController {
 
         log.info("BFF GET CART");
 
+        // Recupera el estado actual del carrito para el usuario autenticado
         return service.getCart();
     }
 
@@ -39,6 +45,7 @@ public class CartController {
 
         log.info("BFF ADD PRODUCT TO CART: {}", dto.getProductCode());
 
+        // Agrega un producto al carrito delegando al servicio backend
         return service.addProduct(dto);
     }
 
@@ -50,6 +57,7 @@ public class CartController {
 
         log.info("BFF UPDATE CART PRODUCT: {}", code);
 
+        // Actualiza la cantidad de un producto específico en el carrito
         return service.updateQuantity(code, dto);
     }
 
@@ -60,6 +68,7 @@ public class CartController {
 
         log.info("BFF REMOVE PRODUCT FROM CART: {}", code);
 
+        // Elimina un producto del carrito
         return service.removeProduct(code);
     }
 
@@ -68,6 +77,7 @@ public class CartController {
 
         log.info("BFF CLEAR CART");
 
+        // Limpia completamente el carrito del usuario
         service.clearCart();
     }
 }

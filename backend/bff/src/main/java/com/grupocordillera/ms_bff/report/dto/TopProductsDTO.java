@@ -8,7 +8,10 @@ import java.util.List;
 public class TopProductsDTO {
 
 
+    /** Número de productos top incluidos. */
     private int topN;
+
+    /** Lista de productos con métricas de venta. */
     private List<TopProductItemDTO> products;
 
 

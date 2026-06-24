@@ -7,7 +7,9 @@ import java.util.List;
 @Data
 public class RevenueByCategoryDTO {
 
-
+    /**
+     * Lista de ingresos agregados por categoría.
+     */
     private List<CategoryRevenueDTO> categories;
 
 

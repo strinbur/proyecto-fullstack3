@@ -17,6 +17,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+/**
+ * Configuración de seguridad de la aplicación.
+ * <p>
+ * Define la cadena de filtros, manejo de excepciones y las rutas públicas (swagger, actuator).
+ * </p>
+ */
 public class SecurityConfig {
 
 
@@ -30,6 +36,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        // Configura políticas de seguridad: deshabilita CSRF, usa sesiones sin estado,
+        // maneja excepciones y añade el filtro JWT antes del UsernamePasswordAuthenticationFilter.
 
 
         http
