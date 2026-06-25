@@ -149,12 +149,20 @@
 
 .profile-orders {
   width: 100%;
+  margin-top: 1.25rem;
 }
 
 .profile-orders h2 {
   margin-bottom: 1.25rem;
   color: #1f2937;
   font-size: 1.6rem;
+}
+
+/* Asegurar que el botón principal (editar/ver perfil) esté centrado visualmente */
+.profile-actions .profile-button.blue {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 300px;
 }
 
 .no-orders {

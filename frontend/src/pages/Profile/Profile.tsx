@@ -222,51 +222,52 @@ function Profile() {
           </button>
 
         </div>
-        </div>
-      </div>
+          
+          {/* Pedidos recientes movidos dentro de la tarjeta de perfil */}
+          <div className="profile-orders">
+            <h2>Pedidos recientes</h2>
 
-      <div className="profile-orders">
-          <h2>Pedidos recientes</h2>
-
-        {orderHistory.length === 0 ? (
-          <p className="no-orders">Aún no has registrado pedidos en esta sesión.</p>
-        ) : (
-          <div className="orders-table-wrapper">
-            <table className="orders-table">
-              <thead>
-                <tr>
-                  <th>ID pedido</th>
-                  <th>Fecha</th>
-                  <th>Estado</th>
-                  <th>Productos</th>
-                  <th>Total</th>
-                  <th>Unidades</th>
-                </tr>
-              </thead>
-              <tbody>
-                {orderHistory.map((order) => (
-                  <tr key={order.id}>
-                    <td>{order.id.slice(-6)}</td>
-                    <td>{new Date(order.createdAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</td>
-                    <td>
-                      <span className="order-status">{order.status}</span>
-                    </td>
-                    <td className="order-products">
-                      {order.items.map((item, index) => (
-                        <span key={`${order.id}-${item.name}-${index}`}>
-                          {item.name} x{item.quantity}
-                          {index < order.items.length - 1 ? ", " : ""}
-                        </span>
-                      ))}
-                    </td>
-                    <td>${order.totalPrice.toFixed(2)}</td>
-                    <td>{order.totalItems}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            {orderHistory.length === 0 ? (
+              <p className="no-orders">Aún no has registrado pedidos en esta sesión.</p>
+            ) : (
+              <div className="orders-table-wrapper">
+                <table className="orders-table">
+                  <thead>
+                    <tr>
+                      <th>ID pedido</th>
+                      <th>Fecha</th>
+                      <th>Estado</th>
+                      <th>Productos</th>
+                      <th>Total</th>
+                      <th>Unidades</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {orderHistory.map((order) => (
+                      <tr key={order.id}>
+                        <td>{order.id.slice(-6)}</td>
+                        <td>{new Date(order.createdAt).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" })}</td>
+                        <td>
+                          <span className="order-status">{order.status}</span>
+                        </td>
+                        <td className="order-products">
+                          {order.items.map((item, index) => (
+                            <span key={`${order.id}-${item.name}-${index}`}>
+                              {item.name} x{item.quantity}
+                              {index < order.items.length - 1 ? ", " : ""}
+                            </span>
+                          ))}
+                        </td>
+                        <td>${order.totalPrice.toFixed(2)}</td>
+                        <td>{order.totalItems}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
