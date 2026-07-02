@@ -8,14 +8,53 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  postgresGt:
+    image: postgres:17-alpine
+    container_name: glitchtip-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_postgres:/var/lib/postgresql/data
+
+  redisGt:
+    image: redis:7-alpine
+    container_name: glitchtip-redis
+    restart: unless-stopped
+
+  glitchtip:
+    image: glitchtip/glitchtip:latest
+    container_name: glitchtip
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresGt
+      - redisGt
+    environment:
+      DATABASE_URL: postgres://glitchtip:password@postgresGt:5432/glitchtip
+      REDIS_URL: redis://redisGt:6379/0
+      VALKEY_URL: redis://redisGt:6379/0
+      GLITCHTIP_DOMAIN: http://localhost:8000
+      GLITCHTIP_EMBED_WORKER: "true"
+      SECRET_KEY: cambia-esta-clave-por-una-larga-y-segura
+      DEFAULT_FROM_EMAIL: admin@fullstack3.local
+    volumes:
+      - glitchtip_media:/code/media
+
   ms-login:
     build:
       context: ./backend/ms-login
     container_name: ms-login
     ports:
       - "8081:8081"
+    environment:
+      - SENTRY_DSN=http://86a4e3e826834377afd5b960269cd159@glitchtip:8000/1
     depends_on:
       - mongodb
+      - glitchtip
 
   ms-inventory:
     build:
@@ -122,3 +161,5 @@ services:
 
 volumes:
   mongo_data:
+  glitchtip_postgres:
+  glitchtip_media:

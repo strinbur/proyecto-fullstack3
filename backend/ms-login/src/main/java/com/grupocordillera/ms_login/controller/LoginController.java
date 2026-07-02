@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.sentry.Sentry;
 
 import java.util.List;
 
@@ -105,4 +106,14 @@ public class LoginController {
                 HttpStatus.CREATED
         );
     }
+
+        /**
+         * testeo de sentry despues eliminar
+         *
+         */
+        @GetMapping("/test-sentry")
+        public String testSentry() {
+        Sentry.captureMessage("Probando GlitchTip desde ms-login");
+        throw new RuntimeException("Error de prueba");
+        }
 }
