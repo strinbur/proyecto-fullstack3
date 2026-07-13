@@ -24,11 +24,11 @@ spec:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
 
-        - name: ANALYTICS_URL
-          value: "http://ms-analytics:8086"
-
-        - name: JWT_SECRET_KEY
-          value: "f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_REPORTING_DSN
 
         resources:
           requests:

@@ -23,18 +23,13 @@ spec:
         env:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
-        - name: MS_REPORTING_URL
-          value: "http://ms-reporting:8087"
-        - name: MS_ANALYTICS_URL
-          value: "http://ms-analytics:8086"
-        - name: MS_INVENTORY_URL
-          value: "http://ms-inventory:8082"
-        - name: MS_ORDER_URL
-          value: "http://ms-order:8084"
-        - name: MS_CART_URL
-          value: "http://ms-cart:8083"
-        - name: MS_LOGIN_URL
-          value: "http://ms-login:8081"
+
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_BFF_DSN
+
         resources:
           requests:
             memory: "256Mi"

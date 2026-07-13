@@ -12,3 +12,5 @@ resources:
   - ../backend/ms-data-aggregation/k8s
   - ../backend/ms-analytics/k8s
   - ../mongo/k8s
+  - ../glitchtip/k8s
+  - k8s-secrets/sentry-secret.yaml

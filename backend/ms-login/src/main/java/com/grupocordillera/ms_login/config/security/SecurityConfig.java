@@ -38,7 +38,6 @@ public class SecurityConfig {
 
                 .requestMatchers(HttpMethod.POST, "/login/auth").permitAll()
                 .requestMatchers(HttpMethod.POST, "/login/register").permitAll()
-                .requestMatchers(HttpMethod.GET, "/login/test-sentry").permitAll()
 
                 .anyRequest().authenticated()
             )

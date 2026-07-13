@@ -106,14 +106,4 @@ public class LoginController {
                 HttpStatus.CREATED
         );
     }
-
-        /**
-         * testeo de sentry despues eliminar
-         *
-         */
-        @GetMapping("/test-sentry")
-        public String testSentry() {
-        Sentry.captureMessage("Probando GlitchTip desde ms-login");
-        throw new RuntimeException("Error de prueba");
-        }
 }

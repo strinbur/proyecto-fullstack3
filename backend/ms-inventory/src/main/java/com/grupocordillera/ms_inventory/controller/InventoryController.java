@@ -7,6 +7,7 @@ import com.grupocordillera.ms_inventory.service.InventoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.sentry.Sentry;
 
 import java.util.List;
 
@@ -84,5 +85,5 @@ public class InventoryController {
         return ResponseEntity.ok(
                 service.update(code, inventory)
         );
-    }
+    }    
 }

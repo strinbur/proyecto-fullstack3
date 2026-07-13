@@ -25,11 +25,11 @@ spec:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
 
-        - name: ORDER_SERVICE_URL
-          value: "http://ms-order:8084"
-
-        - name: INVENTORY_SERVICE_URL
-          value: "http://ms-inventory:8082"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_DATA_AGGREGATION_DSN
 
         resources:
           requests:
