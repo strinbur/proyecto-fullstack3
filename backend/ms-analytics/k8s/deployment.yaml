@@ -37,6 +37,12 @@ spec:
         - name: MONGODB_DATABASE
           value: "ms-analytics"
 
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_ANALYTICS_DSN
+
         resources:
           requests:
             memory: "256Mi"
@@ -44,3 +50,19 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 20
+          periodSeconds: 10
+          failureThreshold: 5
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8086
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          failureThreshold: 6

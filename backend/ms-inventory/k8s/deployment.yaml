@@ -23,6 +23,13 @@ spec:
         env:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
+
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_INVENTORY_DSN
+
         resources:
           requests:
             memory: "256Mi"

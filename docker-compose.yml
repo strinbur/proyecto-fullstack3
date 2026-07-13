@@ -8,14 +8,53 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  postgresGt:
+    image: postgres:17-alpine
+    container_name: glitchtip-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: glitchtip
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: glitchtip
+    volumes:
+      - glitchtip_postgres:/var/lib/postgresql/data
+
+  redisGt:
+    image: redis:7-alpine
+    container_name: glitchtip-redis
+    restart: unless-stopped
+
+  glitchtip:
+    image: glitchtip/glitchtip:latest
+    container_name: glitchtip
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresGt
+      - redisGt
+    environment:
+      DATABASE_URL: postgres://glitchtip:password@postgresGt:5432/glitchtip
+      REDIS_URL: redis://redisGt:6379/0
+      VALKEY_URL: redis://redisGt:6379/0
+      GLITCHTIP_DOMAIN: http://localhost:8000
+      GLITCHTIP_EMBED_WORKER: "true"
+      SECRET_KEY: cambia-esta-clave-por-una-larga-y-segura
+      DEFAULT_FROM_EMAIL: admin@fullstack3.local
+    volumes:
+      - glitchtip_media:/code/media
+
   ms-login:
     build:
       context: ./backend/ms-login
     container_name: ms-login
     ports:
       - "8081:8081"
+    environment:
+      - SENTRY_DSN=http://3b2cdd4705fb481f96f35ba75509ae9a@glitchtip:8000/4
     depends_on:
       - mongodb
+      - glitchtip
 
   ms-inventory:
     build:
@@ -23,8 +62,11 @@ services:
     container_name: ms-inventory
     ports:
       - "8082:8082"
+    environment:
+      - SENTRY_DSN=http://d8343d1e1b6f40929b2614e061e91c4f@glitchtip:8000/5
     depends_on:
       - mongodb
+      - glitchtip
 
   ms-cart:
     build:
@@ -32,9 +74,12 @@ services:
     container_name: ms-cart
     ports:
       - "8083:8083"
+    environment:
+      - SENTRY_DSN=http://165fa2168eb943749fef471b2499f363@glitchtip:8000/6
     depends_on:
       - mongodb
       - ms-inventory
+      - glitchtip
 
   ms-order:
     build:
@@ -42,10 +87,13 @@ services:
     container_name: ms-order
     ports:
       - "8084:8084"
+    environment:
+      - SENTRY_DSN=http://16df1fb539b84d8e99a393d56cf7a478@glitchtip:8000/7
     depends_on:
       - mongodb
       - ms-cart
       - ms-inventory
+      - glitchtip
 
   ms-data-aggregation:
     build:
@@ -53,10 +101,13 @@ services:
     container_name: ms-data-aggregation
     ports:
       - "8085:8085"
+    environment:
+      - SENTRY_DSN=http://f56b5247cce346b190932f875b521f74@glitchtip:8000/8
     depends_on:
       - mongodb
       - ms-order
       - ms-inventory
+      - glitchtip
 
   ms-analytics:
     build:
@@ -71,9 +122,11 @@ services:
       - CRITICAL_STOCK_THRESHOLD=5
       - MONGODB_URL=mongodb://mongodb:27017
       - MONGODB_DATABASE=ms-analytics
+      - SENTRY_DSN=http://7eb3ad3c5cf24d018a074a4fabca3017@glitchtip:8000/9
     depends_on:
       - ms-data-aggregation
       - mongodb
+      - glitchtip
 
   ms-reporting:
     build:
@@ -85,9 +138,11 @@ services:
       - ANALYTICS_URL=http://ms-analytics:8086
       - JWT_SECRET_KEY=f9A2kL7pQzR4vX9mN3bH5jW8sT1yC6xD
       - SPRING_DATA_MONGODB_URI=mongodb://mongodb:27017/reporting_bd
+      - SENTRY_DSN=http://f8036e2c2a0d4fc698306c3f0e80c571@glitchtip:8000/10
     depends_on:
       - ms-analytics
       - mongodb
+      - glitchtip
 
   ms-bff:
     build:
@@ -102,6 +157,7 @@ services:
       - MS_ORDER_URL=http://ms-order:8084
       - MS_CART_URL=http://ms-cart:8083
       - MS_LOGIN_URL=http://ms-login:8081
+      - SENTRY_DSN=http://d0cd109caef54b168f080d2025f27db5@glitchtip:8000/3
     depends_on:
       - ms-login
       - ms-inventory
@@ -110,6 +166,7 @@ services:
       - ms-data-aggregation
       - ms-analytics
       - ms-reporting
+      - glitchtip
 
   front:
     build:
@@ -122,3 +179,5 @@ services:
 
 volumes:
   mongo_data:
+  glitchtip_postgres:
+  glitchtip_media:

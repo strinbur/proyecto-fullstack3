@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip
+  labels:
+    app: glitchtip
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glitchtip
+  template:
+    metadata:
+      labels:
+        app: glitchtip
+    spec:
+      containers:
+      - name: glitchtip
+        image: glitchtip/glitchtip:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "postgres://glitchtip:password@glitchtip-postgres:5432/glitchtip"
+        - name: REDIS_URL
+          value: "redis://glitchtip-redis:6379/0"
+        - name: VALKEY_URL
+          value: "redis://glitchtip-redis:6379/0"
+        - name: GLITCHTIP_DOMAIN
+          value: "http://localhost:8000"
+        - name: GLITCHTIP_EMBED_WORKER
+          value: "true"
+        - name: SECRET_KEY
+          value: "cambia-esta-clave-por-una-larga-y-segura"
+        - name: DEFAULT_FROM_EMAIL
+          value: "admin@fullstack3.local"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"

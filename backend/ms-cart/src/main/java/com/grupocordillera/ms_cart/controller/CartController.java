@@ -4,6 +4,7 @@ import com.grupocordillera.ms_cart.dto.AddProductDTO;
 import com.grupocordillera.ms_cart.dto.CartResponseDTO;
 import com.grupocordillera.ms_cart.dto.UpdateQuantityDTO;
 import com.grupocordillera.ms_cart.service.CartService;
+import io.sentry.Sentry;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -46,4 +47,5 @@ public class CartController {
         service.clearCart();
         return ResponseEntity.noContent().build();
     }
+
 }

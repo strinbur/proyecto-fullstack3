@@ -35,6 +35,12 @@ spec:
           value: "http://ms-cart:8083"
         - name: MS_LOGIN_URL
           value: "http://ms-login:8081"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_BFF_DSN
+
         resources:
           requests:
             memory: "256Mi"
