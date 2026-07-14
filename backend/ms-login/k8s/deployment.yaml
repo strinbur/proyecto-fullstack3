@@ -23,6 +23,11 @@ spec:
         env:
         - name: JAVA_OPTS
           value: "-Xmx256m -Xms128m"
+        - name: SENTRY_DSN
+          valueFrom:
+            secretKeyRef:
+              name: sentry-dsn
+              key: MS_LOGIN_DSN
         resources:
           requests:
             memory: "256Mi"
@@ -30,17 +35,24 @@ spec:
           limits:
             memory: "1Gi"
             cpu: "500m"
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: 8081
+          periodSeconds: 5
+          failureThreshold: 24
+          timeoutSeconds: 3
         livenessProbe:
           httpGet:
             path: /actuator/health
             port: 8081
-          initialDelaySeconds: 45
           periodSeconds: 10
-          failureThreshold: 5
+          failureThreshold: 3
+          timeoutSeconds: 3
         readinessProbe:
           httpGet:
             path: /actuator/health/readiness
             port: 8081
-          initialDelaySeconds: 20
           periodSeconds: 5
-          failureThreshold: 6
+          failureThreshold: 3
+          timeoutSeconds: 3

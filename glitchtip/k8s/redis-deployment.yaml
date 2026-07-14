@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip-redis
+  labels:
+    app: glitchtip-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glitchtip-redis
+  template:
+    metadata:
+      labels:
+        app: glitchtip-redis
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 6379
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "250m"

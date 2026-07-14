@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: glitchtip-postgres
+  labels:
+    app: glitchtip-postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: glitchtip-postgres
+  template:
+    metadata:
+      labels:
+        app: glitchtip-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:17-alpine
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_USER
+          value: "glitchtip"
+        - name: POSTGRES_PASSWORD
+          value: "password"
+        - name: POSTGRES_DB
+          value: "glitchtip"
+        volumeMounts:
+        - name: glitchtip-postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      volumes:
+      - name: glitchtip-postgres-storage
+        persistentVolumeClaim:
+          claimName: glitchtip-postgres-pvc

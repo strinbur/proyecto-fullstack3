@@ -1,5 +1,6 @@
 package com.grupocordillera.ms_login;
 
+import io.sentry.Sentry;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -11,6 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 public class MsLoginApplication {
 
     public static void main(String[] args) {
+
+        Sentry.init(options -> {
+            options.setDsn(System.getenv("SENTRY_DSN"));
+        });
+
         SpringApplication.run(MsLoginApplication.class, args);
     }
 
